@@ -25,7 +25,11 @@ inputs:
     - id: java_opts
       type: string
       default: "-Xmx16g"
-      description: "JVM arguments should be a quoted, space separated list (e.g. \"-Xmx16g -Xms128m -Xmx512m\")"
+      description: "JVM arguments should be a quoted, space separated list (e.g. \"-Xmx8g -Xmx16g -Xms128m -Xmx512m\")"
+      <length>
+        -Xmx16g should be used with LLDR. # set a default toggle with removal_type?
+        -Xmx8g should be used with SLDR.
+      <length>
       inputBinding:
         position: 1
         shellQuote: false
@@ -96,7 +100,12 @@ inputs:
     - id validation_stringency
       type: string
       default: "LENIENT"
-      description: 
+      description: |
+        LENIENT|SILENT
+        <length>
+        LENIENT should be used with LLDR. # set a default toggle with removal_type?
+        SILENT should be used with SLDR.
+        <length>
       inputbinding:
         position: 10
         prefix: VALIDATION_STRINGENCY=
