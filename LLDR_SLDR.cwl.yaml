@@ -1,0 +1,202 @@
+#!/usr/bin/env cwl-runner
+
+cwlVersion: "cwl:draft-3"
+
+class: CommandLineTool
+
+requirements:
+  - $import: envvar-global.cwl
+  - class: InlineJavascriptRequirement
+  - class: ShellCommandRequirement
+  - class: MultipleInputFeatureRequirement
+  - class: DockerRequirement
+    dockerPull: registry.gitlab.com/uc-cdis/genomel-primary-analysis
+
+inputs:
+  - id: java_opts ## Moved this to toggle in the baseCommand arguments # *** VAR CHANGES VALUE LLDR vs SLDR
+    type: string
+    default: "-Xmx16g"
+    description: |
+      "JVM arguments should be a quoted, space separated list (e.g. \"-Xmx8g -Xmx16g -Xms128m -Xmx512m\")"
+    inputBinding:
+      position: 1
+      shellQuote: false
+  - id: picard_jar_path
+    type: string
+    default: "/home/ubuntu/tools/picard-tools/picard.jar" # string or (file)?
+    inputBinding:
+      position: 2
+      prefix: "-jar"
+  - id: picard_tool
+    type: string
+    default: "MarkDuplicates" # is this the way to do this - or is there a suffix-like inputBinding
+    inputBinding:
+      position: 3
+  - id: input_bam_path  # string or (file)?# NO DEFAULT
+    type: File
+    inputBinding:
+      position: 4
+      prefix: "INPUT="
+      separate: false
+  - id: remove_duplicates  # bool or string?
+    type: string
+    default: "true"
+    description: |
+      true|false
+    inputBinding:
+      position: 7
+      prefix: "REMOVE_DUPLICATES="
+      separate: false
+  - id: create_index # bool or string?
+    type: string
+    default: "true"
+    description: |
+      true|false
+    inputBinding:
+      position: 8
+      prefix: "CREATE_INDEX="
+      separate: false
+  - id: assume_sorted  # bool or string?
+    type: string
+    default: "true"
+    description: |
+      true|false
+    inputBinding:
+      position: 9
+      prefix: "ASSUME_SORTED="
+      separate: false
+  - id: validation_stringency  # *** VAR CHANGES VALUE LLDR vs SLDR
+    type: string
+    default: "LENIENT"
+    description: |
+      LENIENT|SILENT
+      <length>
+        LENIENT should be used with LLDR.# set a default toggle with removal_type?
+        SILENT should be used with SLDR.
+      <length>
+    inputBinding:
+      position: 10
+      prefix: "VALIDATION_STRINGENCY="
+      separate: false
+
+#  - id: removal_type
+#    type: string
+#    default: "LLDR"
+#    description: |
+#      LLDR|SLDR|OTHER
+#       <length>
+#       This module can be used to perform the (L)ane or (S)ample (L)evel (D)uplication (R)emoval.
+#       You must choose between one of these two options.
+#       <length>
+#    inputBinding:
+#      position: 11
+
+outputs:
+  - id: duplicate_removed_output_bam
+    type: File
+    outputBinding:
+      glob: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + inputs.removal_type + '.duplicate_removed.bam')
+  - id: duplicate_removed_output_metrics
+    type: File
+    outputBinding:
+      glob: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + inputs.removal_type + '.duplicate_removed.metrics.txt')
+  - id: duplicate_removed_output_bai
+    type: File
+    outputBinding:
+      glob: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + inputs.removal_type + '.duplicate_removed.bai')
+
+baseCommand: java
+arguments: # use removal_type to toggle defaults if it is set to LLDR or SSDR?
+  - valueFrom: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + inputs.removal_type + '.duplicate_removed.bam')
+    position: 5
+    prefix: "OUTPUT="
+    separate: false
+  - valueFrom: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + inputs.removal_type + '.duplicate_removed.metrics.txt')
+    position: 6
+    prefix: "METRICS_FILE="
+    separate: false
+
+description: |
+  This module can perform (L)ane or (S)ample (L)evel (D)uplication (R)emoval
+
+
+
+
+
+
+ #   - id: java_opts
+ #     type: string
+ #     default: "-Xmx16g"
+ #     description: "JVM arguments should be a quoted, space separated list (e.g. \"-Xmx8g -Xmx16g -Xms128m -Xmx512m\")"
+ #     <length>
+ #       -Xmx16g should be used with LLDR.# set a default toggle with removal_type?
+ #       -Xmx8g should be used with SLDR.
+ #     <length>
+ #     inputBinding:
+ #       position: 1
+ #       shellQuote: false
+
+
+ # - id validation_stringency
+ #     type: string
+ #     default: "LENIENT"
+ #     description: |
+ #       LENIENT|SILENT
+ #       <length>
+ #       LENIENT should be used with LLDR.# set a default toggle with removal_type?
+ #       SILENT should be used with SLDR.
+ #       <length>
+ #     inputBinding:
+ #       position: 10
+ #       prefix: VALIDATION_STRINGENCY=
+
+
+
+
+### To run Shenglai's trimmomatic cwl
+#
+# /usr/bin/time -v /home/ubuntu/.virtualenvs/p2/bin/cwltool --debug --tmpdir-prefix /mnt/tmp/cwl --tmp-outdir-prefix /mnt/tmp/cwl /mnt/SCRATCH/genomel_cwls/tools/novoalign.cwl.yaml --dbname /mnt/ref_data/hg19_canonical+phiX.nix --input_read1_fastq_file /mnt/example_data/SB887769_CAGATC_L007_R1_001_HQ_paired.fastq.trimmed.fastq --input_read2_fastq_file /mnt/example_data/SB887769_CAGATC_L007_R2_001_HQ_paired.fastq.trimmed.fastq --format ILM1.8 --mode PE --length 300,125 --output_format SAM --readgroup "@RG\tCN:CGR\tPL:ILLUMINA\tID:SB887769_ S1_L007_HQ_paired\tSM:SB887769\tPU:SB887769_S1_L007_HQ_paired\tLB:N/A" --output_name test.sam 2> novoalign.log
+#
+### separatd for easier reading:
+# /usr/bin/time -v\
+# /home/ubuntu/.virtualenvs/p2/bin/cwltool \
+# --debug \
+# --tmpdir-prefix /mnt/tmp/cwl \
+# --tmp-outdir-prefix /mnt/tmp/cwl \
+# /mnt/SCRATCH/genomel_cwls/tools/novoalign.cwl.yaml \
+# --dbname /mnt/ref_data/hg19_canonical+phiX.nix \
+# --input_read1_fastq_file /mnt/example_data/SB887769_CAGATC_L007_R1_001_HQ_paired.fastq.trimmed.fastq \
+# --input_read2_fastq_file /mnt/example_data/SB887769_CAGATC_L007_R2_001_HQ_paired.fastq.trimmed.fastq \
+# --format ILM1.8 \
+# --mode PE \
+# --length 300,125 \
+# --output_format SAM \
+# --readgroup "@RG\tCN:CGR\tPL:ILLUMINA\tID:SB887769_ S1_L007_HQ_paired\tSM:SB887769\tPU:SB887769_S1_L007_HQ_paired\tLB:N/A" \
+# --output_name test.sam 2> novoalign.log
+#
+### If this information were placed in a Yaml  - like this (example for DNASeq cwl that Jeremiah prepared):
+#
+### !/usr/bin/env cwl-runner
+# {
+#     "thread_count": 4,
+#     "uuid": "genomel_test",
+#     "bam_path": {
+#         "class": "File",
+#         "path": "/mnt/SCRATCH/genoMel_harmon/CTRL_NA12878_GDNA_HSV4_KHP_4.bam"
+#     },
+#     "reference_fasta_path": {
+#         "class": "File",
+#         "path": "/mnt/SCRATCH/grch38/GRCh38.d1.vd1.fa"
+#     },
+#     "db_snp_path": {
+#         "class": "File",
+#         "path": "/mnt/SCRATCH/coclean/dbsnp_144.hg38.vcf.gz"
+#     }
+# }
+#
+### You could run like this:
+#
+# cwl-runner 1st-tool.cwl echo-job.yml
+#
+### Shenglai does something explicit like this (command line, not file, contains the arguments):
+# /usr/bin/time -v /home/ubuntu/.virtualenvs/p2/bin/cwltool --debug --tmpdir-prefix /mnt/tmp/cwl --tmp-outdir-prefix /mnt/tmp/cwl /mnt/SCRATCH/genomel_cwls/tools/novoalign.cwl.yaml --dbname /mnt/ref_data/hg19_canonical+phiX.nix --input_read1_fastq_file /mnt/example_data/SB887769_CAGATC_L007_R1_001_HQ_paired.fastq.trimmed.fastq --input_read2_fastq_file /mnt/example_data/SB887769_CAGATC_L007_R2_001_HQ_paired.fastq.trimmed.fastq --format ILM1.8 --mode PE --length 300,125 --output_format SAM --readgroup "@RG\tCN:CGR\tPL:ILLUMINA\tID:SB887769_ S1_L007_HQ_paired\tSM:SB887769\tPU:SB887769_S1_L007_HQ_paired\tLB:N/A" --output_name test.sam 2> novoalign.log
