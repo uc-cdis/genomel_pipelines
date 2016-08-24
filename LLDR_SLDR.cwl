@@ -1,9 +1,11 @@
 #!/usr/bin/env cwl-runner
 
-
 ### Kevin cwl for
 # Duplication Removal (Lane or Sample Level)
 # Sample Level Duplication Removal
+
+### NOTE
+# 8-24-16 -- This CWL is not yet complete
 
 cwlVersion: "cwl:draft-3"
 
@@ -110,7 +112,6 @@ inputs:
       inputbinding:
         position: 11
           
-        
 outputs:
       - id: duplicate_removed_output_bam 
       type: File
@@ -136,55 +137,6 @@ outputs:
             return null;  
            }
 
-
-          
-
-
-
-
-
-
-
-
-
-
-
-  - valueFrom: $(inputs.input_read1_fastq_file.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + '.trimmed.fastq')
-    position: 7
-  - valueFrom: |
-      ${
-        if (inputs.end_mode == "PE" && inputs.input_read2_fastq_file)
-          return inputs.input_read1_fastq_file.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + '.trimmed.unpaired.fastq';
-        return null;
-      }
-    position: 8
-  - valueFrom: |
-      ${
-        if (inputs.end_mode == "PE" && inputs.input_read2_fastq_file)
-          return inputs.input_read2_fastq_file.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + '.trimmed.fastq';
-        return null;
-      }
-    position: 9
-  - valueFrom: |
-      ${
-        if (inputs.end_mode == "PE" && inputs.input_read2_fastq_file)
-          return inputs.input_read2_fastq_file.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + '.trimmed.unpaired.fastq';
-        return null;
-      }
-    position: 10
-  - valueFrom: $("ILLUMINACLIP:" + inputs.input_adapters_file.path + ":"+ inputs.illuminaclip)
-    position: 11
-
+baseCommand: java
 description: |
-  Trimmomatic is a fast, multithreaded command line tool that can be used to trim and crop
-  Illumina (FASTQ) data as well as to remove adapters. These adapters can pose a real problem
-  depending on the library preparation and downstream application.
-  There are two major modes of the program: Paired end mode and Single end mode. The
-  paired end mode will maintain correspondence of read pairs and also use the additional
-  information contained in paired reads to better find adapter or PCR primer fragments
-  introduced by the library preparation process.
-  Trimmomatic works with FASTQ files (using phred + 33 or phred + 64 quality scores,
-  depending on the Illumina pipeline used).
-      
-
-
+  This module can perform (L)ane or (S)ample (L)evel (D)uplication (R)emoval
