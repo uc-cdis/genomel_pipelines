@@ -22,17 +22,17 @@ requirements:
   #- class: StepInputExpressionRequirement
 
 inputs:
-    - id: java_opts
-      type: string
-      default: "-Xmx16g"
-      description: "JVM arguments should be a quoted, space separated list (e.g. \"-Xmx8g -Xmx16g -Xms128m -Xmx512m\")"
-      <length>
-        -Xmx16g should be used with LLDR. # set a default toggle with removal_type?
-        -Xmx8g should be used with SLDR.
-      <length>
-      inputBinding:
-        position: 1
-        shellQuote: false
+    #- id: java_opts ## Moved this to toggle in the baseCommand arguments
+    #  type: string
+    #  default: "-Xmx16g"
+    #  description: "JVM arguments should be a quoted, space separated list (e.g. \"-Xmx8g -Xmx16g -Xms128m -Xmx512m\")"
+    #  <length>
+    #    -Xmx16g should be used with LLDR. # set a default toggle with removal_type?
+    #    -Xmx8g should be used with SLDR.
+    #  <length>
+    #  inputBinding:
+    #    position: 1
+    #    shellQuote: false
     - id: picard_jar_path
       type: file
       inputBinding:
@@ -113,7 +113,7 @@ inputs:
       type: string
       default: "LLDR"
       description: |
-        LLDR|SLDR
+        LLDR|SLDR|OTHER
         <length>
         This module can be used to perform the (L)ane or (S)ample (L)evel (D)uplication (R)emoval.
         You must choose between one of these two options. 
@@ -147,5 +147,17 @@ outputs:
            }
 
 baseCommand: java
+arguments: # use removal_type to toggle defaults if it is set to LLDR or SSDR
+  - id: java_opts
+      type: string
+      default: "-Xmx16g"
+      description: "JVM arguments should be a quoted, space separated list (e.g. \"-Xmx8g -Xmx16g -Xms128m -Xmx512m\")"
+      <length>
+        -Xmx16g should be used with LLDR. # set a default toggle with removal_type?
+        -Xmx8g should be used with SLDR.
+      <length>
+      inputBinding:
+        position: 1
+        shellQuote: false
 description: |
   This module can perform (L)ane or (S)ample (L)evel (D)uplication (R)emoval
