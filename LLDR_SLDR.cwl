@@ -46,10 +46,10 @@ inputs:
     inputBinding:
       position: 3
   - id: input_bam_path# string or (file)?# NO DEFAULT
-    type: file 
+    type: string 
     inputBinding:
       position 4
-      prefix: INPUT=
+      prefix: "INPUT="
       separate: false
   - id: output_bam_filename# can't be same dir as input?
     type: string
@@ -60,7 +60,7 @@ inputs:
         } 
     inputBinding:
       position 5
-      prefix: INPUT=
+      prefix: "INPUT="
       separate: false
   - id: output_metrics_filename =# can't be same dir as input?
     type: string
@@ -70,7 +70,7 @@ inputs:
       }
     inputBinding:
       position 6
-      prefix: METRICS_FILE=
+      prefix: "METRICS_FILE="
       separate: false
   - id remove_duplicates# bool or string?
     type: string
@@ -79,7 +79,7 @@ inputs:
       true|false
     inputbinding:
       position: 7
-      prefix: REMOVE_DUPLICATES=
+      prefix: "REMOVE_DUPLICATES="
       separate: false
   - id create_index# bool or string?
     type: string
@@ -88,7 +88,7 @@ inputs:
       true|false
     inputbinding:
       position: 8
-      prefix: CREATE_INDEX=
+      prefix: "CREATE_INDEX="
       separate: false
   - id assume_sorted# bool or string?
     type: string
@@ -97,7 +97,7 @@ inputs:
       true|false
     inputbinding:
       position: 9
-      prefix: ASSUME_SORTED=
+      prefix: "ASSUME_SORTED="
       separate: false  
   - id validation_stringency# *** VAR CHANGES VALUE LLDR vs SLDR 
     type: string
@@ -110,7 +110,7 @@ inputs:
       <length>
     inputbinding:
       position: 10
-      prefix: VALIDATION_STRINGENCY=
+      prefix: "VALIDATION_STRINGENCY="
   - id removal_type
     type: string
     default: "LLDR"
