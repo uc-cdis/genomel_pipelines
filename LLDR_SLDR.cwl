@@ -22,8 +22,8 @@ requirements:
   #- class: StepInputExpressionRequirement
 
 inputs:
-  - id: java_opts ## Moved this to toggle in the baseCommand arguments # *** VAR CHANGES VALUE LLDR vs SLDR
-    type: string
+  - id: java_opts 
+    type: string ## Moved this to toggle in the baseCommand arguments # *** VAR CHANGES VALUE LLDR vs SLDR
     default: "-Xmx16g"
     description: "JVM arguments should be a quoted, space separated list (e.g. \"-Xmx8g -Xmx16g -Xms128m -Xmx512m\")"
       <length>
