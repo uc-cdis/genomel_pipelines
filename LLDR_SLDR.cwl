@@ -22,12 +22,13 @@ requirements:
   #- class: StepInputExpressionRequirement
 
 inputs:
-  - id: java_opts 
-    type: string ## Moved this to toggle in the baseCommand arguments # *** VAR CHANGES VALUE LLDR vs SLDR
+  - id: java_opts## Moved this to toggle in the baseCommand arguments # *** VAR CHANGES VALUE LLDR vs SLDR 
+    type: string 
     default: "-Xmx16g"
-    description: "JVM arguments should be a quoted, space separated list (e.g. \"-Xmx8g -Xmx16g -Xms128m -Xmx512m\")"
+    description: |
+      "JVM arguments should be a quoted, space separated list (e.g. \"-Xmx8g -Xmx16g -Xms128m -Xmx512m\")"
       <length>
-      -Xmx16g should be used with LLDR. # set a default toggle with removal_type?
+      -Xmx16g should be used with LLDR.# set a default toggle with removal_type?
       -Xmx8g should be used with SLDR.
       <length>
     inputBinding:
@@ -35,22 +36,22 @@ inputs:
     shellQuote: false
   - id: picard_jar_path
     type: file
-    default: "/home/ubuntu/tools/picard-tools/picard.jar" # string or (file)?
+    default: "/home/ubuntu/tools/picard-tools/picard.jar"# string or (file)?
     inputBinding:
       position: 2
       prefix: "-jar"
   - id: picard_tool
     type: string
-    default: "MarkDuplicates"  # is this the way to do this - or is there a suffix-like inputBinding
+    default: "MarkDuplicates" # is this the way to do this - or is there a suffix-like inputBinding
     inputBinding:
       position: 3
-  - id: input_bam_path # string or (file)? # NO DEFAULT
+  - id: input_bam_path# string or (file)?# NO DEFAULT
     type: file 
     inputBinding:
       position 4
       prefix: INPUT=
       separate: false
-  - id: output_bam_filename # can't be same dir as input?
+  - id: output_bam_filename# can't be same dir as input?
     type: string
     default:
       glob: |
@@ -61,7 +62,7 @@ inputs:
       position 5
       prefix: INPUT=
       separate: false
-  - id: output_metrics_filename = # can't be same dir as input?
+  - id: output_metrics_filename =# can't be same dir as input?
     type: string
     glob: |
       ${
@@ -71,7 +72,7 @@ inputs:
       position 6
       prefix: METRICS_FILE=
       separate: false
-  - id remove_duplicates # bool or string?
+  - id remove_duplicates# bool or string?
     type: string
     default: "true"
     description: |
@@ -80,7 +81,7 @@ inputs:
       position: 7
       prefix: REMOVE_DUPLICATES=
       separate: false
-  - id create_index # bool or string?
+  - id create_index# bool or string?
     type: string
     default: "true"
     description: |
@@ -89,7 +90,7 @@ inputs:
       position: 8
       prefix: CREATE_INDEX=
       separate: false
-  - id assume_sorted # bool or string?
+  - id assume_sorted# bool or string?
     type: string
     default: "true"
     description: |
@@ -98,13 +99,13 @@ inputs:
       position: 9
       prefix: ASSUME_SORTED=
       separate: false  
-  - id validation_stringency # *** VAR CHANGES VALUE LLDR vs SLDR 
+  - id validation_stringency# *** VAR CHANGES VALUE LLDR vs SLDR 
     type: string
     default: "LENIENT"
     description: |
       LENIENT|SILENT
       <length>
-        LENIENT should be used with LLDR. # set a default toggle with removal_type?
+        LENIENT should be used with LLDR.# set a default toggle with removal_type?
         SILENT should be used with SLDR.
       <length>
     inputbinding:
@@ -148,7 +149,7 @@ outputs:
         }
 
 baseCommand: java
-#arguments: # use removal_type to toggle defaults if it is set to LLDR or SSDR?
+#arguments:# use removal_type to toggle defaults if it is set to LLDR or SSDR?
 description: |
   This module can perform (L)ane or (S)ample (L)evel (D)uplication (R)emoval
 
@@ -157,31 +158,31 @@ description: |
 
 
 
-  #   - id: java_opts
-  #     type: string
-  #     default: "-Xmx16g"
-  #     description: "JVM arguments should be a quoted, space separated list (e.g. \"-Xmx8g -Xmx16g -Xms128m -Xmx512m\")"
-  #     <length>
-  #       -Xmx16g should be used with LLDR. # set a default toggle with removal_type?
-  #       -Xmx8g should be used with SLDR.
-  #     <length>
-  #     inputBinding:
-  #       position: 1
-  #       shellQuote: false
+ #   - id: java_opts
+ #     type: string
+ #     default: "-Xmx16g"
+ #     description: "JVM arguments should be a quoted, space separated list (e.g. \"-Xmx8g -Xmx16g -Xms128m -Xmx512m\")"
+ #     <length>
+ #       -Xmx16g should be used with LLDR.# set a default toggle with removal_type?
+ #       -Xmx8g should be used with SLDR.
+ #     <length>
+ #     inputBinding:
+ #       position: 1
+ #       shellQuote: false
   
 
-  # - id validation_stringency
-  #     type: string
-  #     default: "LENIENT"
-  #     description: |
-  #       LENIENT|SILENT
-  #       <length>
-  #       LENIENT should be used with LLDR. # set a default toggle with removal_type?
-  #       SILENT should be used with SLDR.
-  #       <length>
-  #     inputbinding:
-  #       position: 10
-  #       prefix: VALIDATION_STRINGENCY=
+ # - id validation_stringency
+ #     type: string
+ #     default: "LENIENT"
+ #     description: |
+ #       LENIENT|SILENT
+ #       <length>
+ #       LENIENT should be used with LLDR.# set a default toggle with removal_type?
+ #       SILENT should be used with SLDR.
+ #       <length>
+ #     inputbinding:
+ #       position: 10
+ #       prefix: VALIDATION_STRINGENCY=
 
 
 
@@ -209,7 +210,7 @@ description: |
 #
 ### If this information were placed in a Yaml  - like this (example for DNASeq cwl that Jeremiah prepared):
 #
-# #!/usr/bin/env cwl-runner
+### !/usr/bin/env cwl-runner
 # {
 #     "thread_count": 4,
 #     "uuid": "genomel_test",
