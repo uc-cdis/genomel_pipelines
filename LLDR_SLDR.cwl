@@ -22,17 +22,17 @@ requirements:
   #- class: StepInputExpressionRequirement
 
 inputs:
-    #- id: java_opts ## Moved this to toggle in the baseCommand arguments
-    #  type: string
-    #  default: "-Xmx16g"
-    #  description: "JVM arguments should be a quoted, space separated list (e.g. \"-Xmx8g -Xmx16g -Xms128m -Xmx512m\")"
-    #  <length>
-    #    -Xmx16g should be used with LLDR. # set a default toggle with removal_type?
-    #    -Xmx8g should be used with SLDR.
-    #  <length>
-    #  inputBinding:
-    #    position: 1
-    #    shellQuote: false
+    - id: java_opts ## Moved this to toggle in the baseCommand arguments
+     type: string
+     default: "-Xmx16g"
+     description: "JVM arguments should be a quoted, space separated list (e.g. \"-Xmx8g -Xmx16g -Xms128m -Xmx512m\")"
+     <length>
+       -Xmx16g should be used with LLDR. # set a default toggle with removal_type?
+       -Xmx8g should be used with SLDR.
+     <length>
+     inputBinding:
+       position: 1
+       shellQuote: false
     - id: picard_jar_path
       type: file
       inputBinding:
@@ -147,17 +147,88 @@ outputs:
            }
 
 baseCommand: java
-arguments: # use removal_type to toggle defaults if it is set to LLDR or SSDR
-  - id: java_opts
-      type: string
-      default: "-Xmx16g"
-      description: "JVM arguments should be a quoted, space separated list (e.g. \"-Xmx8g -Xmx16g -Xms128m -Xmx512m\")"
-      <length>
-        -Xmx16g should be used with LLDR. # set a default toggle with removal_type?
-        -Xmx8g should be used with SLDR.
-      <length>
-      inputBinding:
-        position: 1
-        shellQuote: false
+#arguments: # use removal_type to toggle defaults if it is set to LLDR or SSDR?
 description: |
   This module can perform (L)ane or (S)ample (L)evel (D)uplication (R)emoval
+
+
+
+
+
+
+  #   - id: java_opts
+  #     type: string
+  #     default: "-Xmx16g"
+  #     description: "JVM arguments should be a quoted, space separated list (e.g. \"-Xmx8g -Xmx16g -Xms128m -Xmx512m\")"
+  #     <length>
+  #       -Xmx16g should be used with LLDR. # set a default toggle with removal_type?
+  #       -Xmx8g should be used with SLDR.
+  #     <length>
+  #     inputBinding:
+  #       position: 1
+  #       shellQuote: false
+  
+
+  # - id validation_stringency
+  #     type: string
+  #     default: "LENIENT"
+  #     description: |
+  #       LENIENT|SILENT
+  #       <length>
+  #       LENIENT should be used with LLDR. # set a default toggle with removal_type?
+  #       SILENT should be used with SLDR.
+  #       <length>
+  #     inputbinding:
+  #       position: 10
+  #       prefix: VALIDATION_STRINGENCY=
+
+
+
+
+### To run Shenglai's trimmomatic cwl
+#
+# /usr/bin/time -v /home/ubuntu/.virtualenvs/p2/bin/cwltool --debug --tmpdir-prefix /mnt/tmp/cwl --tmp-outdir-prefix /mnt/tmp/cwl /mnt/SCRATCH/genomel_cwls/tools/novoalign.cwl.yaml --dbname /mnt/ref_data/hg19_canonical+phiX.nix --input_read1_fastq_file /mnt/example_data/SB887769_CAGATC_L007_R1_001_HQ_paired.fastq.trimmed.fastq --input_read2_fastq_file /mnt/example_data/SB887769_CAGATC_L007_R2_001_HQ_paired.fastq.trimmed.fastq --format ILM1.8 --mode PE --length 300,125 --output_format SAM --readgroup "@RG\tCN:CGR\tPL:ILLUMINA\tID:SB887769_ S1_L007_HQ_paired\tSM:SB887769\tPU:SB887769_S1_L007_HQ_paired\tLB:N/A" --output_name test.sam 2> novoalign.log
+#
+### separatd for easier reading:
+# /usr/bin/time \
+# -v /home/ubuntu/.virtualenvs/p2/bin/cwltool \
+# --debug \
+# --tmpdir-prefix /mnt/tmp/cwl \
+# --tmp-outdir-prefix /mnt/tmp/cwl \
+# /mnt/SCRATCH/genomel_cwls/tools/novoalign.cwl.yaml \
+# --dbname /mnt/ref_data/hg19_canonical+phiX.nix \
+# --input_read1_fastq_file /mnt/example_data/SB887769_CAGATC_L007_R1_001_HQ_paired.fastq.trimmed.fastq \
+# --input_read2_fastq_file /mnt/example_data/SB887769_CAGATC_L007_R2_001_HQ_paired.fastq.trimmed.fastq \
+# --format ILM1.8 \
+# --mode PE \
+# --length 300,125 \
+# --output_format SAM \
+# --readgroup "@RG\tCN:CGR\tPL:ILLUMINA\tID:SB887769_ S1_L007_HQ_paired\tSM:SB887769\tPU:SB887769_S1_L007_HQ_paired\tLB:N/A" \
+# --output_name test.sam 2> novoalign.log
+#
+### If this information were placed in a Yaml  - like this (example for DNASeq cwl that Jeremiah prepared):
+#
+# #!/usr/bin/env cwl-runner
+# {
+#     "thread_count": 4,
+#     "uuid": "genomel_test",
+#     "bam_path": {
+#         "class": "File",
+#         "path": "/mnt/SCRATCH/genoMel_harmon/CTRL_NA12878_GDNA_HSV4_KHP_4.bam"
+#     },
+#     "reference_fasta_path": {
+#         "class": "File",
+#         "path": "/mnt/SCRATCH/grch38/GRCh38.d1.vd1.fa"
+#     },
+#     "db_snp_path": {
+#         "class": "File",
+#         "path": "/mnt/SCRATCH/coclean/dbsnp_144.hg38.vcf.gz"
+#     }
+# }
+#
+### You could run like this:
+#
+# cwl-runner 1st-tool.cwl echo-job.yml
+#
+### Shenglai does something explicit like this (command line, not file, contains the arguments):
+# /usr/bin/time -v /home/ubuntu/.virtualenvs/p2/bin/cwltool --debug --tmpdir-prefix /mnt/tmp/cwl --tmp-outdir-prefix /mnt/tmp/cwl /mnt/SCRATCH/genomel_cwls/tools/novoalign.cwl.yaml --dbname /mnt/ref_data/hg19_canonical+phiX.nix --input_read1_fastq_file /mnt/example_data/SB887769_CAGATC_L007_R1_001_HQ_paired.fastq.trimmed.fastq --input_read2_fastq_file /mnt/example_data/SB887769_CAGATC_L007_R2_001_HQ_paired.fastq.trimmed.fastq --format ILM1.8 --mode PE --length 300,125 --output_format SAM --readgroup "@RG\tCN:CGR\tPL:ILLUMINA\tID:SB887769_ S1_L007_HQ_paired\tSM:SB887769\tPU:SB887769_S1_L007_HQ_paired\tLB:N/A" --output_name test.sam 2> novoalign.log
