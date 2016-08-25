@@ -26,10 +26,10 @@ inputs:
     type: string
     default: "-Xmx16g"
     description: "JVM arguments should be a quoted, space separated list (e.g. \"-Xmx8g -Xmx16g -Xms128m -Xmx512m\")"
-    <length>
-    -Xmx16g should be used with LLDR. # set a default toggle with removal_type?
-    -Xmx8g should be used with SLDR.
-    <length>
+      <length>
+      -Xmx16g should be used with LLDR. # set a default toggle with removal_type?
+      -Xmx8g should be used with SLDR.
+      <length>
     inputBinding:
     position: 1
     shellQuote: false
@@ -115,10 +115,10 @@ inputs:
     default: "LLDR"
     description: |
      LLDR|SLDR|OTHER
-     <length>
+       <length>
        This module can be used to perform the (L)ane or (S)ample (L)evel (D)uplication (R)emoval.
        You must choose between one of these two options. 
-     <length>
+       <length>
     inputbinding:
       position: 11
           
