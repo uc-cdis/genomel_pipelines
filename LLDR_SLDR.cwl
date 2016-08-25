@@ -22,7 +22,7 @@ requirements:
   #- class: StepInputExpressionRequirement
 
 inputs:
-    - id: java_opts ## Moved this to toggle in the baseCommand arguments
+    - id: java_opts ## Moved this to toggle in the baseCommand arguments # *** VAR CHANGES VALUE LLDR vs SLDR
      type: string
      default: "-Xmx16g"
      description: "JVM arguments should be a quoted, space separated list (e.g. \"-Xmx8g -Xmx16g -Xms128m -Xmx512m\")"
@@ -35,16 +35,17 @@ inputs:
        shellQuote: false
     - id: picard_jar_path
       type: file
+      default: "/home/ubuntu/tools/picard-tools/picard.jar" # string or (file)?
       inputBinding:
         position: 2
         prefix: "-jar"
     - id: picard_tool
-      type: file
+      type: string
         default: "MarkDuplicates"  # is this the way to do this - or is there a suffix-like inputBinding
         inputBinding:
           position: 3
-    - id: input_bam_path
-      type: File 
+    - id: input_bam_path # string or (file)? # NO DEFAULT
+      type: file 
       inputBinding:
         position 4
         prefix: INPUT=
@@ -85,7 +86,7 @@ inputs:
       description: |
         true|false
       inputbinding:
-        position: 8
+         position: 8
         prefix: CREATE_INDEX=
         separate: false
     - id assume_sorted # bool or string?
@@ -97,7 +98,7 @@ inputs:
         position: 9
         prefix: ASSUME_SORTED=
         separate: false  
-    - id validation_stringency
+    - id validation_stringency # *** VAR CHANGES VALUE LLDR vs SLDR 
       type: string
       default: "LENIENT"
       description: |
@@ -190,8 +191,8 @@ description: |
 # /usr/bin/time -v /home/ubuntu/.virtualenvs/p2/bin/cwltool --debug --tmpdir-prefix /mnt/tmp/cwl --tmp-outdir-prefix /mnt/tmp/cwl /mnt/SCRATCH/genomel_cwls/tools/novoalign.cwl.yaml --dbname /mnt/ref_data/hg19_canonical+phiX.nix --input_read1_fastq_file /mnt/example_data/SB887769_CAGATC_L007_R1_001_HQ_paired.fastq.trimmed.fastq --input_read2_fastq_file /mnt/example_data/SB887769_CAGATC_L007_R2_001_HQ_paired.fastq.trimmed.fastq --format ILM1.8 --mode PE --length 300,125 --output_format SAM --readgroup "@RG\tCN:CGR\tPL:ILLUMINA\tID:SB887769_ S1_L007_HQ_paired\tSM:SB887769\tPU:SB887769_S1_L007_HQ_paired\tLB:N/A" --output_name test.sam 2> novoalign.log
 #
 ### separatd for easier reading:
-# /usr/bin/time \
-# -v /home/ubuntu/.virtualenvs/p2/bin/cwltool \
+# /usr/bin/time -v\
+# /home/ubuntu/.virtualenvs/p2/bin/cwltool \
 # --debug \
 # --tmpdir-prefix /mnt/tmp/cwl \
 # --tmp-outdir-prefix /mnt/tmp/cwl \
