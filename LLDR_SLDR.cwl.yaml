@@ -42,7 +42,7 @@ inputs:
     inputBinding:
       position: 3
   - id: input_bam_path  # string or (file)?# NO DEFAULT
-    type: string
+    type: File
     inputBinding:
       position: 4
       prefix: "INPUT="
@@ -90,7 +90,7 @@ inputs:
     type: string
     default: "LLDR"
     description: |
-     LLDR|SLDR|OTHER
+      LLDR|SLDR|OTHER
        <length>
        This module can be used to perform the (L)ane or (S)ample (L)evel (D)uplication (R)emoval.
        You must choose between one of these two options.
@@ -102,26 +102,15 @@ outputs:
   - id: duplicate_removed_output_bam
     type: File
     outputBinding:
-      glob: |
-        ${
-          return inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + inputs.removal_type + '.duplicate_removed.bam';
-        }
+      glob: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + inputs.removal_type + '.duplicate_removed.bam')
   - id: duplicate_removed_output_metrics
     type: File
     outputBinding:
-      glob: |
-        ${
-          return inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + inputs.removal_type + '.duplicate_removed.metrics.txt';
-        }
+      glob: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + inputs.removal_type + '.duplicate_removed.metrics.txt')
   - id: duplicate_removed_output_bai
-    type: ['null', File]
+    type: File
     outputBinding:
-      glob: |
-        ${
-          if(inputs.create_index=="true")
-            return inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + inputs.removal_type + '.duplicate_removed.bai';
-          return null;
-        }
+      glob: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + inputs.removal_type + '.duplicate_removed.bai')
 
 baseCommand: java
 arguments: # use removal_type to toggle defaults if it is set to LLDR or SSDR?
