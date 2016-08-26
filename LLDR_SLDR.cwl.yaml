@@ -1,15 +1,6 @@
 #!/usr/bin/env cwl-runner
 
-### Kevin cwl for
-# Duplication Removal (Lane or Sample Level)
-# Sample Level Duplication Removal
-
-### NOTE
-# 8-24-16 -- This CWL is not yet complete
-
 cwlVersion: "cwl:draft-3"
-
-#class: #NA (Tool)
 
 requirements:
   - $import: envvar-global.cwl
@@ -18,8 +9,6 @@ requirements:
   - class: MultipleInputFeatureRequirement
   - class: DockerRequirement
     dockerPull: registry.gitlab.com/uc-cdis/genomel-primary-analysis
-  #- class: ScatterFeatureRequirement
-  #- class: StepInputExpressionRequirement
 
 inputs:
   - id: java_opts ## Moved this to toggle in the baseCommand arguments # *** VAR CHANGES VALUE LLDR vs SLDR
