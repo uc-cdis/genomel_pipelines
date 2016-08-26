@@ -32,8 +32,8 @@ inputs:
       -Xmx8g should be used with SLDR.
       <length>
     inputBinding:
-    position: 1
-    shellQuote: false
+      position: 1
+      shellQuote: false
   - id: picard_jar_path
     type: file
     default: "/home/ubuntu/tools/picard-tools/picard.jar" # string or (file)?
@@ -51,7 +51,7 @@ inputs:
       position: 4
       prefix: "INPUT="
       separate: false
-  - id remove_duplicates  # bool or string?
+  - id: remove_duplicates  # bool or string?
     type: string
     default: "true"
     description: |
