@@ -48,7 +48,7 @@ inputs:
   - id: input_bam_path  # string or (file)?# NO DEFAULT
     type: string
     inputBinding:
-      position 4
+      position: 4
       prefix: "INPUT="
       separate: false
   - id remove_duplicates  # bool or string?
