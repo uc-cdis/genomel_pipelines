@@ -23,7 +23,7 @@ inputs:
       shellQuote: false
   - id: picard_jar_path
     type: string
-    #default: "/home/ubuntu/tools/picard-tools/picard.jar" # string or (file)?
+    default: "/home/ubuntu/tools/picard-tools/picard.jar" # string or (file)?
     inputBinding:
       position: 2
       prefix: "-jar"
