@@ -9,7 +9,7 @@
 
 cwlVersion: "cwl:draft-3"
 
-#class: #NA (Tool) 
+#class: #NA (Tool)
 
 requirements:
   - $import: envvar-global.cwl
@@ -22,8 +22,8 @@ requirements:
   #- class: StepInputExpressionRequirement
 
 inputs:
-  - id: java_opts## Moved this to toggle in the baseCommand arguments # *** VAR CHANGES VALUE LLDR vs SLDR 
-    type: string 
+  - id: java_opts ## Moved this to toggle in the baseCommand arguments # *** VAR CHANGES VALUE LLDR vs SLDR
+    type: string
     default: "-Xmx16g"
     description: |
       "JVM arguments should be a quoted, space separated list (e.g. \"-Xmx8g -Xmx16g -Xms128m -Xmx512m\")"
@@ -36,7 +36,7 @@ inputs:
     shellQuote: false
   - id: picard_jar_path
     type: file
-    default: "/home/ubuntu/tools/picard-tools/picard.jar"# string or (file)?
+    default: "/home/ubuntu/tools/picard-tools/picard.jar" # string or (file)?
     inputBinding:
       position: 2
       prefix: "-jar"
@@ -45,34 +45,13 @@ inputs:
     default: "MarkDuplicates" # is this the way to do this - or is there a suffix-like inputBinding
     inputBinding:
       position: 3
-  - id: input_bam_path# string or (file)?# NO DEFAULT
-    type: string 
+  - id: input_bam_path  # string or (file)?# NO DEFAULT
+    type: string
     inputBinding:
       position 4
       prefix: "INPUT="
       separate: false
-  - id: output_bam_filename# can't be same dir as input?
-    type: string
-    default:
-      glob: |
-        ${
-          return inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + inputs.removal_type + '.duplicate_removed.bam';
-        } 
-    inputBinding:
-      position 5
-      prefix: "INPUT="
-      separate: false
-  - id: output_metrics_filename =# can't be same dir as input?
-    type: string
-    glob: |
-      ${
-        return inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + inputs.removal_type + '.duplicate_removed.metrics.txt';
-      }
-    inputBinding:
-      position 6
-      prefix: "METRICS_FILE="
-      separate: false
-  - id remove_duplicates# bool or string?
+  - id remove_duplicates  # bool or string?
     type: string
     default: "true"
     description: |
@@ -81,7 +60,7 @@ inputs:
       position: 7
       prefix: "REMOVE_DUPLICATES="
       separate: false
-  - id create_index# bool or string?
+  - id create_index # bool or string?
     type: string
     default: "true"
     description: |
@@ -90,7 +69,7 @@ inputs:
       position: 8
       prefix: "CREATE_INDEX="
       separate: false
-  - id assume_sorted# bool or string?
+  - id assume_sorted  # bool or string?
     type: string
     default: "true"
     description: |
@@ -98,8 +77,8 @@ inputs:
     inputbinding:
       position: 9
       prefix: "ASSUME_SORTED="
-      separate: false  
-  - id validation_stringency# *** VAR CHANGES VALUE LLDR vs SLDR 
+      separate: false
+  - id validation_stringency  # *** VAR CHANGES VALUE LLDR vs SLDR
     type: string
     default: "LENIENT"
     description: |
@@ -118,13 +97,13 @@ inputs:
      LLDR|SLDR|OTHER
        <length>
        This module can be used to perform the (L)ane or (S)ample (L)evel (D)uplication (R)emoval.
-       You must choose between one of these two options. 
+       You must choose between one of these two options.
        <length>
     inputbinding:
       position: 11
-          
+
 outputs:
-  - id: duplicate_removed_output_bam 
+  - id: duplicate_removed_output_bam
     type: File
     outputBinding:
       glob: |
@@ -138,18 +117,27 @@ outputs:
         ${
           return inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + inputs.removal_type + '.duplicate_removed.metrics.txt';
         }
-  - id: duplicate_removed_output_bai 
+  - id: duplicate_removed_output_bai
     type: ['null', File]
     outputBinding:
       glob: |
         ${
           if(inputs.create_index=="true")
             return inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + inputs.removal_type + '.duplicate_removed.bai';
-          return null;  
+          return null;
         }
 
 baseCommand: java
-#arguments:# use removal_type to toggle defaults if it is set to LLDR or SSDR?
+arguments: # use removal_type to toggle defaults if it is set to LLDR or SSDR?
+  - valueFrom: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + inputs.removal_type + '.duplicate_removed.bam')
+    position 5
+    prefix: "OUTPUT="
+    separate: false
+  - valueFrom: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + inputs.removal_type + '.duplicate_removed.metrics.txt')
+    position 6
+    prefix: "METRICS_FILE="
+    separate: false
+
 description: |
   This module can perform (L)ane or (S)ample (L)evel (D)uplication (R)emoval
 
@@ -169,7 +157,7 @@ description: |
  #     inputBinding:
  #       position: 1
  #       shellQuote: false
-  
+
 
  # - id validation_stringency
  #     type: string
