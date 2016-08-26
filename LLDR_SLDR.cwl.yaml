@@ -2,6 +2,8 @@
 
 cwlVersion: "cwl:draft-3"
 
+class: CommandLineTool
+
 requirements:
   - $import: envvar-global.cwl
   - class: InlineJavascriptRequirement
