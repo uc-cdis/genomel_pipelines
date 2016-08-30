@@ -5,7 +5,7 @@
 
 
 
-
+rm my_output_log.txt;
 /usr/bin/time -v \
 /home/ubuntu/.virtualenvs/p2/bin/cwltool \
 --debug \
