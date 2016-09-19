@@ -5,16 +5,14 @@ cwlVersion: "cwl:draft-3"
 class: CommandLineTool
 
 requirements:
-  - $import: envvar-global.cwl
+  - $import: ../envvar-global.cwl
   - class: InlineJavascriptRequirement
   - class: DockerRequirement
     dockerPull: registry.gitlab.com/uc-cdis/genomel-primary-analysis
 
 inputs:
   - id: nthreads
-    type:
-      - 'null'
-      - int
+    type: ["null", int]
     description: "Sets maximum number of threads to use. Defaults to one thread per CPU as reported by sysinfo(). This is usually the number of cores or twice the number of cores if hyper-threading is turned on. Lisenced version only. (e.g. 4)"
     inputBinding:
       position: 1
@@ -35,9 +33,7 @@ inputs:
       prefix: "-f"
 
   - id: input_read2_fastq_file
-    type:
-      - 'null'
-      - File
+    type: ["null", File]
     description: "FASTQ file for read R2 in Paired End mode"
     inputBinding:
       position: 4
