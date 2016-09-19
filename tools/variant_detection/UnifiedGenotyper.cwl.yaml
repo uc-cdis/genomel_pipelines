@@ -1,0 +1,98 @@
+#!/usr/bin/env cwl-runner
+
+cwlVersion: "cwl:draft-3"
+
+class: CommandLineTool
+
+requirements:
+  - $import: ../envvar-global.cwl
+  - class: InlineJavascriptRequirement
+  - class: ShellCommandRequirement
+  - class: MultipleInputFeatureRequirement
+  - class: DockerRequirement
+    dockerPull: registry.gitlab.com/uc-cdis/genomel-exome-variant-detection:0.1b
+
+inputs:
+  - id: java_opts
+    type: string
+    default: "-Xmx32g -XX:+UseConcMarkSweepGC -XX:-UseGCOverheadLimit"
+    description: |
+      "JVM arguments should be a quoted, space separated list (e.g. \"-Xmx8g -Xmx16g -Xms128m -Xmx512m\")"
+    inputBinding:
+      position: 1
+      shellQuote: false
+  - id: input_bam_path
+    type:
+      type: array
+      items: File
+      inputBinding:
+        prefix: "-I"
+      secondaryFiles:
+        - "^.bai"
+    inputBinding:
+      position: 4
+  - id: reference_fasta_path
+    type: File
+    inputBinding:
+      position: 5
+      prefix: "-R"
+    secondaryFiles:
+      - "^.dict"
+      - ".fai"
+  - id: interval_file_path
+    type: ["null", File]
+    inputBinding:
+      position: 6
+      prefix: "-L"
+  - id: output_vcf_name
+    type: string
+    inputBinding:
+      position: 7
+      prefix: "-o"
+
+outputs:
+  - id: output_vcf
+    type: File
+    outputBinding:
+      glob: $(inputs.output_vcf_name)
+    secondaryFiles:
+      - ".idx"
+
+baseCommand: java
+arguments:
+  - valueFrom: /home/ubuntu/tools/GenomeAnalysisTK.jar
+    position: 2
+    prefix: -jar
+  - valueFrom: UnifiedGenotyper
+    position: 3
+    prefix: -T
+  - valueFrom: "250"
+    position: 8
+    prefix: -dcov
+  - valueFrom: BOTH
+    position: 9
+    prefix: -glm
+  - valueFrom: "30"
+    position: 10
+    prefix: -stand_call_conf
+  - valueFrom: "30"
+    position: 11
+    prefix: -stand_emit_conf
+  - valueFrom: Standard
+    position: 12
+    prefix: -G
+  - valueFrom: AlleleBalance
+    position: 13
+    prefix: -A
+  - valueFrom: Coverage
+    position: 14
+    prefix: -A
+  - valueFrom: HomopolymerRun
+    position: 15
+    prefix: -A
+  - valueFrom: QualByDepth
+    position: 16
+    prefix: -A
+
+description: |
+    This tool uses a Bayesian genotype likelihood model to estimate simultaneously the most likely genotypes and allele frequency in a population of N samples, emitting a genotype for each sample. The system can either emit just the variant sites or complete genotypes (which includes homozygous reference calls) satisfying some phred-scaled confidence value.
