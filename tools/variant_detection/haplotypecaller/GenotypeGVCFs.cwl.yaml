@@ -1,0 +1,64 @@
+#!/usr/bin/env cwl-runner
+
+cwlVersion: "cwl:draft-3"
+
+class: CommandLineTool
+
+requirements:
+  - $import: ../../envvar-global.cwl
+  - class: InlineJavascriptRequirement
+  - class: ShellCommandRequirement
+  - class: MultipleInputFeatureRequirement
+  - class: DockerRequirement
+    dockerPull: registry.gitlab.com/uc-cdis/genomel-exome-variant-detection:0.1c
+
+inputs:
+  - id: java_opts
+    type: string
+    default: "-Xmx256g"
+    description: |
+      "JVM arguments should be a quoted, space separated list (e.g. \"-Xmx8g -Xmx16g -Xms128m -Xmx512m\")"
+    inputBinding:
+      position: 1
+      shellQuote: false
+  - id: input_vcf_path
+    type:
+      type: array
+      items: File
+      inputBinding:
+        prefix: "--variant"
+      secondaryFiles:
+        - ".tbi"
+  - id: reference_fasta_path
+    type: File
+    inputBinding:
+      position: 5
+      prefix: "-R"
+    secondaryFiles:
+      - "^.dict"
+      - ".fai"
+  - id: output_gvcf_name
+    type: string
+    inputBinding:
+      position: 6
+      prefix: "-o"
+
+outputs:
+  - id: output_gvcf
+    type: File
+    outputBinding:
+      glob: $(inputs.output_gvcf_name)
+
+baseCommand: java
+arguments:
+  - valueFrom: /home/ubuntu/tools/GenomeAnalysisTK.jar
+    position: 2
+    prefix: -jar
+  - valueFrom: GenotypeGVCFs
+    position: 3
+    prefix: -T
+  - valueFrom: "--disable_auto_index_creation_and_locking_when_reading_rods"
+    position: 7
+
+description: |
+    GenotypeGVCFs merges gVCF records that were produced as part of the Best Practices workflow for variant discovery (see Best Practices documentation for more details) using the '-ERC GVCF' or '-ERC BP_RESOLUTION' mode of the HaplotypeCaller, or result from combining such gVCF files using CombineGVCFs.
