@@ -1,1 +1,1 @@
-###CWL for genomel primary analysis docker tools.
+###CWL for genomel docker tools.

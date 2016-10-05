@@ -1,0 +1,59 @@
+#!/usr/bin/env cwl-runner
+
+cwlVersion: "cwl:draft-3"
+
+class: CommandLineTool
+
+requirements:
+  - $import: ../envvar-global.cwl
+  - class: InlineJavascriptRequirement
+  - class: DockerRequirement
+    dockerPull: registry.gitlab.com/uc-cdis/genomel-exome-variant-detection:0.1b
+
+inputs:
+  - id: java_opts
+    type: string
+    default: "-Xmx32g"
+    description: |
+      "JVM arguments should be a quoted, space separated list (e.g. \"-Xmx8g -Xmx16g -Xms128m -Xmx512m\")"
+    inputBinding:
+      position: 1
+      shellQuote: false
+  - id: ENS_PARAM_FILE
+    type: File
+    inputBinding:
+      position: 4
+  - id: reference_fasta_path
+    type: File
+    inputBinding:
+      position: 5
+    secondaryFiles:
+      - "^.dict"
+      - ".fai"
+  - id: output_vcf_name
+    type: string
+    inputBinding:
+      position: 6
+  - id: input_vcf_path
+    type:
+      type: array
+      items: File
+      inputBinding:
+        position: 7
+
+outputs:
+- id: output_vcf
+  type: File
+  outputBinding:
+    glob: $(inputs.output_vcf_name)
+
+baseCommand: java
+arguments:
+  - valueFrom: /home/ubuntu/tools/bcbio.variation-0.2.6-standalone.jar
+    position: 2
+    prefix: -jar
+  - valueFrom: variant-ensemble
+    position: 3
+
+description: |
+  A toolkit to analyze genome variation data, built on top of the Genome Analysis Toolkit (GATK) with Clojure. It supports scoring for the Archon Genomics X PRIZE competition and is also a general framework for variant file comparison.

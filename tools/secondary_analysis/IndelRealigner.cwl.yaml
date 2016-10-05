@@ -1,0 +1,85 @@
+#!/usr/bin/env cwl-runner
+
+cwlVersion: "cwl:draft-3"
+
+class: CommandLineTool
+
+requirements:
+  - $import: ../envvar-global.cwl
+  - class: InlineJavascriptRequirement
+  - class: ShellCommandRequirement
+  - class: MultipleInputFeatureRequirement
+  - class: DockerRequirement
+    dockerPull: registry.gitlab.com/uc-cdis/genomel-secondary-analysis:0.1a
+
+inputs:
+  - id: java_opts
+    type: string
+    default: "-Xmx8g"
+    description: |
+      "JVM arguments should be a quoted, space separated list (e.g. \"-Xmx8g -Xmx16g -Xms128m -Xmx512m\")"
+    inputBinding:
+      position: 1
+      shellQuote: false
+  - id: input_bam_path
+    type: File
+    inputBinding:
+      position: 4
+      prefix: "-I"
+    secondaryFiles:
+      - "^.bai"
+  - id: reference_fasta_path
+    type: File
+    inputBinding:
+      position: 5
+      prefix: "-R"
+    secondaryFiles:
+      - "^.dict"
+      - ".fai"
+  - id: reference_indel_path
+    type: File
+    inputBinding:
+      position: 6
+      prefix: "-known"
+    secondaryFiles:
+      - ".tbi"
+  - id: reference_snp_path
+    type: File
+    inputBinding:
+      position: 7
+      prefix: "-known"
+    secondaryFiles:
+      - ".tbi"
+  - id: target_intervals
+    type: File
+    inputBinding:
+      position: 8
+      prefix: "-targetIntervals"
+
+outputs:
+  - id: output_bqsr_bam
+    type: File
+    outputBinding:
+      glob: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + '.bqsr.bam')
+
+baseCommand: java
+arguments:
+  - valueFrom: /home/ubuntu/tools/GenomeAnalysisTK.jar
+    position: 2
+    prefix: -jar
+  - valueFrom: IndelRealigner
+    position: 3
+    prefix: -T
+  - valueFrom: NotPrimaryAlignment
+    position: 9
+    prefix: -rf
+  - valueFrom: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + '.bqsr.bam')
+    position: 10
+    prefix: "-o"
+  - valueFrom: "7"
+    position: 11
+    prefix: -compress
+
+
+description: |
+    Running the realigner over those intervals.
