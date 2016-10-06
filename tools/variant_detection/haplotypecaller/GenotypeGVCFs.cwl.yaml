@@ -37,17 +37,17 @@ inputs:
     secondaryFiles:
       - "^.dict"
       - ".fai"
-  - id: output_gvcf_name
+  - id: output_vcf_name
     type: string
     inputBinding:
       position: 6
       prefix: "-o"
 
 outputs:
-  - id: output_gvcf
+  - id: output_vcf
     type: File
     outputBinding:
-      glob: $(inputs.output_gvcf_name)
+      glob: $(inputs.output_vcf_name)
 
 baseCommand: java
 arguments:
