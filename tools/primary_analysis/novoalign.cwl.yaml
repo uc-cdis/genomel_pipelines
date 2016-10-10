@@ -7,8 +7,9 @@ class: CommandLineTool
 requirements:
   - $import: ../envvar-global.cwl
   - class: InlineJavascriptRequirement
+  - class: ShellCommandRequirement
   - class: DockerRequirement
-    dockerPull: registry.gitlab.com/uc-cdis/genomel-primary-analysis:0.1a
+    dockerPull: registry.gitlab.com/uc-cdis/genomel-primary-analysis:0.1b
 
 inputs:
   - id: nthreads
@@ -75,7 +76,7 @@ inputs:
     type: string
     description: "Name of the output file."
     inputBinding:
-      position: 10
+      position: 13
       prefix: ">"
 
 outputs:
@@ -85,5 +86,18 @@ outputs:
     glob: $(inputs.output_name)
 
 baseCommand: /home/ubuntu/tools/novocraft/novoalign
+baseCommand: /home/ubuntu/tools/novocraft/novoalign
+arguments:
+  - valueFrom: "/usr/bin/samtools"
+    position: 10
+    prefix: "|"
+
+  - valueFrom: "view"
+    position: 11
+
+  - valueFrom: "-"
+    position: 12
+    prefix: "-Sb"
+
 description: |
   Usage:    novoalign options
