@@ -8,7 +8,7 @@ requirements:
   - $import: ../envvar-global.cwl
   - class: InlineJavascriptRequirement
   - class: DockerRequirement
-    dockerPull: registry.gitlab.com/uc-cdis/genomel-primary-analysis:0.1a
+    dockerPull: registry.gitlab.com/uc-cdis/genomel-primary-analysis:0.1b
 
 inputs:
   - id: nthreads
