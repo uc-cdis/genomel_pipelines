@@ -78,6 +78,18 @@ inputs:
       position: 10
       prefix: "VALIDATION_STRINGENCY="
       separate: false
+      
+  - id: removal_type
+    type: string
+    default: "LLDR"
+    description: |
+      LLDR|SLDR|OTHER
+       <length>
+       This module can be used to perform the (L)ane or (S)ample (L)evel (D)uplication (R)emoval.
+       You must choose between one of these two options.
+       <length>
+    inputBinding:
+      position: 11
 
 outputs:
   - id: duplicate_removed_output_bam
