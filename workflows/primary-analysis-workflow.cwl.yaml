@@ -53,9 +53,30 @@ inputs:
 
 outputs:
 
+  - id: "#output_read1_trimmed_file"
+    type: File
+    source: "#trimmomatic-tool.output_read1_trimmed_file"
+  - id: "#output_read1_trimmed_unpaired_file"
+    type: File
+    source: "#trimmomatic-tool.output_read1_trimmed_unpaired_file"
+  - id: "#output_read2_trimmed_paired_file"
+    type: File
+    source: "#trimmomatic-tool.output_read2_trimmed_unpaired_file"
+  - id: "output_read2_trimmed_unpaired_file"
+    type: File
+    source: "#trimmomatic-tool.output_read2_trimmed_unpaired_file"
+  - id: "#output_log_file"
+    type: File
+    source: "#trimmomatic-tool.output_log_file"
+  - id: "#output_file"
+    type: File
+    source: "#novoalign-tool.output_file"
   - id: "#duplicate_removed_output_bam"
     type: File
     source: "#LLDR_SLDR-tool.duplicate_removed_output_bam"
+  - id: "#duplicate_removed_output_metrics"
+    type: File
+    source: "#LLDR_SLDR-tool.duplicate_removed_output_metrics"
   - id: "#duplicate_removed_output_bai"   
     type: File
     source: "#LLDR_SLDR-tool.duplicate_removed_output_bai"
