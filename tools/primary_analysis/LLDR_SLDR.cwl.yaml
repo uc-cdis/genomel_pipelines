@@ -10,7 +10,7 @@ requirements:
   - class: ShellCommandRequirement
   - class: MultipleInputFeatureRequirement
   - class: DockerRequirement
-    dockerPull: registry.gitlab.com/uc-cdis/genomel-primary-analysis:0.1a
+    dockerPull: registry.gitlab.com/uc-cdis/genomel-primary-analysis:0.1b
 
 inputs:
   - id: java_opts
@@ -78,40 +78,28 @@ inputs:
       position: 10
       prefix: "VALIDATION_STRINGENCY="
       separate: false
-      
-  - id: removal_type
-    type: string
-    default: "LLDR"
-    description: |
-      LLDR|SLDR|OTHER
-       <length>
-       This module can be used to perform the (L)ane or (S)ample (L)evel (D)uplication (R)emoval.
-       You must choose between one of these two options.
-       <length>
-    inputBinding:
-      position: 11
 
 outputs:
   - id: duplicate_removed_output_bam
     type: File
     outputBinding:
-      glob: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + inputs.removal_type + '.duplicate_removed.bam')
+      glob: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + inputs.validation_stringency + '.duplicate_removed.bam')
   - id: duplicate_removed_output_metrics
     type: File
     outputBinding:
-      glob: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + inputs.removal_type + '.duplicate_removed.metrics.txt')
+      glob: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + inputs.validation_stringency + '.duplicate_removed.metrics.txt')
   - id: duplicate_removed_output_bai
     type: File
     outputBinding:
-      glob: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + inputs.removal_type + '.duplicate_removed.bai')
+      glob: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + inputs.validation_stringency + '.duplicate_removed.bai')
 
 baseCommand: java
 arguments:
-  - valueFrom: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + inputs.removal_type + '.duplicate_removed.bam')
+  - valueFrom: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + inputs.validation_stringency + '.duplicate_removed.bam')
     position: 5
     prefix: "OUTPUT="
     separate: false
-  - valueFrom: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + inputs.removal_type + '.duplicate_removed.metrics.txt')
+  - valueFrom: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + inputs.validation_stringency + '.duplicate_removed.metrics.txt')
     position: 6
     prefix: "METRICS_FILE="
     separate: false
