@@ -76,16 +76,14 @@ inputs:
     type: string
     description: "Name of the output file."
     inputBinding:
-      position: 13
-      prefix: ">"
+      position: 16
 
 outputs:
 - id: output_file
   type: File
   outputBinding:
-    glob: $(inputs.output_name)
+    glob: $(inputs.output_name + '.bam')
 
-baseCommand: /home/ubuntu/tools/novocraft/novoalign
 baseCommand: /home/ubuntu/tools/novocraft/novoalign
 arguments:
   - valueFrom: "/usr/bin/samtools"
@@ -98,6 +96,16 @@ arguments:
   - valueFrom: "-"
     position: 12
     prefix: "-Sb"
+
+  - valueFrom: "/usr/bin/samtools"
+    position: 13
+    prefix: "|"
+
+  - valueFrom: "sort"
+    position: 14
+
+  - valueFrom: "-"
+    position: 15
 
 description: |
   Usage:    novoalign options
