@@ -61,8 +61,8 @@ outputs:
     source: "#trimmomatic-tool.output_read1_trimmed_unpaired_file"
   - id: "#output_read2_trimmed_paired_file"
     type: File
-    source: "#trimmomatic-tool.output_read2_trimmed_unpaired_file"
-  - id: "output_read2_trimmed_unpaired_file"
+    source: "#trimmomatic-tool.output_read2_trimmed_paired_file"
+  - id: "#output_read2_trimmed_unpaired_file"
     type: File
     source: "#trimmomatic-tool.output_read2_trimmed_unpaired_file"
   - id: "#output_log_file"
