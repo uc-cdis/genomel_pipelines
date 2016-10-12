@@ -60,7 +60,7 @@ outputs:
   - id: output_bqsr_bam
     type: File
     outputBinding:
-      glob: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + '.bqsr.bam')
+      glob: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + '.realigned.bam')
 
 baseCommand: java
 arguments:
@@ -73,7 +73,7 @@ arguments:
   - valueFrom: NotPrimaryAlignment
     position: 9
     prefix: -rf
-  - valueFrom: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + '.bqsr.bam')
+  - valueFrom: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + '.realigned.bam')
     position: 10
     prefix: "-o"
   - valueFrom: "7"
