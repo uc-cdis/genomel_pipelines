@@ -1,0 +1,163 @@
+#!/usr/bin/env cwl-runner
+
+cwlVersion: "cwl:draft-3"
+
+class: Workflow
+
+inputs:
+
+  - id: "#trimmomatic_java_opts"
+    type: ["null", string]
+  - id: "#trimmomatic_jar_path"
+    type: string
+  - id: "#end_mode"
+    type: string
+  - id: "#nthreads"
+    type: int
+  - id: "#log_filename"
+    type: ["null", string]
+  - id: "#phred"
+    type: string
+  - id: "#input_read1_fastq_file"
+    type: File
+  - id: "#input_read2_fastq_file"
+    type: File
+  - id: "#input_adapters_file"
+    type: File
+  - id: "#illuminaclip"
+    type: string
+  - id: "#slidingwindow"
+    type: string
+  - id: "#leading"
+    type: int
+  - id: "#trailing"
+    type: int
+  - id: "#minlen"
+    type: int
+  - id: "#dbname"
+    type: File
+  - id: "#format"
+    type: string
+  - id: "#mode"
+    type: string
+  - id: "#length"
+    type: string
+  - id: "#output_format"
+    type: string
+  - id: "#readgroup"
+    type: string
+  - id: "#output_name"
+    type: string
+  - id: "#validation_stringency"
+    type: string
+
+outputs:
+
+  - id: "#output_read1_trimmed_file"
+    type: File
+    source: "#trimmomatic-tool.output_read1_trimmed_file"
+  - id: "#output_read1_trimmed_unpaired_file"
+    type: File
+    source: "#trimmomatic-tool.output_read1_trimmed_unpaired_file"
+  - id: "#output_read2_trimmed_paired_file"
+    type: File
+    source: "#trimmomatic-tool.output_read2_trimmed_paired_file"
+  - id: "#output_read2_trimmed_unpaired_file"
+    type: File
+    source: "#trimmomatic-tool.output_read2_trimmed_unpaired_file"
+  - id: "#output_log_file"
+    type: File
+    source: "#trimmomatic-tool.output_log_file"
+  - id: "#output_file"
+    type: File
+    source: "#novoalign-tool.output_file"
+  - id: "#duplicate_removed_output_bam"
+    type: File
+    source: "#LLDR_SLDR-tool.duplicate_removed_output_bam"
+  - id: "#duplicate_removed_output_metrics"
+    type: File
+    source: "#LLDR_SLDR-tool.duplicate_removed_output_metrics"
+  - id: "#duplicate_removed_output_bai"   
+    type: File
+    source: "#LLDR_SLDR-tool.duplicate_removed_output_bai"
+
+steps:
+
+  - id: "#trimmomatic-tool"
+    run: ../tools/primary_analysis/trimmomatic.cwl.yaml
+    inputs:
+       - id: "#trimmomatic-tool.java_opts"
+         source: "#trimmomatic_java_opts"
+       - id: "#trimmomatic-tool.trimmomatic_jar_path"
+         source: "#trimmomatic_jar_path"
+       - id: "#trimmomatic-tool.end_mode"
+         source: "#end_mode"
+       - id: "#trimmomatic-tool.nthreads"
+         source: "#nthreads"
+       - id: "#trimmomatic-tool.phred"
+         source: "#phred"
+       - id: "#trimmomatic-tool.log_filename"
+         source: "#log_filename"
+       - id: "#trimmomatic-tool.input_read1_fastq_file"
+         source: "#input_read1_fastq_file"
+       - id: "#trimmomatic-tool.input_read2_fastq_file"
+         source: "#input_read2_fastq_file"
+       - id: "#trimmomatic-tool.input_adapters_file"
+         source: "#input_adapters_file"
+       - id: "#trimmomatic-tool.illuminaclip"
+         source: "#illuminaclip"
+       - id: "#trimmomatic-tool.slidingwindow"
+         source: "#slidingwindow"
+       - id: "#trimmomatic-tool.leading"
+         source: "#leading"
+       - id: "#trimmomatic-tool.trailing"
+         source: "#trailing"
+       - id: "#trimmomatic-tool.minlen"
+         source: "#minlen"
+
+    outputs:
+       - id: "#trimmomatic-tool.output_read1_trimmed_file"
+       - id: "#trimmomatic-tool.output_read1_trimmed_unpaired_file"
+       - id: "#trimmomatic-tool.output_read2_trimmed_paired_file"
+       - id: "#trimmomatic-tool.output_read2_trimmed_unpaired_file"
+       - id: "#trimmomatic-tool.output_log_file"
+
+  - id: "#novoalign-tool"
+    run: ../tools/primary_analysis/novoalign.cwl.yaml
+    inputs:
+       - id: "#novoalign-tool.nthreads"
+         source: "#nthreads"
+       - id: "#novoalign-tool.dbname"
+         source: "#dbname"
+       - id: "#novoalign-tool.input_read1_fastq_file"
+         source: "#trimmomatic-tool.output_read1_trimmed_file"
+       - id: "#novoalign-tool.input_read2_fastq_file"
+         source: "#trimmomatic-tool.output_read2_trimmed_paired_file"
+       - id: "#novoalign-tool.format"
+         source: "#format"
+       - id: "#novoalign-tool.mode"
+         source: "#mode"
+       - id: "#novoalign-tool.length"
+         source: "#length"
+       - id: "#novoalign-tool.output_format"
+         source: "#output_format"
+       - id: "#novoalign-tool.readgroup"
+         source: "#readgroup"
+       - id: "#novoalign-tool.output_name"
+         source: "#output_name"
+
+    outputs:
+       - id: "#novoalign-tool.output_file"
+
+  - id: "#LLDR_SLDR-tool"
+    run: ../tools/primary_analysis/LLDR_SLDR.cwl.yaml
+    inputs:
+       - id: "#LLDR_SLDR-tool.input_bam_path"
+         source: "#novoalign-tool.output_file"
+       - id: "#LLDR_SLDR-tool.validation_stringency"
+         source: "#validation_stringency"
+
+    outputs:
+       - id: "#LLDR_SLDR-tool.duplicate_removed_output_bam"
+       - id: "#LLDR_SLDR-tool.duplicate_removed_output_metrics"
+       - id: "#LLDR_SLDR-tool.duplicate_removed_output_bai"

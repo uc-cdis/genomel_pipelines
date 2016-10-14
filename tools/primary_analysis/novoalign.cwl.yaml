@@ -7,6 +7,7 @@ class: CommandLineTool
 requirements:
   - $import: ../envvar-global.cwl
   - class: InlineJavascriptRequirement
+  - class: ShellCommandRequirement
   - class: DockerRequirement
     dockerPull: registry.gitlab.com/uc-cdis/genomel-primary-analysis:0.1b
 
@@ -75,15 +76,36 @@ inputs:
     type: string
     description: "Name of the output file."
     inputBinding:
-      position: 10
-      prefix: ">"
+      position: 16
 
 outputs:
 - id: output_file
   type: File
   outputBinding:
-    glob: $(inputs.output_name)
+    glob: $(inputs.output_name + '.bam')
 
 baseCommand: /home/ubuntu/tools/novocraft/novoalign
+arguments:
+  - valueFrom: "/usr/bin/samtools"
+    position: 10
+    prefix: "|"
+
+  - valueFrom: "view"
+    position: 11
+
+  - valueFrom: "-"
+    position: 12
+    prefix: "-Sb"
+
+  - valueFrom: "/usr/bin/samtools"
+    position: 13
+    prefix: "|"
+
+  - valueFrom: "sort"
+    position: 14
+
+  - valueFrom: "-"
+    position: 15
+
 description: |
   Usage:    novoalign options
