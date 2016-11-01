@@ -54,7 +54,7 @@ arguments:
   - valueFrom: SelectVariants
     position: 3
     prefix: -T
-  - valueFrom: \"QUAL > 20.0\"
+  - valueFrom: 'QUAL > 20.0'
     position: 8
     prefix: -select
   - valueFrom: -ef
