@@ -25,7 +25,7 @@ inputs:
       position: 2
       prefix: "--bam"
     secondaryFiles:
-      - "^.bai"
+      - ".bai"
   - id: interval_file_path
     type: ["null", File]
     inputBinding:
