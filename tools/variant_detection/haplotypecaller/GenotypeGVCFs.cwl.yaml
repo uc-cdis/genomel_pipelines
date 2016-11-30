@@ -22,15 +22,12 @@ inputs:
       position: 1
       shellQuote: false
   - id: input_vcf_path
-    type:
-      type: array
-      items: File
-      inputBinding:
-        prefix: "--variant"
-      secondaryFiles:
-        - ".tbi"
+    type: File
     inputBinding:
       position: 4
+      prefix: "--variant"
+    secondaryFiles:
+      - ".tbi"
   - id: reference_fasta_path
     type: File
     inputBinding:
