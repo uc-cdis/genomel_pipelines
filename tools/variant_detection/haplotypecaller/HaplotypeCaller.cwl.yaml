@@ -58,7 +58,7 @@ outputs:
     outputBinding:
       glob: $(inputs.output_gvcf_name)
     secondaryFiles:
-      - ".tbi"
+      - ".idx"
 
 baseCommand: java
 arguments:
