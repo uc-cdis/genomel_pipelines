@@ -20,12 +20,15 @@ inputs:
       - "^.dict"
       - ".fai"
   - id: input_bam_path
-    type: File
+    type:
+      type: array
+      items: File
+      inputBinding:
+        prefix: "-I"
+      secondaryFiles:
+        - "^.bai"
     inputBinding:
-      position: 2
-      prefix: "--bam"
-    secondaryFiles:
-      - ".bai"
+      position: 4
   - id: interval_file_path
     type: ["null", File]
     inputBinding:
