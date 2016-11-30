@@ -1,0 +1,42 @@
+#!/usr/bin/env cwl-runner
+
+cwlVersion: "cwl:draft-3"
+
+class: CommandLineTool
+
+requirements:
+  - $import: ../envvar-global.cwl
+  - class: InlineJavascriptRequirement
+  - class: ShellCommandRequirement
+  - class: MultipleInputFeatureRequirement
+  - class: DockerRequirement
+    dockerPull: registry.gitlab.com/uc-cdis/genomel-primary-analysis:0.1d
+
+inputs:
+
+  - id: input_bam_path
+    type: File
+    inputBinding:
+      position: 3
+
+outputs:
+  - id: paired_output_bam
+    type: File
+    outputBinding:
+      glob: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + '.paired.bam')
+
+baseCommand: ['samtools', 'view']
+arguments:
+  - valueFrom: "-b"
+    position: 1
+  - valueFrom: "3"
+    position: 2
+    prefix: "-f"
+  - valueFrom: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + '.paired.bam')
+    position: 4
+    prefix: ">"
+
+
+
+description: |
+  This module filters out unaligned pairs from BAM file
