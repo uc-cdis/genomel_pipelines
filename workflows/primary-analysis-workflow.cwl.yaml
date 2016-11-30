@@ -46,6 +46,8 @@ inputs:
     type: string
   - id: "#readgroup"
     type: string
+  - id: "#reference"
+    type: File
   - id: "#output_name"
     type: string
   - id: "#validation_stringency"
@@ -143,6 +145,8 @@ steps:
          source: "#output_format"
        - id: "#novoalign-tool.readgroup"
          source: "#readgroup"
+       - id: "#novoalign-tool.reference_seq"
+         source: "#reference"
        - id: "#novoalign-tool.output_name"
          source: "#output_name"
 
