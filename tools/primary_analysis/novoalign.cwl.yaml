@@ -97,15 +97,5 @@ arguments:
     position: 12
     prefix: "-Sb"
 
-  - valueFrom: "/usr/bin/samtools"
-    position: 13
-    prefix: "|"
-
-  - valueFrom: "sort"
-    position: 14
-
-  - valueFrom: "-"
-    position: 15
-
 description: |
   Usage:    novoalign options
