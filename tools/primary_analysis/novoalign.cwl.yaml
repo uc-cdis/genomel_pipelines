@@ -76,13 +76,14 @@ inputs:
     type: string
     description: "Name of the output file."
     inputBinding:
-      position: 16
+      position: 13
+      prefix: ">"
 
 outputs:
 - id: output_file
   type: File
   outputBinding:
-    glob: $(inputs.output_name + '.bam')
+    glob: $(inputs.output_name)
 
 baseCommand: /home/ubuntu/tools/novocraft/novoalign
 arguments:
