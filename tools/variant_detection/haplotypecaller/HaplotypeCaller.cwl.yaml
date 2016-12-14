@@ -42,10 +42,12 @@ inputs:
       position: 6
       prefix: "-L"
   - id: reference_snp_path
-    type: ["null", File]
+    type: File
     inputBinding:
       position: 7
       prefix: "-D"
+    secondaryFiles:
+      - ".tbi"
   - id: output_gvcf_name
     type: string
     inputBinding:
@@ -58,7 +60,7 @@ outputs:
     outputBinding:
       glob: $(inputs.output_gvcf_name)
     secondaryFiles:
-      - ".idx"
+      - ".tbi"
 
 baseCommand: java
 arguments:
