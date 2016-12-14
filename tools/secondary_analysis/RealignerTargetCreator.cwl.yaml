@@ -55,7 +55,7 @@ outputs:
   - id: output_target
     type: File
     outputBinding:
-      glob: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + '.grp')
+      glob: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + '.intervals')
 
 baseCommand: java
 arguments:
@@ -65,7 +65,7 @@ arguments:
   - valueFrom: RealignerTargetCreator
     position: 3
     prefix: -T
-  - valueFrom: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + '.grp')
+  - valueFrom: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + '.intervals')
     position: 8
     prefix: "-o"
 
