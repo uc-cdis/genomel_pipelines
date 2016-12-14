@@ -51,12 +51,18 @@ outputs:
     type: File
     outputBinding:
       glob: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + '.srt.bam')
+    secondaryFiles:
+      - "^.bai"
 
 baseCommand: java
 arguments:
   - valueFrom: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + '.srt.bam')
     position: 5
     prefix: "OUTPUT="
+    separate: false
+  - valueFrom: "true"
+    position: 7
+    prefix: "CREATE_INDEX="
     separate: false
 
 description: |

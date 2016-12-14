@@ -67,6 +67,8 @@ outputs:
     type: File
     outputBinding:
       glob: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + '.ro.bam')
+    secondaryFiles:
+      - "^.bai"
 
 baseCommand: java
 arguments:
