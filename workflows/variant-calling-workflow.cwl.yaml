@@ -26,7 +26,7 @@ inputs:
   - id: "#bed_file_path"
     type: ["null", File]
   - id: "#reference_snp_path"
-    type: ["null", File]
+    type: File
   - id: "#ens_param_file"
     type: File
   - id: "#prefix_name"
