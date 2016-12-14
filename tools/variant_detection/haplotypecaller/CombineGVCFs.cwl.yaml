@@ -50,6 +50,8 @@ outputs:
     type: File
     outputBinding:
       glob: $(inputs.output_gvcf_name)
+    secondaryFiles:
+      - ".tbi"
 
 baseCommand: java
 arguments:
