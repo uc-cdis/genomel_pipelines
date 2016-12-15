@@ -14,8 +14,6 @@ inputs:
     type: File
   - id: "#reference_seq"
     type: File
-  - id: "#bam_format"
-    type: boolean 
 
 outputs:
 
@@ -58,8 +56,6 @@ steps:
     inputs:
        - id: "#remove-unpaired.input_bam_path"
          source: "#picard-reorder.reordered_output_bam"
-       - id: "#remove-unpaired.bam_format"
-         source: "#bam_format"
 
     outputs:
        - id: "#remove-unpaired.paired_output_bam"
