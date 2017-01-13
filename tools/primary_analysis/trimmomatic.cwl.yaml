@@ -37,7 +37,7 @@ inputs:
 
   - id: phred
     type: string
-    default: "64"
+    default: "33"
     description: |
       "33"|"64"
       -phred33 ("33") or -phred64 ("64") specifies the base quality encoding. Default: -phred64
