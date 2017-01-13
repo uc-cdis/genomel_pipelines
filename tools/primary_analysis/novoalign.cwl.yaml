@@ -14,6 +14,7 @@ requirements:
 inputs:
   - id: nthreads
     type: ["null", int]
+    default: 4
     description: "Sets maximum number of threads to use. Defaults to one thread per CPU as reported by sysinfo(). This is usually the number of cores or twice the number of cores if hyper-threading is turned on. Lisenced version only. (e.g. 4)"
     inputBinding:
       position: 1
