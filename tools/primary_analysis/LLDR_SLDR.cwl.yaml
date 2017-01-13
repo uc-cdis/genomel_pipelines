@@ -21,50 +21,14 @@ inputs:
     inputBinding:
       position: 1
       shellQuote: false
-  - id: picard_jar_path
-    type: string
-    default: "/home/ubuntu/tools/picard-tools/picard.jar"
-    inputBinding:
-      position: 2
-      prefix: "-jar"
-  - id: picard_tool
-    type: string
-    default: "MarkDuplicates"
-    inputBinding:
-      position: 3
+
   - id: input_bam_path
     type: File
     inputBinding:
       position: 4
       prefix: "INPUT="
       separate: false
-  - id: remove_duplicates
-    type: string
-    default: "true"
-    description: |
-      true|false
-    inputBinding:
-      position: 7
-      prefix: "REMOVE_DUPLICATES="
-      separate: false
-  - id: create_index
-    type: string
-    default: "true"
-    description: |
-      true|false
-    inputBinding:
-      position: 8
-      prefix: "CREATE_INDEX="
-      separate: false
-  - id: assume_sorted
-    type: string
-    default: "true"
-    description: |
-      true|false
-    inputBinding:
-      position: 9
-      prefix: "ASSUME_SORTED="
-      separate: false
+
   - id: validation_stringency
     type: string
     default: "LENIENT"
@@ -83,25 +47,42 @@ outputs:
   - id: duplicate_removed_output_bam
     type: File
     outputBinding:
-      glob: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + inputs.validation_stringency + '.duplicate_removed.bam')
+      glob: $(inputs.input_bam_path.path.split('/').slice(-1)[0].slice(0,-3) + inputs.validation_stringency + '.duplicate_removed.bam')
   - id: duplicate_removed_output_metrics
     type: File
     outputBinding:
-      glob: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + inputs.validation_stringency + '.duplicate_removed.metrics.txt')
+      glob: $(inputs.input_bam_path.path.split('/').slice(-1)[0].slice(0,-3) + inputs.validation_stringency + '.duplicate_removed.metrics.txt')
   - id: duplicate_removed_output_bai
     type: File
     outputBinding:
-      glob: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + inputs.validation_stringency + '.duplicate_removed.bai')
+      glob: $(inputs.input_bam_path.path.split('/').slice(-1)[0].slice(0,-3) + inputs.validation_stringency + '.duplicate_removed.bai')
 
 baseCommand: java
 arguments:
-  - valueFrom: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + inputs.validation_stringency + '.duplicate_removed.bam')
+  - valueFrom: "/home/ubuntu/tools/picard-tools/picard.jar"
+    position: 2
+    prefix: "-jar"
+  - valueFrom: "MarkDuplicates"
+    position: 3
+  - valueFrom: $(inputs.input_bam_path.path.split('/').slice(-1)[0].slice(0,-3) + inputs.validation_stringency + '.duplicate_removed.bam')
     position: 5
     prefix: "OUTPUT="
     separate: false
-  - valueFrom: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + inputs.validation_stringency + '.duplicate_removed.metrics.txt')
+  - valueFrom: $(inputs.input_bam_path.path.split('/').slice(-1)[0].slice(0,-3) + inputs.validation_stringency + '.duplicate_removed.metrics.txt')
     position: 6
     prefix: "METRICS_FILE="
+    separate: false
+  - valueFrom: "true"
+    position: 7
+    prefix: "REMOVE_DUPLICATES="
+    separate: false
+  - valueFrom: "true"
+    position: 8
+    prefix: "CREATE_INDEX="
+    separate: false
+  - valueFrom: "true"
+    position: 9
+    prefix: "ASSUME_SORTED="
     separate: false
 
 description: |
