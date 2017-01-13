@@ -13,13 +13,10 @@ inputs:
     default: "PE"
   - id: "#trimmomatic_java_opts"
     type: string
-    default: "-Xmx4g"
+    default: \"-Xmx4g\"
   - id: "#trimmomatic_phred"
     type: string
     default: "64"
-  - id: "#trimmomatic_log_filename"
-    type: ["null", string]
-    default: null
   - id: "#trimmomatic_input_read1_fastq_file"
     type: File
   - id: "#trimmomatic_input_read2_fastq_file"
@@ -107,8 +104,6 @@ steps:
          source: "#workflow_nthreads"
        - id: "#trimmomatic_tool.phred"
          source: "#trimmomatic_phred"
-       - id: "#trimmomatic_tool.log_filename"
-         source: "#trimmomatic_log_filename"
        - id: "#trimmomatic_tool.input_read1_fastq_file"
          source: "#trimmomatic_input_read1_fastq_file"
        - id: "#trimmomatic_tool.input_read2_fastq_file"

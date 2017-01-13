@@ -14,7 +14,7 @@ requirements:
 inputs:
   - id: java_opts
     type: string
-    default: "-Xmx4g"
+    default: \"-Xmx4g\"
     description: "JVM arguments should be a quoted, space separated list (e.g. \"-Xms128m -Xmx512m\")"
     inputBinding:
       position: 1
@@ -48,9 +48,7 @@ inputs:
       position: 4
 
   - id: log_filename
-    type:
-      - 'null'
-      - string
+    type: ['null', string]
     description: |
       <ouptut log file name>
       Specifying a trimlog file creates a log of all read trimmings, indicating the following details:
@@ -70,9 +68,7 @@ inputs:
       position: 5
     description: "FASTQ file for input read (read R1 in Paired End mode)"
   - id: input_read2_fastq_file
-    type:
-      - 'null'
-      - File
+    type: ['null', string]
     inputBinding:
       position: 6
     description: "FASTQ file for read R2 in Paired End mode"
