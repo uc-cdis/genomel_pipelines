@@ -16,7 +16,6 @@ inputs:
     default: -Xmx4g
   - id: "#trimmomatic_phred"
     type: string
-    default: "33"
   - id: "#trimmomatic_input_read1_fastq_file"
     type: File
   - id: "#trimmomatic_input_read2_fastq_file"
