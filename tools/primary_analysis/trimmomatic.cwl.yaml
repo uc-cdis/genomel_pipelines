@@ -13,18 +13,13 @@ requirements:
 
 inputs:
   - id: java_opts
-    type:
-      - 'null'
-      - string
+    type: string
+    default: "-Xmx4g"
     description: "JVM arguments should be a quoted, space separated list (e.g. \"-Xms128m -Xmx512m\")"
     inputBinding:
       position: 1
       shellQuote: false
-  - id: trimmomatic_jar_path
-    type: string
-    inputBinding:
-      position: 2
-      prefix: "-jar"
+
   - id: end_mode
     type: string
     description: |
@@ -32,6 +27,7 @@ inputs:
       Single End (SE) or Paired End (PE) mode
     inputBinding:
       position: 3
+
   - id: nthreads
     type: int
     default: 1
@@ -39,6 +35,7 @@ inputs:
     inputBinding:
       position: 4
       prefix: "-threads"
+
   - id: phred
     type: string
     default: "64"
@@ -49,6 +46,7 @@ inputs:
       prefix: "-phred"
       separate: false
       position: 4
+
   - id: log_filename
     type:
       - 'null'
@@ -65,6 +63,7 @@ inputs:
     inputBinding:
       position: 4
       prefix: "-trimlog"
+
   - id: input_read1_fastq_file
     type: File
     inputBinding:
@@ -77,9 +76,11 @@ inputs:
     inputBinding:
       position: 6
     description: "FASTQ file for read R2 in Paired End mode"
+
   - id: input_adapters_file
     type: File
     description: "FASTA file containing adapters, PCR sequences, etc. It is used to search for and remove these sequences in the input FASTQ file(s)"
+
   - id: illuminaclip
     type: string
     description: |
@@ -103,6 +104,7 @@ inputs:
         entirely drop the reverse read. By specifying „true‟ for this parameter, the reverse read will
         also be retained, which may be useful e.g. if the downstream tools cannot handle a
         combination of paired and unpaired reads.
+
   - id: slidingwindow
     type: ['null', string]
     inputBinding:
@@ -116,6 +118,7 @@ inputs:
       removal of high quality data later in the read.
       <windowSize>: specifies the number of bases to average across
       <requiredQuality>: specifies the average quality required
+
   - id: maxinfo
     type: ['null', string]
     inputBinding:
@@ -132,6 +135,7 @@ inputs:
       balance between preserving as much read length as possible vs. removal of incorrect
       bases. A low value of this parameter (<0.2) favours longer reads, while a high value
       (>0.8) favours read correctness.
+
   - id: leading
     type: ['null', int]
     inputBinding:
@@ -143,6 +147,7 @@ inputs:
       Remove low quality bases from the beginning. As long as a base has a value below this
       threshold the base is removed and the next base will be investigated.
       <quality>: Specifies the minimum quality required to keep a base.
+
   - id: trailing
     type: ['null', int]
     inputBinding:
@@ -157,6 +162,7 @@ inputs:
       used removing the special illumina „low quality segment‟ regions (which are marked with
       quality score of 2), but we recommend Sliding Window or MaxInfo instead
       <quality>: Specifies the minimum quality required to keep a base.
+
   - id: crop
     type: ['null', int]
     inputBinding:
@@ -169,6 +175,7 @@ inputs:
       the specified length after this step has been performed. Steps performed after CROP might of
       course further shorten the read.
       <length>: The number of bases to keep, from the start of the read.
+
   - id: headcrop
     type: ['null', int]
     inputBinding:
@@ -179,6 +186,7 @@ inputs:
       <length>
       Removes the specified number of bases, regardless of quality, from the beginning of the read.
       <length>: The number of bases to keep, from the start of the read.
+
   - id: minlen
     type: ['null', int]
     inputBinding:
@@ -191,6 +199,7 @@ inputs:
       normally be after all other processing steps. Reads removed by this step will be counted and
       included in the „dropped reads‟ count presented in the trimmomatic summary.
       <length>:  Specifies the minimum length of reads to be kept
+
   - id: avgqual
     type: ['null', int]
     inputBinding:
@@ -201,6 +210,7 @@ inputs:
       <quality>
       Drop the read if the average quality is below the specified level
       <quality>: Specifies the minimum average quality required to keep a read.
+
   - id: tophred33
     type: ['null', boolean]
     inputBinding:
@@ -208,6 +218,7 @@ inputs:
       prefix: "TOPHRED33"
       separate: false
     description: "This (re)encodes the quality part of the FASTQ file to base 33."
+
   - id: tophred64
     type: ['null', boolean]
     inputBinding:
@@ -257,6 +268,9 @@ outputs:
 
 baseCommand: java
 arguments:
+  - valueFrom: "/home/ubuntu/tools/Trimmomatic-0.36/trimmomatic-0.36.jar"
+    position: 2
+    prefix: "-jar"
   - valueFrom: $(inputs.input_read1_fastq_file.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + '.trimmed.fastq')
     position: 7
   - valueFrom: |
