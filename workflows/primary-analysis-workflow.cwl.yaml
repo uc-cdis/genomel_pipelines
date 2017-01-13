@@ -13,7 +13,7 @@ inputs:
     default: "PE"
   - id: "#trimmomatic_java_opts"
     type: string
-    default: -Xmx4g
+    default: \"-Xmx4g\"
   - id: "#trimmomatic_phred"
     type: string
     default: "64"
