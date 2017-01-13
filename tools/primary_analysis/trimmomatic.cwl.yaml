@@ -14,11 +14,10 @@ requirements:
 inputs:
   - id: java_opts
     type: string
-    default: \"-Xmx4g\"
-    description: "JVM arguments should be a quoted, space separated list (e.g. \"-Xms128m -Xmx512m\")"
+    default: -Xmx4g
+    description: "JVM arguments should be a quoted, space separated list (e.g. -Xms128m or -Xmx512m)"
     inputBinding:
       position: 1
-      shellQuote: false
 
   - id: end_mode
     type: string
