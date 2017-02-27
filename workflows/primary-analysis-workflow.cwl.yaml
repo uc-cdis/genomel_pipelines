@@ -68,6 +68,10 @@ inputs:
     type: File
   - id: "#novoalign_output_name"
     type: string
+  - id: "#lldr_validation_stringency"
+    type: string
+    default: "LENIENT"
+
 
 outputs:
 
@@ -89,6 +93,19 @@ outputs:
   - id: "#output_novoaligned_bam_file"
     type: File
     source: "#novoalign_tool.output_file"
+  - id: "#output_sorted_bam_file"
+    type: File
+    source: "#samtools-sort.sorted_output_bam"
+  - id: "#output_lldr_bam_file"
+    type: File
+    source: "#LLDR_SLDR-tool.duplicate_removed_output_bam"
+  - id: "#output_lldr_bai_file"
+    type: File
+    source: "#LLDR_SLDR-tool.duplicate_removed_output_bai"
+  - id: "#output_lldr_metrics_file"
+    type: File
+    source: "#LLDR_SLDR-tool.duplicate_removed_output_metrics"
+
 
 steps:
 
@@ -167,3 +184,27 @@ steps:
 
     outputs:
        - id: "#novoalign_tool.output_file"
+
+
+  - id: "#samtools-sort"
+    run: ../tools/primary_analysis/samtoolsSort.cwl.yaml
+    inputs:
+       - id: "#samtools-sort.input_bam_path"
+         source: "#novoalign_tool.output_file"
+    
+    outputs:
+       - id: "#samtools-sort.sorted_output_bam"
+
+
+  - id: "#LLDR_SLDR-tool"
+    run: ../tools/primary_analysis/LLDR_SLDR.cwl.yaml
+    inputs:
+       - id: "#LLDR_SLDR-tool.input_bam_path"
+         source: "#samtools-sort.output"
+       - id: "#LLDR_SLDR-tool.validation_stringency"
+         source: "#lldr_validation_stringency"
+
+    outputs:
+       - id: "#LLDR_SLDR-tool.duplicate_removed_output_bam"
+       - id: "#LLDR_SLDR-tool.duplicate_removed_output_metrics"
+       - id: "#LLDR_SLDR-tool.duplicate_removed_output_bai"
