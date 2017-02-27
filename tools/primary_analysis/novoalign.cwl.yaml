@@ -9,7 +9,7 @@ requirements:
   - class: InlineJavascriptRequirement
   - class: ShellCommandRequirement
   - class: DockerRequirement
-    dockerPull: registry.gitlab.com/uc-cdis/genomel-primary-analysis:0.2b
+    dockerPull: registry.gitlab.com/uc-cdis/genomel-primary-analysis:0.2d
 
 inputs:
   - id: nthreads
