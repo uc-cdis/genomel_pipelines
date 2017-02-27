@@ -1,0 +1,35 @@
+#!/usr/bin/env cwl-runner
+
+cwlVersion: "cwl:draft-3"
+
+class: CommandLineTool
+
+requirements:
+  - $import: ../envvar-global.cwl
+  - class: InlineJavascriptRequirement
+  - class: ShellCommandRequirement
+  - class: MultipleInputFeatureRequirement
+  - class: DockerRequirement
+    dockerPull: registry.gitlab.com/uc-cdis/genomel-primary-analysis:0.2d
+
+inputs:
+  - id: input_bam_path
+    type: File
+    inputBinding:
+      position: 3
+
+outputs:
+  - id: sorted_output_bam
+    type: File
+
+outputs:
+  - id: sorted_output_bam
+    type: File
+    outputBinding:
+      glob: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + '.srt.bam')
+
+baseCommand: ['/home/ubuntu/tools/samtools/samtools', 'sort']
+arguments:
+  - valueFrom: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + '.srt.bam')
+    position: 2
+    prefix: "-o"
