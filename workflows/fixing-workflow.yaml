@@ -1,0 +1,41 @@
+#!/usr/bin/env cwl-runner
+
+cwlVersion: "cwl:draft-3"
+
+class: Workflow
+
+inputs:
+
+  - id: "#input_bam_path"
+    type: File
+  - id: "#reference_seq"
+    type: File
+
+outputs:
+
+  - id: "#paired_output_file"
+    type: File
+    source: "#remove-unpaired.paired_output_bam"
+  - id: "#nophix_output_file"
+    type: File
+    source: "#remove-phix.fixed_output_bam"
+
+steps:
+
+  - id: "#remove-unpaired"
+    run: ../tools/sorting/RemoveUnpaired.cwl.yaml
+    inputs:
+       - id: "#remove-unpaired.input_bam_path"
+         source: "#input_bam_path"
+
+    outputs:
+       - id: "#remove-unpaired.paired_output_bam"
+
+  - id: "#remove-phix"
+    run: ../tools/sorting/RemovePhiX.cwl.yaml
+    inputs:
+       - id: "#remove-phix.input_bam_path"
+         source: "#remove-unpaired.paired_output_bam"
+
+    outputs:
+       - id: "#remove-phix.fixed_output_bam"
