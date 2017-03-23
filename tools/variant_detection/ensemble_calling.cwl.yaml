@@ -1,6 +1,6 @@
 #!/usr/bin/env cwl-runner
 
-cwlVersion: "cwl:draft-3"
+cwlVersion: v1.0
 
 class: CommandLineTool
 
@@ -14,8 +14,8 @@ inputs:
   - id: java_opts
     type: string
     default: "-Xmx32g"
-    description: |
-      "JVM arguments should be a quoted, space separated list (e.g. \"-Xmx8g -Xmx16g -Xms128m -Xmx512m\")"
+    doc: |
+      "JVM arguments should be a quoted, space separated list (e.g. -Xmx8g -Xmx16g -Xms128m -Xmx512m)"
     inputBinding:
       position: 1
       shellQuote: false
@@ -54,6 +54,3 @@ arguments:
     prefix: -jar
   - valueFrom: variant-ensemble
     position: 3
-
-description: |
-  A toolkit to analyze genome variation data, built on top of the Genome Analysis Toolkit (GATK) with Clojure. It supports scoring for the Archon Genomics X PRIZE competition and is also a general framework for variant file comparison.

@@ -1,6 +1,6 @@
 #!/usr/bin/env cwl-runner
 
-cwlVersion: "cwl:draft-3"
+cwlVersion: v1.0
 
 class: CommandLineTool
 
@@ -15,6 +15,7 @@ requirements:
 inputs:
   - id: input_bam_path
     type: File
+    doc: Input bam file
     inputBinding:
       position: 3
 
@@ -26,10 +27,10 @@ outputs:
   - id: sorted_output_bam
     type: File
     outputBinding:
-      glob: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + '.srt.bam')
+      glob: $(inputs.input_bam_path.nameroot + '.srt.bam')
 
 baseCommand: ['/home/ubuntu/tools/samtools/samtools', 'sort']
 arguments:
-  - valueFrom: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + '.srt.bam')
+  - valueFrom: $(inputs.input_bam_path.nameroot + '.srt.bam')
     position: 2
     prefix: "-o"

@@ -1,6 +1,6 @@
 #!/usr/bin/env cwl-runner
 
-cwlVersion: "cwl:draft-3"
+cwlVersion: v1.0
 
 class: CommandLineTool
 
@@ -16,8 +16,8 @@ inputs:
   - id: java_opts
     type: string
     default: "-Xmx256g"
-    description: |
-      "JVM arguments should be a quoted, space separated list (e.g. \"-Xmx8g -Xmx16g -Xms128m -Xmx512m\")"
+    doc: |
+      "JVM arguments should be a quoted, space separated list (e.g. -Xmx8g -Xmx16g -Xms128m -Xmx512m)"
     inputBinding:
       position: 1
       shellQuote: false
@@ -58,6 +58,3 @@ arguments:
     prefix: -T
   - valueFrom: "--disable_auto_index_creation_and_locking_when_reading_rods"
     position: 7
-
-description: |
-    GenotypeGVCFs merges gVCF records that were produced as part of the Best Practices workflow for variant discovery (see Best Practices documentation for more details) using the '-ERC GVCF' or '-ERC BP_RESOLUTION' mode of the HaplotypeCaller, or result from combining such gVCF files using CombineGVCFs.

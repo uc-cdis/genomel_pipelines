@@ -1,6 +1,6 @@
 #!/usr/bin/env cwl-runner
 
-cwlVersion: "cwl:draft-3"
+cwlVersion: v1.0
 
 class: CommandLineTool
 
@@ -15,66 +15,67 @@ inputs:
   - id: nthreads
     type: ["null", int]
     default: 4
-    description: "Sets maximum number of threads to use. Defaults to one thread per CPU as reported by sysinfo(). This is usually the number of cores or twice the number of cores if hyper-threading is turned on. Lisenced version only. (e.g. 4)"
+    doc: Sets maximum number of threads to use. Defaults to one thread per CPU as reported by sysinfo(). This is usually the number of cores or twice the number of cores if hyper-threading is turned on. Lisenced version only. (e.g. 4)
     inputBinding:
       position: 1
       prefix: "-c"
 
   - id: dbname
     type: File
-    description: "Full pathname of indexed reference sequence created by novoindex."
+    doc: Full pathname of indexed reference sequence created by novoindex.
     inputBinding:
       position: 2
       prefix: "-d"
 
   - id: input_read1_fastq_file
     type: File
-    description: "FASTQ file for input read (read R1 in Paired End mode)"
+    doc: FASTQ file for input read (read R1 in Paired End mode)
     inputBinding:
       position: 3
       prefix: "-f"
 
   - id: input_read2_fastq_file
     type: ["null", File]
-    description: "FASTQ file for read R2 in Paired End mode"
+    doc: FASTQ file for read R2 in Paired End mode, if there is one.
     inputBinding:
       position: 4
 
   - id: format
     type: string
-    description: "Specifies a read file format. For Fastq '_sequence.txt' files from Illumina Pipeline 1.3 please specify -F ILMFQ. Other values for the -F option could be found at novocraft website."
+    doc: Specifies a read file format. For Fastq '_sequence.txt' files from Illumina Pipeline 1.3 please specify -F ILMFQ. Other values for the -F option could be found at novocraft website.
     inputBinding:
       position: 5
       prefix: "-F"
 
   - id: mode
     type: string
-    description: "Sets mode. (e.g. PE)"
+    doc: Sets mode. (e.g. PE)
     inputBinding:
       position: 6
       prefix: "-i"
 
   - id: length
     type: string
-    description: "Sets approximate fragment length and standard deviation. (e.g. 300,125)"
+    doc: Sets approximate fragment length and standard deviation. (e.g. 300,125)
     inputBinding:
       position: 7
 
   - id: output_format
     type: string
-    description: "Specifies the report format. (e.g. SAM)"
+    doc: Specifies the report format. (e.g. SAM)
     inputBinding:
       position: 8
       prefix: "-o"
 
   - id: readgroup
     type: string
-    description: "Specifies the readgoup. (e.g. \"@RG\tCN:\tPL:\tID:\tSM:\tPU:\tLB:\")"
+    doc: Specifies the readgoup. (e.g. "@RG\tCN:\tPL:\tID:\tSM:\tPU:\tLB:")
     inputBinding:
       position: 9
 
   - id: reference_seq
     type: File
+    doc: Reference fasta file, with .dict and .fai.
     inputBinding:
       position: 13
     secondaryFiles:
@@ -83,7 +84,7 @@ inputs:
 
   - id: output_name
     type: string
-    description: "Name of the output file."
+    doc: Name of the output file.
 
 outputs:
 - id: output_file
@@ -109,6 +110,3 @@ arguments:
   - valueFrom: $(inputs.output_name)
     position: 15
     prefix: ">"
-
-description: |
-  Usage:    novoalign options

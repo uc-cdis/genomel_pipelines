@@ -1,6 +1,6 @@
 #!/usr/bin/env cwl-runner
 
-cwlVersion: "cwl:draft-3"
+cwlVersion: v1.0
 
 class: CommandLineTool
 
@@ -23,7 +23,7 @@ outputs:
   - id: paired_output_bam
     type: File
     outputBinding:
-      glob: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + '.paired.bam')
+      glob: $(inputs.input_bam_path.nameroot + '.paired.bam')
 
 baseCommand: ['samtools', 'view']
 arguments:
@@ -32,11 +32,6 @@ arguments:
   - valueFrom: "3"
     position: 2
     prefix: "-f"
-  - valueFrom: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + '.paired.bam')
+  - valueFrom: $(inputs.input_bam_path.nameroot + '.paired.bam')
     position: 4
     prefix: ">"
-
-
-
-description: |
-  This module filters out unaligned pairs from BAM file

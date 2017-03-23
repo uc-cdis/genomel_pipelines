@@ -1,6 +1,6 @@
 #!/usr/bin/env cwl-runner
 
-cwlVersion: "cwl:draft-3"
+cwlVersion: v1.0
 
 class: CommandLineTool
 
@@ -16,14 +16,14 @@ inputs:
   - id: java_opts
     type: string
     default: "-Xmx16g"
-    description: |
-      "JVM arguments should be a quoted, space separated list (e.g. \"-Xmx8g -Xmx16g -Xms128m -Xmx512m\")"
+    doc: JVM arguments should be a quoted, space separated list. (e.g. -Xmx8g -Xmx16g -Xms128m -Xmx512m)
     inputBinding:
       position: 1
       shellQuote: false
 
   - id: input_bam_path
     type: File
+    doc: Input bam file path.
     inputBinding:
       position: 4
       prefix: "INPUT="
@@ -32,12 +32,7 @@ inputs:
   - id: validation_stringency
     type: string
     default: "LENIENT"
-    description: |
-      LENIENT|SILENT
-      <length>
-        LENIENT should be used with LLDR.# set a default toggle with removal_type?
-        SILENT should be used with SLDR.
-      <length>
+    doc: LENIENT or SILENT. LENIENT should be used with LLDR. SILENT should be used with SLDR.
     inputBinding:
       position: 10
       prefix: "VALIDATION_STRINGENCY="
@@ -47,15 +42,15 @@ outputs:
   - id: duplicate_removed_output_bam
     type: File
     outputBinding:
-      glob: $(inputs.input_bam_path.path.split('/').slice(-1)[0].slice(0,-3) + inputs.validation_stringency + '.duplicate_removed.bam')
+      glob: $(inputs.input_bam_path.nameroot + '.' + inputs.validation_stringency + '.duplicate_removed.bam')
   - id: duplicate_removed_output_metrics
     type: File
     outputBinding:
-      glob: $(inputs.input_bam_path.path.split('/').slice(-1)[0].slice(0,-3) + inputs.validation_stringency + '.duplicate_removed.metrics.txt')
+      glob: $(inputs.input_bam_path.nameroot + '.' + inputs.validation_stringency + '.duplicate_removed.metrics.txt')
   - id: duplicate_removed_output_bai
     type: File
     outputBinding:
-      glob: $(inputs.input_bam_path.path.split('/').slice(-1)[0].slice(0,-3) + inputs.validation_stringency + '.duplicate_removed.bai')
+      glob: $(inputs.input_bam_path.nameroot + '.' + inputs.validation_stringency + '.duplicate_removed.bai')
 
 baseCommand: java
 arguments:
@@ -64,11 +59,11 @@ arguments:
     prefix: "-jar"
   - valueFrom: "MarkDuplicates"
     position: 3
-  - valueFrom: $(inputs.input_bam_path.path.split('/').slice(-1)[0].slice(0,-3) + inputs.validation_stringency + '.duplicate_removed.bam')
+  - valueFrom: $(inputs.input_bam_path.nameroot + '.' + inputs.validation_stringency + '.duplicate_removed.bam')
     position: 5
     prefix: "OUTPUT="
     separate: false
-  - valueFrom: $(inputs.input_bam_path.path.split('/').slice(-1)[0].slice(0,-3) + inputs.validation_stringency + '.duplicate_removed.metrics.txt')
+  - valueFrom: $(inputs.input_bam_path.nameroot + '.' + inputs.validation_stringency + '.duplicate_removed.metrics.txt')
     position: 6
     prefix: "METRICS_FILE="
     separate: false
@@ -84,6 +79,3 @@ arguments:
     position: 9
     prefix: "ASSUME_SORTED="
     separate: false
-
-description: |
-  This module can perform (L)ane or (S)ample (L)evel (D)uplication (R)emoval

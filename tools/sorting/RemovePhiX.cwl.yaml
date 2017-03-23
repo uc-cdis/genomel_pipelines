@@ -1,6 +1,6 @@
 #!/usr/bin/env cwl-runner
 
-cwlVersion: "cwl:draft-3"
+cwlVersion: v1.0
 
 class: CommandLineTool
 
@@ -23,7 +23,7 @@ outputs:
   - id: fixed_output_bam
     type: File
     outputBinding:
-      glob: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + '.nophix.bam')
+      glob: $(inputs.input_bam_path.nameroot + '.nophix.bam')
 
 
 
@@ -43,6 +43,6 @@ arguments:
     position: 6
   - valueFrom: "-bS"
     position: 7
-  - valueFrom: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + '.nophix.bam')
+  - valueFrom: $(inputs.input_bam_path.nameroot + '.nophix.bam')
     position: 8
     prefix: "-o"

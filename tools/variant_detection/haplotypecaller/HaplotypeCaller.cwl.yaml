@@ -1,6 +1,6 @@
 #!/usr/bin/env cwl-runner
 
-cwlVersion: "cwl:draft-3"
+cwlVersion: v1.0
 
 class: CommandLineTool
 
@@ -16,8 +16,8 @@ inputs:
   - id: java_opts
     type: string
     default: "-Xmx32g -XX:+UseConcMarkSweepGC -XX:-UseGCOverheadLimit"
-    description: |
-      "JVM arguments should be a quoted, space separated list (e.g. \"-Xmx8g -Xmx16g -Xms128m -Xmx512m\")"
+    doc: |
+      "JVM arguments should be a quoted, space separated list (e.g. -Xmx8g -Xmx16g -Xms128m -Xmx512m)"
     inputBinding:
       position: 1
       shellQuote: false
@@ -106,7 +106,3 @@ arguments:
   - valueFrom: QualByDepth
     position: 19
     prefix: -A
-
-
-description: |
-    This tool uses a Bayesian genotype likelihood model to estimate simultaneously the most likely genotypes and allele frequency in a population of N samples, emitting a genotype for each sample. The system can either emit just the variant sites or complete genotypes (which includes homozygous reference calls) satisfying some phred-scaled confidence value.

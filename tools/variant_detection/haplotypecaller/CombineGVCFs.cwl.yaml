@@ -1,6 +1,6 @@
 #!/usr/bin/env cwl-runner
 
-cwlVersion: "cwl:draft-3"
+cwlVersion: v1.0
 
 class: CommandLineTool
 
@@ -16,8 +16,8 @@ inputs:
   - id: java_opts
     type: string
     default: "-Xmx32g"
-    description: |
-      "JVM arguments should be a quoted, space separated list (e.g. \"-Xmx8g -Xmx16g -Xms128m -Xmx512m\")"
+    doc: |
+      "JVM arguments should be a quoted, space separated list (e.g. -Xmx8g -Xmx16g -Xms128m -Xmx512m)"
     inputBinding:
       position: 1
       shellQuote: false
@@ -61,6 +61,3 @@ arguments:
   - valueFrom: CombineGVCFs
     position: 3
     prefix: -T
-
-description: |
-    CombineGVCFs is meant to be used for hierarchical merging of gVCFs that will eventually be input into GenotypeGVCFs.
