@@ -8,9 +8,6 @@ inputs:
 
   - id: input_bam_path
     type: File
-  - id: validation_stringency
-    default: "SILENT"
-    type: string
   - id: reference_seq
     type: File
   - id: reference_indel_path
@@ -20,15 +17,6 @@ inputs:
 
 outputs:
 
-  - id: duplicate_removed_output_bam
-    type: File
-    outputSource: LLDR_SLDR-tool/duplicate_removed_output_bam
-  - id: duplicate_removed_output_metrics
-    type: File
-    outputSource: LLDR_SLDR-tool/duplicate_removed_output_metrics
-  - id: duplicate_removed_output_bai
-    type: File
-    outputSource: LLDR_SLDR-tool/duplicate_removed_output_bai
   - id: left_aligned_bam
     type: File
     outputSource: LeftAlignIndels/left_aligned_bam
@@ -41,24 +29,11 @@ outputs:
 
 steps:
 
-  - id: LLDR_SLDR-tool
-    run: ../tools/primary_analysis/LLDR_SLDR.cwl.yaml
-    in:
-       - id: input_bam_path
-         source: input_bam_path
-       - id: validation_stringency
-         source: validation_stringency
-
-    out:
-       - id: duplicate_removed_output_bam
-       - id: duplicate_removed_output_metrics
-       - id: duplicate_removed_output_bai
-
   - id: LeftAlignIndels
     run: ../tools/secondary_analysis/LeftAlignIndels.cwl.yaml
     in:
        - id: input_bam_path
-         source: LLDR_SLDR-tool/duplicate_removed_output_bam
+         source: input_bam_path
        - id: reference_fasta_path
          source: reference_seq
 
