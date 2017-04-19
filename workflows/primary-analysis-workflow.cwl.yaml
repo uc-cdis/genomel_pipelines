@@ -5,206 +5,206 @@ cwlVersion: v1.0
 class: Workflow
 
 inputs:
-  - id: "#workflow_nthreads"
+  - id: workflow_nthreads
     type: int
     default: 4
-  - id: "#workflow_end_mode"
+  - id: workflow_end_mode
     type: string
     default: "PE"
-  - id: "#trimmomatic_java_opts"
+  - id: trimmomatic_java_opts
     type: string
     default: -Xmx4g
-  - id: "#trimmomatic_phred"
+  - id: trimmomatic_phred
     type: string
-  - id: "#trimmomatic_input_read1_fastq_file"
+  - id: trimmomatic_input_read1_fastq_file
     type: File
-  - id: "#trimmomatic_input_read2_fastq_file"
-    type: ["null", File]
-  - id: "#trimmomatic_input_adapters_file"
+  - id: trimmomatic_input_read2_fastq_file
+    type: ['null', File]
+  - id: trimmomatic_input_adapters_file
     type: File
-  - id: "#trimmomatic_illuminaclip"
+  - id: trimmomatic_illuminaclip
     type: string
-  - id: "#trimmomatic_slidingwindow"
+  - id: trimmomatic_slidingwindow
     type: ['null', string]
     default: null
-  - id: "#trimmomatic_maxinfo"
+  - id: trimmomatic_maxinfo
     type: ['null', string]
     default: null
-  - id: "#trimmomatic_leading"
+  - id: trimmomatic_leading
     type: ['null', int]
     default: null
-  - id: "#trimmomatic_trailing"
+  - id: trimmomatic_trailing
     type: ['null', int]
     default: null
-  - id: "#trimmomatic_crop"
+  - id: trimmomatic_crop
     type: ['null', int]
     default: null
-  - id: "#trimmomatic_headcrop"
+  - id: trimmomatic_headcrop
     type: ['null', int]
     default: null
-  - id: "#trimmomatic_minlen"
+  - id: trimmomatic_minlen
     type: ['null', int]
     default: null
-  - id: "#trimmomatic_avgqual"
+  - id: trimmomatic_avgqual
     type: ['null', int]
     default: null
-  - id: "#trimmomatic_tophred33"
+  - id: trimmomatic_tophred33
     type: ['null', boolean]
     default: null
-  - id: "#trimmomatic_tophred64"
+  - id: trimmomatic_tophred64
     type: ['null', boolean]
     default: null
-  - id: "#novoalign_dbname"
+  - id: novoalign_dbname
     type: File
-  - id: "#novoalign_format"
+  - id: novoalign_format
     type: string
-  - id: "#novoalign_length"
+  - id: novoalign_length
     type: string
-  - id: "#novoalign_output_format"
+  - id: novoalign_output_format
     type: string
-  - id: "#novoalign_readgroup"
+  - id: novoalign_readgroup
     type: string
-  - id: "#novoalign_reference_seq"
+  - id: novoalign_reference_seq
     type: File
-  - id: "#novoalign_output_name"
+  - id: novoalign_output_name
     type: string
-  - id: "#lldr_validation_stringency"
+  - id: lldr_validation_stringency
     type: string
     default: "LENIENT"
 
 
 outputs:
 
-  - id: "#output_read1_trimmed_file"
+  - id: output_read1_trimmed_file
     type: File
-    source: "#trimmomatic_tool.output_read1_trimmed_file"
-  - id: "#output_read1_trimmed_unpaired_file"
+    outputSource: trimmomatic_tool/output_read1_trimmed_file
+  - id: output_read1_trimmed_unpaired_file
     type: ['null', File]
-    source: "#trimmomatic_tool.output_read1_trimmed_unpaired_file"
-  - id: "#output_read2_trimmed_paired_file"
+    outputSource: trimmomatic_tool/output_read1_trimmed_unpaired_file
+  - id: output_read2_trimmed_paired_file
     type: ['null', File]
-    source: "#trimmomatic_tool.output_read2_trimmed_paired_file"
-  - id: "#output_read2_trimmed_unpaired_file"
+    outputSource: trimmomatic_tool/output_read2_trimmed_paired_file
+  - id: output_read2_trimmed_unpaired_file
     type: ['null', File]
-    source: "#trimmomatic_tool.output_read2_trimmed_unpaired_file"
-  - id: "#output_log_file"
+    outputSource: trimmomatic_tool/output_read2_trimmed_unpaired_file
+  - id: output_log_file
     type: ['null', File]
-    source: "#trimmomatic_tool.output_log_file"
-  - id: "#output_novoaligned_bam_file"
+    outputSource: trimmomatic_tool/output_log_file
+  - id: output_novoaligned_bam_file
     type: File
-    source: "#novoalign_tool.output_file"
-  - id: "#output_sorted_bam_file"
+    outputSource: novoalign_tool/output_file
+  - id: output_sorted_bam_file
     type: File
-    source: "#samtools-sort.sorted_output_bam"
-  - id: "#output_lldr_bam_file"
+    outputSource: samtools-sort/sorted_output_bam
+  - id: output_lldr_bam_file
     type: File
-    source: "#LLDR_SLDR-tool.duplicate_removed_output_bam"
-  - id: "#output_lldr_bai_file"
+    outputSource: LLDR_SLDR-tool/duplicate_removed_output_bam
+  - id: output_lldr_bai_file
     type: File
-    source: "#LLDR_SLDR-tool.duplicate_removed_output_bai"
-  - id: "#output_lldr_metrics_file"
+    outputSource: LLDR_SLDR-tool/duplicate_removed_output_bai
+  - id: output_lldr_metrics_file
     type: File
-    source: "#LLDR_SLDR-tool.duplicate_removed_output_metrics"
+    outputSource: LLDR_SLDR-tool/duplicate_removed_output_metrics
 
 
 steps:
 
-  - id: "#trimmomatic_tool"
+  - id: trimmomatic_tool
     run: ../tools/primary_analysis/trimmomatic.cwl.yaml
-    inputs:
-       - id: "#trimmomatic_tool.java_opts"
-         source: "#trimmomatic_java_opts"
-       - id: "#trimmomatic_tool.end_mode"
-         source: "#workflow_end_mode"
-       - id: "#trimmomatic_tool.nthreads"
-         source: "#workflow_nthreads"
-       - id: "#trimmomatic_tool.phred"
-         source: "#trimmomatic_phred"
-       - id: "#trimmomatic_tool.input_read1_fastq_file"
-         source: "#trimmomatic_input_read1_fastq_file"
-       - id: "#trimmomatic_tool.input_read2_fastq_file"
-         source: "#trimmomatic_input_read2_fastq_file"
-       - id: "#trimmomatic_tool.input_adapters_file"
-         source: "#trimmomatic_input_adapters_file"
-       - id: "#trimmomatic_tool.illuminaclip"
-         source: "#trimmomatic_illuminaclip"
-       - id: "#trimmomatic_tool.slidingwindow"
-         source: "#trimmomatic_slidingwindow"
-       - id: "#trimmomatic_tool.maxinfo"
-         source: "#trimmomatic_maxinfo"
-       - id: "#trimmomatic_tool.leading"
-         source: "#trimmomatic_leading"
-       - id: "#trimmomatic_tool.trailing"
-         source: "#trimmomatic_trailing"
-       - id: "#trimmomatic_tool.crop"
-         source: "#trimmomatic_crop"
-       - id: "#trimmomatic_tool.headcrop"
-         source: "#trimmomatic_headcrop"
-       - id: "#trimmomatic_tool.minlen"
-         source: "#trimmomatic_minlen"
-       - id: "#trimmomatic_tool.avgqual"
-         source: "#trimmomatic_avgqual"
-       - id: "#trimmomatic_tool.tophred33"
-         source: "#trimmomatic_tophred33"
-       - id: "#trimmomatic_tool.tophred64"
-         source: "#trimmomatic_tophred64"
+    in:
+       - id: java_opts
+         source: trimmomatic_java_opts
+       - id: end_mode
+         source: workflow_end_mode
+       - id: nthreads
+         source: workflow_nthreads
+       - id: phred
+         source: trimmomatic_phred
+       - id: input_read1_fastq_file
+         source: trimmomatic_input_read1_fastq_file
+       - id: input_read2_fastq_file
+         source: trimmomatic_input_read2_fastq_file
+       - id: input_adapters_file
+         source: trimmomatic_input_adapters_file
+       - id: illuminaclip
+         source: trimmomatic_illuminaclip
+       - id: slidingwindow
+         source: trimmomatic_slidingwindow
+       - id: maxinfo
+         source: trimmomatic_maxinfo
+       - id: leading
+         source: trimmomatic_leading
+       - id: trailing
+         source: trimmomatic_trailing
+       - id: crop
+         source: trimmomatic_crop
+       - id: headcrop
+         source: trimmomatic_headcrop
+       - id: minlen
+         source: trimmomatic_minlen
+       - id: avgqual
+         source: trimmomatic_avgqual
+       - id: tophred33
+         source: trimmomatic_tophred33
+       - id: tophred64
+         source: trimmomatic_tophred64
 
-    outputs:
-       - id: "#trimmomatic_tool.output_read1_trimmed_file"
-       - id: "#trimmomatic_tool.output_read1_trimmed_unpaired_file"
-       - id: "#trimmomatic_tool.output_read2_trimmed_paired_file"
-       - id: "#trimmomatic_tool.output_read2_trimmed_unpaired_file"
-       - id: "#trimmomatic_tool.output_log_file"
+    out:
+       - id: output_read1_trimmed_file
+       - id: output_read1_trimmed_unpaired_file
+       - id: output_read2_trimmed_paired_file
+       - id: output_read2_trimmed_unpaired_file
+       - id: output_log_file
 
-  - id: "#novoalign_tool"
+  - id: novoalign_tool
     run: ../tools/primary_analysis/novoalign.cwl.yaml
-    inputs:
-       - id: "#novoalign_tool.nthreads"
-         source: "#workflow_nthreads"
-       - id: "#novoalign_tool.dbname"
-         source: "#novoalign_dbname"
-       - id: "#novoalign_tool.input_read1_fastq_file"
-         source: "#trimmomatic_tool.output_read1_trimmed_file"
-       - id: "#novoalign_tool.input_read2_fastq_file"
-         source: "#trimmomatic_tool.output_read2_trimmed_paired_file"
-       - id: "#novoalign_tool.format"
-         source: "#novoalign_format"
-       - id: "#novoalign_tool.mode"
-         source: "#workflow_end_mode"
-       - id: "#novoalign_tool.length"
-         source: "#novoalign_length"
-       - id: "#novoalign_tool.output_format"
-         source: "#novoalign_output_format"
-       - id: "#novoalign_tool.readgroup"
-         source: "#novoalign_readgroup"
-       - id: "#novoalign_tool.reference_seq"
-         source: "#novoalign_reference_seq"
-       - id: "#novoalign_tool.output_name"
-         source: "#novoalign_output_name"
+    in:
+       - id: nthreads
+         source: workflow_nthreads
+       - id: dbname
+         source: novoalign_dbname
+       - id: input_read1_fastq_file
+         source: trimmomatic_tool/output_read1_trimmed_file
+       - id: input_read2_fastq_file
+         source: trimmomatic_tool/output_read2_trimmed_paired_file
+       - id: format
+         source: novoalign_format
+       - id: mode
+         source: workflow_end_mode
+       - id: length
+         source: novoalign_length
+       - id: output_format
+         source: novoalign_output_format
+       - id: readgroup
+         source: novoalign_readgroup
+       - id: reference_seq
+         source: novoalign_reference_seq
+       - id: output_name
+         source: novoalign_output_name
 
-    outputs:
-       - id: "#novoalign_tool.output_file"
+    out:
+       - id: output_file
 
 
-  - id: "#samtools-sort"
+  - id: samtools-sort
     run: ../tools/primary_analysis/samtoolsSort.cwl.yaml
-    inputs:
-       - id: "#samtools-sort.input_bam_path"
-         source: "#novoalign_tool.output_file"
+    in:
+       - id: input_bam_path
+         source: novoalign_tool/output_file
 
-    outputs:
-       - id: "#samtools-sort.sorted_output_bam"
+    out:
+       - id: sorted_output_bam
 
 
-  - id: "#LLDR_SLDR-tool"
+  - id: LLDR_SLDR-tool
     run: ../tools/primary_analysis/LLDR_SLDR.cwl.yaml
-    inputs:
-       - id: "#LLDR_SLDR-tool.input_bam_path"
-         source: "#samtools-sort.output"
-       - id: "#LLDR_SLDR-tool.validation_stringency"
-         source: "#lldr_validation_stringency"
+    in:
+       - id: input_bam_path
+         source: samtools-sort/sorted_output_bam
+       - id: validation_stringency
+         source: lldr_validation_stringency
 
-    outputs:
-       - id: "#LLDR_SLDR-tool.duplicate_removed_output_bam"
-       - id: "#LLDR_SLDR-tool.duplicate_removed_output_metrics"
-       - id: "#LLDR_SLDR-tool.duplicate_removed_output_bai"
+    out:
+       - id: duplicate_removed_output_bam
+       - id: duplicate_removed_output_metrics
+       - id: duplicate_removed_output_bai
