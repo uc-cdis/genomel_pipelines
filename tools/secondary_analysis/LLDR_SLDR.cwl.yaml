@@ -10,7 +10,7 @@ requirements:
   - class: ShellCommandRequirement
   - class: MultipleInputFeatureRequirement
   - class: DockerRequirement
-    dockerPull: registry.gitlab.com/uc-cdis/genomel-primary-analysis:0.2d
+    dockerPull: registry.gitlab.com/uc-cdis/genomel-primary-analysis:0.2c
 
 inputs:
   - id: java_opts
