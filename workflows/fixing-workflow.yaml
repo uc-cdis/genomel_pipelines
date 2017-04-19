@@ -10,23 +10,73 @@ inputs:
     type: File
   - id: reference_seq
     type: File
+  - id: lldr_validation_stringency
+    type: string
+    default: "LENIENT"
+  - id: sldr_validation_stringency
+    type: string
+    default: "SILENT"
 
 outputs:
 
+  - id: output_sorted_bam_file
+    type: File
+    outputSource: samtools-sort/sorted_output_bam
+  - id: output_lldr_bam_file
+    type: File
+    outputSource: lldr-markduplicates-tool/duplicate_removed_output_bam
+  - id: output_lldr_bai_file
+    type: File
+    outputSource: lldr-markduplicates-tool/duplicate_removed_output_bai
+  - id: output_lldr_metrics_file
+    type: File
+    outputSource: lldr-markduplicates-tool/duplicate_removed_output_metrics
   - id: paired_output_file
     type: File
     outputSource: remove-unpaired/paired_output_bam
   - id: nophix_output_file
     type: File
     outputSource: remove-phix/fixed_output_bam
+  - id: duplicate_removed_output_bam
+    type: File
+    outputSource: sldr-markduplicates-tool/duplicate_removed_output_bam
+  - id: duplicate_removed_output_metrics
+    type: File
+    outputSource: sldr-markduplicates-tool/duplicate_removed_output_metrics
+  - id: duplicate_removed_output_bai
+    type: File
+    outputSource: sldr-markduplicates-tool/duplicate_removed_output_bai
 
 steps:
+
+  - id: samtools-sort
+    run: ../tools/primary_analysis/samtoolsSort.cwl.yaml
+    in:
+       - id: input_bam_path
+         source: input_bam_path
+
+    out:
+       - id: sorted_output_bam
+
+
+  - id: lldr-markduplicates-tool
+    run: ../tools/primary_analysis/LLDR_SLDR.cwl.yaml
+    in:
+       - id: input_bam_path
+         source: samtools-sort/sorted_output_bam
+       - id: validation_stringency
+         source: lldr_validation_stringency
+
+    out:
+       - id: duplicate_removed_output_bam
+       - id: duplicate_removed_output_metrics
+       - id: duplicate_removed_output_bai
 
   - id: remove-unpaired
     run: ../tools/sorting/RemoveUnpaired.cwl.yaml
     in:
        - id: input_bam_path
-         source: input_bam_path
+         source: lldr-markduplicates-tool/duplicate_removed_output_bam
 
     out:
        - id: paired_output_bam
@@ -39,3 +89,16 @@ steps:
 
     out:
        - id: fixed_output_bam
+
+  - id: sldr-markduplicates-tool
+    run: ../tools/primary_analysis/LLDR_SLDR.cwl.yaml
+    in:
+       - id: input_bam_path
+         source: remove-phix/fixed_output_bam
+       - id: validation_stringency
+         source: sldr_validation_stringency
+
+    out:
+       - id: duplicate_removed_output_bam
+       - id: duplicate_removed_output_metrics
+       - id: duplicate_removed_output_bai
