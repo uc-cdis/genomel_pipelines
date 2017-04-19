@@ -57,9 +57,9 @@ steps:
   - id: LeftAlignIndels
     run: ../tools/secondary_analysis/LeftAlignIndels.cwl.yaml
     in:
-       - id: LeftAlignIndels.input_bam_path
+       - id: input_bam_path
          source: LLDR_SLDR-tool/duplicate_removed_output_bam
-       - id: LeftAlignIndels.reference_fasta_path
+       - id: reference_fasta_path
          source: reference_seq
 
     out:
