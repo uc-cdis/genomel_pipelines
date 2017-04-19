@@ -6,94 +6,94 @@ class: Workflow
 
 inputs:
 
-  - id: "#input_bam_path"
+  - id: input_bam_path
     type: File
-  - id: "#validation_stringency"
+  - id: validation_stringency
     default: "SILENT"
     type: string
-  - id: "#reference_seq"
+  - id: reference_seq
     type: File
-  - id: "#reference_indel_path"
+  - id: reference_indel_path
     type: File
-  - id: "#reference_snp_path"
+  - id: reference_snp_path
     type: File
 
 outputs:
 
-  - id: "#duplicate_removed_output_bam"
+  - id: duplicate_removed_output_bam
     type: File
-    source: "#LLDR_SLDR-tool.duplicate_removed_output_bam"
-  - id: "#duplicate_removed_output_metrics"
+    outputSource: LLDR_SLDR-tool/duplicate_removed_output_bam
+  - id: duplicate_removed_output_metrics
     type: File
-    source: "#LLDR_SLDR-tool.duplicate_removed_output_metrics"
-  - id: "#duplicate_removed_output_bai"
+    outputSource: LLDR_SLDR-tool/duplicate_removed_output_metrics
+  - id: duplicate_removed_output_bai
     type: File
-    source: "#LLDR_SLDR-tool.duplicate_removed_output_bai"
-  - id: "#left_aligned_bam"
+    outputSource: LLDR_SLDR-tool/duplicate_removed_output_bai
+  - id: left_aligned_bam
     type: File
-    source: "#LeftAlignIndels.left_aligned_bam"
-  - id: "#output_target"
+    outputSource: LeftAlignIndels/left_aligned_bam
+  - id: output_target
     type: File
-    source: "#RealignerTargetCreator.output_target"
-  - id: "#output_bqsr_bam"
+    outputSource: RealignerTargetCreator/output_target
+  - id: output_bqsr_bam
     type: File
-    source: "#IndelRealigner.output_bqsr_bam"
+    outputSource: IndelRealigner/output_bqsr_bam
 
 steps:
 
-  - id: "#LLDR_SLDR-tool"
+  - id: LLDR_SLDR-tool
     run: ../tools/primary_analysis/LLDR_SLDR.cwl.yaml
-    inputs:
-       - id: "#LLDR_SLDR-tool.input_bam_path"
-         source: "#input_bam_path"
-       - id: "#LLDR_SLDR-tool.validation_stringency"
-         source: "#validation_stringency"
+    in:
+       - id: input_bam_path
+         source: input_bam_path
+       - id: validation_stringency
+         source: validation_stringency
 
-    outputs:
-       - id: "#LLDR_SLDR-tool.duplicate_removed_output_bam"
-       - id: "#LLDR_SLDR-tool.duplicate_removed_output_metrics"
-       - id: "#LLDR_SLDR-tool.duplicate_removed_output_bai"
+    out:
+       - id: duplicate_removed_output_bam
+       - id: duplicate_removed_output_metrics
+       - id: duplicate_removed_output_bai
 
-  - id: "#LeftAlignIndels"
+  - id: LeftAlignIndels
     run: ../tools/secondary_analysis/LeftAlignIndels.cwl.yaml
-    inputs:
-       - id: "#LeftAlignIndels.input_bam_path"
-         source: "#LLDR_SLDR-tool.duplicate_removed_output_bam"
-       - id: "#LeftAlignIndels.reference_fasta_path"
-         source: "#reference_seq"
+    in:
+       - id: LeftAlignIndels.input_bam_path
+         source: LLDR_SLDR-tool/duplicate_removed_output_bam
+       - id: LeftAlignIndels.reference_fasta_path
+         source: reference_seq
 
-    outputs:
-       - id: "#LeftAlignIndels.left_aligned_bam"
+    out:
+       - id: left_aligned_bam
 
 
-  - id: "#RealignerTargetCreator"
+  - id: RealignerTargetCreator
     run: ../tools/secondary_analysis/RealignerTargetCreator.cwl.yaml
-    inputs:
-       - id: "#RealignerTargetCreator.input_bam_path"
-         source: "#LeftAlignIndels.left_aligned_bam"
-       - id: "#RealignerTargetCreator.reference_fasta_path"
-         source: "#reference_seq"
-       - id: "#RealignerTargetCreator.reference_indel_path"
-         source: "#reference_indel_path"
-       - id: "#RealignerTargetCreator.reference_snp_path"
-         source: "#reference_snp_path"
+    in:
+       - id: input_bam_path
+         source: LeftAlignIndels/left_aligned_bam
+       - id: reference_fasta_path
+         source: reference_seq
+       - id: reference_indel_path
+         source: reference_indel_path
+       - id: reference_snp_path
+         source: reference_snp_path
 
-    outputs:
-       - id: "#RealignerTargetCreator.output_target"
+    out:
+       - id: output_target
 
-  - id: "#IndelRealigner"
+  - id: IndelRealigner
     run: ../tools/secondary_analysis/IndelRealigner.cwl.yaml
-    inputs:
-       - id: "#IndelRealigner.input_bam_path"
-         source: "#LeftAlignIndels.left_aligned_bam"
-       - id: "#IndelRealigner.reference_fasta_path"
-         source: "#reference_seq"
-       - id: "#IndelRealigner.reference_indel_path"
-         source: "#reference_indel_path"
-       - id: "#IndelRealigner.reference_snp_path"
-         source: "#reference_snp_path"
-       - id: "#IndelRealigner.target_intervals"
-         source: "#RealignerTargetCreator.output_target"
+    in:
+       - id: input_bam_path
+         source: LeftAlignIndels/left_aligned_bam
+       - id: reference_fasta_path
+         source: reference_seq
+       - id: reference_indel_path
+         source: reference_indel_path
+       - id: reference_snp_path
+         source: reference_snp_path
+       - id: target_intervals
+         source: RealignerTargetCreator/output_target
 
-    outputs:
-       - id: "#IndelRealigner.output_bqsr_bam"
+    out:
+       - id: output_bqsr_bam
