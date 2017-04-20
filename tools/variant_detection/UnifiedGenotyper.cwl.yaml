@@ -81,21 +81,18 @@ arguments:
   - valueFrom: "30"
     position: 10
     prefix: -stand_call_conf
-  - valueFrom: "30"
-    position: 11
-    prefix: -stand_emit_conf
   - valueFrom: Standard
-    position: 12
+    position: 11
     prefix: -G
   - valueFrom: AlleleBalance
-    position: 13
+    position: 12
     prefix: -A
   - valueFrom: Coverage
-    position: 14
+    position: 13
     prefix: -A
   - valueFrom: HomopolymerRun
-    position: 15
+    position: 14
     prefix: -A
   - valueFrom: QualByDepth
-    position: 16
+    position: 15
     prefix: -A
