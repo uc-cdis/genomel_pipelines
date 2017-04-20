@@ -13,165 +13,165 @@ requirements:
 
 inputs:
 
-  - id: "#input_bam_path"
+  - id: input_bam_path
     type: 
        type: array 
        items: File
-  - id: "#reference_seq"
+  - id: reference_seq
     type: File
-  - id: "#hard_marked_reference"
+  - id: hard_marked_reference
     type: File
-  - id: "#interval_file_path"
+  - id: interval_file_path
     type: ["null", File]
-  - id: "#bed_file_path"
+  - id: bed_file_path
     type: ["null", File]
-  - id: "#reference_snp_path"
+  - id: reference_snp_path
     type: File
-  - id: "#ens_param_file"
+  - id: ens_param_file
     type: File
-  - id: "#prefix_name"
+  - id: prefix_name
     type: string
     default: "output"
 
 outputs:
 
-  - id: "#fb_vcf_output_file"
+  - id: fb_vcf_output_file
     type: File
-    source: "#select-variants.output_vcf"
-  - id: "#ug_vcf_output_file"
+    outputSource: select-variants/output_vcf
+  - id: ug_vcf_output_file
     type: File
-    source: "#unified-genotyper.output_vcf"
-  - id: "#hc_vcf_output_file"
+    outputSource: unified-genotyper/output_vcf
+  - id: hc_vcf_output_file
     type: File
-    source: "#genotype-gvcf.output_vcf"
+    outputSource: genotype-gvcf/output_vcf
 
 steps:
 
-  - id: "#freeBayes"
+  - id: freeBayes
     run: ../tools/variant_detection/freebayes/freebayes.cwl.yaml
-    inputs:
-       - id: "#freeBayes.reference_fasta_path"
-         source: "#hard_marked_reference"
-       - id: "#freeBayes.input_bam_path"
-         source: "#input_bam_path"
-       - id: "#freeBayes.interval_file_path"
-         source: "#bed_file_path"
-       - id: "#haplotype-caller.output_vcf_name"
-         source: "#prefix_name"
+    in:
+       - id: reference_fasta_path
+         source: hard_marked_reference
+       - id: input_bam_path
+         source: input_bam_path
+       - id: interval_file_path
+         source: bed_file_path
+       - id: output_vcf_name
+         source: prefix_name
          valueFrom: $(self + '.freebayes.vcf')
 
-    outputs:
-       - id: "#freeBayes.output_vcf"
+    out:
+       - id: output_vcf
 
 
-  - id: "#fix-vcf"
+  - id: fix-vcf
     run: ../tools/variant_detection/freebayes/fixIntType.cwl.yaml
-    inputs:
-       - id: "#fix-vcf.input_vcf_path"
-         source: "#freeBayes.output_vcf"
+    in:
+       - id: input_vcf_path
+         source: freeBayes/output_vcf
 
-    outputs:
-       - id: "#fix-vcf.fixed_output_vcf"
+    out:
+       - id: fixed_output_vcf
 
 
-  - id: "#select-variants"
+  - id: select-variants
     run: ../tools/variant_detection/freebayes/SelectVariants.cwl.yaml
-    inputs:
-       - id: "#select-variants.input_vcf_path"
-         source: "#fix-vcf.fixed_output_vcf"
-       - id: "#select-variants.reference_fasta_path"
-         source: "#hard_marked_reference"
-       - id: "#select-variants.output_vcf_name"
-         source: "#prefix_name"
+    in:
+       - id: input_vcf_path
+         source: fix-vcf/fixed_output_vcf
+       - id: reference_fasta_path
+         source: hard_marked_reference
+       - id: output_vcf_name
+         source: prefix_name
          valueFrom: $(self + '.combined.freebayes.selectVariants.vcf')
-    outputs:
-       - id: "#select-variants.output_vcf"
+    out:
+       - id: output_vcf
 
 
-  - id: "#unified-genotyper"
+  - id: unified-genotyper
     run: ../tools/variant_detection/UnifiedGenotyper.cwl.yaml
-    inputs:
-       - id: "#unified-genotyper.input_bam_path"
-         source: "#input_bam_path"
-       - id: "#unified-genotyper.reference_fasta_path"
-         source: "#reference_seq"
-       - id: "#haplotype-caller.interval_file_path"
-         source: "#bed_file_path"
-       - id: "#haplotype-caller.output_vcf_name"
-         source: "#prefix_name"
+    in:
+       - id: input_bam_path
+         source: input_bam_path
+       - id: reference_fasta_path
+         source: reference_seq
+       - id: interval_file_path
+         source: bed_file_path
+       - id: output_vcf_name
+         source: prefix_name
          valueFrom: $(self + '.combined.unifiedGenotyper.vcf')
 
-    outputs:
-       - id: "#unified-genotyper.output_vcf"
+    out:
+       - id: output_vcf
 
 
-  - id: "#haplotype-caller"
+  - id: haplotype-caller
     run: ../tools/variant_detection/haplotypecaller/HaplotypeCaller.cwl.yaml
-    scatter: ["#haplotype-caller.input_bam_path", "#haplotype-caller.output_gvcf_name"]
+    scatter: [input_bam_path, output_gvcf_name]
     scatterMethod: dotproduct
-    inputs:
-       - id: "#haplotype-caller.input_bam_path"
-         source: "#input_bam_path"
-       - id: "#haplotype-caller.reference_fasta_path"
-         source: "#reference_seq"
-       - id: "#haplotype-caller.interval_file_path"
-         source: "#interval_file_path"
-       - id: "#haplotype-caller.reference_snp_path"
-         source: "#reference_snp_path"
-       - id: "#haplotype-caller.output_gvcf_name"
-         source: "#input_bam_path"
+    in:
+       - id: input_bam_path
+         source: input_bam_path
+       - id: reference_fasta_path
+         source: reference_seq
+       - id: interval_file_path
+         source: interval_file_path
+       - id: reference_snp_path
+         source: reference_snp_path
+       - id: output_gvcf_name
+         source: input_bam_path
          valueFrom: $(self.basename.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + '.haplotypeCaller.g.vcf.gz')
 
-    outputs:
-       - id: "#haplotype-caller.output_gvcf"
+    out:
+       - id: output_gvcf
 
 
-  - id: "#tabix_hc"
+  - id: tabix_hc
     run: ../tools/variant_detection/haplotypecaller/tabix.cwl.yaml
-    scatter: "#tabix_hc.input_vcf_gz"
-    inputs:
-       - id: "#tabix_hc.input_vcf_gz"
-         source: "#haplotype-caller.output_gvcf"
+    scatter: input_vcf_gz
+    in:
+       - id: input_vcf_gz
+         source: haplotype-caller/output_gvcf
 
-    outputs:
-       - id: "#tabix_hc.output"
+    out:
+       - id: output
 
 
-  - id: "#combine-gvcf"
+  - id: combine-gvcf
     run: ../tools/variant_detection/haplotypecaller/CombineGVCFs.cwl.yaml
-    inputs:
-       - id: "#combine-gvcf.input_vcf_path"
-         source: "#tabix_hc.output"
-       - id: "#combine-gvcf.reference_fasta_path"
-         source: "#reference_seq"
-       - id: "#combine-gvcf.output_gvcf_name"
-         source: "#prefix_name"
+    in:
+       - id: input_vcf_path
+         source: tabix_hc/output
+       - id: reference_fasta_path
+         source: reference_seq
+       - id: output_gvcf_name
+         source: prefix_name
          valueFrom: $(self + '.combinedGVCFs.g.vcf.gz')
 
-    outputs:
-       - id: "#combine-gvcf.output_gvcf"
+    out:
+       - id: output_gvcf
 
 
-  - id: "#tabix_combine"
+  - id: tabix_combine
     run: ../tools/variant_detection/haplotypecaller/tabix.cwl.yaml
-    inputs:
-       - id: "#tabix_combine.input_vcf_gz"
-         source: "#combine-gvcf.output_gvcf"
+    in:
+       - id: input_vcf_gz
+         source: combine-gvcf/output_gvcf
 
-    outputs:
-       - id: "#tabix_combine.output"
+    out:
+       - id: output
 
 
-  - id: "#genotype-gvcf"
+  - id: genotype-gvcf
     run: ../tools/variant_detection/haplotypecaller/GenotypeGVCFs.cwl.yaml
-    inputs:
-       - id: "#genotype-gvcf.input_vcf_path"
-         source: "#tabix_combine.output"
-       - id: "#genotype-gvcf.reference_fasta_path"
-         source: "#reference_seq"
-       - id: "#genotype-gvcf.output_vcf_name"
-         source: "#prefix_name"
+    in:
+       - id: input_vcf_path
+         source: tabix_combine/output
+       - id: reference_fasta_path
+         source: reference_seq
+       - id: output_vcf_name
+         source: prefix_name
          valueFrom: $(self + 'combined.haplotype-caller.genotypeGVCF.vcf')
 
-    outputs:
-       - id: "#genotype-gvcf.output_vcf"
+    out:
+       - id: output_vcf
