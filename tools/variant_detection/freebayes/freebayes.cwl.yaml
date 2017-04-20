@@ -25,8 +25,8 @@ inputs:
       items: File
       inputBinding:
         prefix: "-I"
-      secondaryFiles:
-        - "^.bai"
+    secondaryFiles:
+      - "^.bai"
     inputBinding:
       position: 4
   - id: interval_file_path
