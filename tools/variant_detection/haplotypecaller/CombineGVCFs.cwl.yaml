@@ -27,8 +27,8 @@ inputs:
       items: File
       inputBinding:
         prefix: "--variant"
-      secondaryFiles:
-        - ".tbi"
+    secondaryFiles:
+      - ".tbi"
     inputBinding:
       position: 4
   - id: reference_fasta_path
