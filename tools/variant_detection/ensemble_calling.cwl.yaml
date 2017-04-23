@@ -49,7 +49,7 @@ outputs:
 
 baseCommand: java
 arguments:
-  - valueFrom: /home/ubuntu/tools/bcbio.variation-0.2.4-standalone.jar
+  - valueFrom: /home/ubuntu/tools/bcbio.variation-0.2.6-standalone.jar
     position: 2
     prefix: -jar
   - valueFrom: variant-ensemble
