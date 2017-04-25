@@ -19,8 +19,6 @@ inputs:
        items: File
   - id: reference_seq
     type: File
-  - id: hard_marked_reference
-    type: File
   - id: interval_file_path
     type: ["null", File]
   - id: bed_file_path
@@ -51,7 +49,7 @@ steps:
     run: ../tools/variant_detection/freebayes/freebayes.cwl.yaml
     in:
        - id: reference_fasta_path
-         source: hard_marked_reference
+         source: reference_seq
        - id: input_bam_path
          source: input_bam_path
        - id: interval_file_path
@@ -64,23 +62,13 @@ steps:
        - id: output_vcf
 
 
-  - id: fix-vcf
-    run: ../tools/variant_detection/freebayes/fixIntType.cwl.yaml
-    in:
-       - id: input_vcf_path
-         source: freeBayes/output_vcf
-
-    out:
-       - id: fixed_output_vcf
-
-
   - id: select-variants
     run: ../tools/variant_detection/freebayes/SelectVariants.cwl.yaml
     in:
        - id: input_vcf_path
-         source: fix-vcf/fixed_output_vcf
+         source: freeBayes/output_vcf
        - id: reference_fasta_path
-         source: hard_marked_reference
+         source: reference_seq
        - id: output_vcf_name
          source: prefix_name
          valueFrom: $(self + '.combined.freebayes.selectVariants.vcf')
@@ -126,22 +114,11 @@ steps:
        - id: output_gvcf
 
 
-  - id: tabix_hc
-    run: ../tools/variant_detection/haplotypecaller/tabix.cwl.yaml
-    scatter: input_vcf_gz
-    in:
-       - id: input_vcf_gz
-         source: haplotype-caller/output_gvcf
-
-    out:
-       - id: output
-
-
   - id: combine-gvcf
     run: ../tools/variant_detection/haplotypecaller/CombineGVCFs.cwl.yaml
     in:
        - id: input_vcf_path
-         source: tabix_hc/output
+         source: haplotype-caller/output_gvcf
        - id: reference_fasta_path
          source: reference_seq
        - id: output_gvcf_name
@@ -152,26 +129,16 @@ steps:
        - id: output_gvcf
 
 
-  - id: tabix_combine
-    run: ../tools/variant_detection/haplotypecaller/tabix.cwl.yaml
-    in:
-       - id: input_vcf_gz
-         source: combine-gvcf/output_gvcf
-
-    out:
-       - id: output
-
-
   - id: genotype-gvcf
     run: ../tools/variant_detection/haplotypecaller/GenotypeGVCFs.cwl.yaml
     in:
        - id: input_vcf_path
-         source: tabix_combine/output
+         source: combine-gvcf/output_gvcf
        - id: reference_fasta_path
          source: reference_seq
        - id: output_vcf_name
          source: prefix_name
-         valueFrom: $(self + 'combined.haplotype-caller.genotypeGVCF.vcf')
+         valueFrom: $(self + '.combined.haplotype-caller.genotypeGVCF.vcf')
 
     out:
        - id: output_vcf
