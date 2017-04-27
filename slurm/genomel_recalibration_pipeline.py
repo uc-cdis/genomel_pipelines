@@ -211,9 +211,9 @@ if __name__ == '__main__':
     
     # Setup postgres classes for tables
     class HaplotypeCallerStatus(postgres.mixins.StatusTypeMixin, postgres.utils.Base):
-        __tablename__ = 'haplotypecaller_' + project + '_cwl_status'
+        __tablename__ = 'genomel_recalibration' + project + '_cwl_status'
     class HaplotypeCallerMetrics(postgres.mixins.MetricsTypeMixin, postgres.utils.Base):
-        __tablename__ = 'haplotypecaller_' + project + '_cwl_metrics'
+        __tablename__ = 'genomel_recalibration' + project + '_cwl_metrics'
     
     # Run pipeline
     run_pipeline(args, HaplotypeCallerStatus, HaplotypeCallerMetrics)
