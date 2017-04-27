@@ -15,19 +15,22 @@ requirements:
 inputs:
   - id: java_opts
     type: string
-    default: "-Xmx256g"
+    default: "-Xmx26g"
     doc: |
       "JVM arguments should be a quoted, space separated list (e.g. -Xmx8g -Xmx16g -Xms128m -Xmx512m)"
     inputBinding:
       position: 1
       shellQuote: false
   - id: input_vcf_path
-    type: File
-    inputBinding:
-      position: 4
-      prefix: "--variant"
+    type:
+      type: array
+      items: File
+      inputBinding:
+        prefix: "--variant"
     secondaryFiles:
       - ".tbi"
+    inputBinding:
+      position: 4
   - id: reference_fasta_path
     type: File
     inputBinding:
@@ -36,10 +39,15 @@ inputs:
     secondaryFiles:
       - "^.dict"
       - ".fai"
+  - id: interval_file_path
+    type: ["null", File]
+    inputBinding:
+      position: 6
+      prefix: "-L"
   - id: output_vcf_name
     type: string
     inputBinding:
-      position: 6
+      position: 7
       prefix: "-o"
 
 outputs:
@@ -57,4 +65,4 @@ arguments:
     position: 3
     prefix: -T
   - valueFrom: "--disable_auto_index_creation_and_locking_when_reading_rods"
-    position: 7
+    position: 8
