@@ -91,9 +91,8 @@ def run_pipeline(args, statusclass, metricsclass):
     logger.info("getting resources")
     reference_data        = utils.pipeline.load_reference_json()
     reference_fasta_path  = os.path.join(refdir, reference_data["reference_fasta"])
-    reference_fasta_fai   = os.path.join(refdir, reference_data["reference_fasta_index"])
-    reference_fasta_dict  = os.path.join(refdir, reference_data["reference_fasta_dict"])
-    known_snp_vcf_path    = os.path.join(refdir, reference_data["known_snp_vcf"])
+    reference_indel_vcf   = os.path.join(refdir, reference_data["reference_indel_vcf"])
+    reference_snp_vcf     = os.path.join(refdir, reference_data["reference_snp_vcf"])    
     postgres_config       = os.path.join(refdir, reference_data["pg_config"])
     
     # Logging pipeline info
@@ -131,8 +130,8 @@ def run_pipeline(args, statusclass, metricsclass):
     input_json_data = {
       "input_bam_path": {"class": "File", "path": input_bam},
       "reference_seq": {"class": "File", "path": reference_fasta_path},
-      "reference_indel_path": {"class": "File", "path": reference_fasta_path},
-      "reference_snp_path": {"class": "File", "path": reference_fasta_path},      
+      "reference_indel_path": {"class": "File", "path": reference_indel_vcf},
+      "reference_snp_path": {"class": "File", "path": reference_snp_vcf},      
     }
     with open(input_json_file, 'wt') as o:
         json.dump(input_json_data, o, indent=4)
