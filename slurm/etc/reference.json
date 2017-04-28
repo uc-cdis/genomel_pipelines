@@ -1,7 +1,7 @@
 {
   "reference_fasta": "hg19_canonical_correct_chr_order.fa",
   "reference_indel_vcf": "Mills_and_1000G_gold_standard.indels.hg19.vcf.gz",
-  "reference_snp_vcf": "1000G_phase1.indels.hg19.vcf.gz"
+  "reference_snp_vcf": "1000G_phase1.indels.hg19.vcf.gz",
   "pg_config": "postgres_config",
   "cwl_version": "1.0.20170224141733",
   "docker_version": ["registry.gitlab.com/uc-cdis/genomel-secondary-analysis:0.1b"]
