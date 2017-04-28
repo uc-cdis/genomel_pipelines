@@ -101,13 +101,17 @@ def run_pipeline(args, statusclass, metricsclass):
     logger.info("cwl_version: %s" % (cwl_version))
     logger.info("docker_version: %s" % (docker_version))
     
-    # Download input
+    # Download input bam and index
     input_url = args.s3_url
     input_bam = os.path.join(inputdir, os.path.basename(input_url))
+    input_index_url = input_url.replace('.bam','.bai')
     project_s3_profile = args.s3_profile
     project_s3_endpoint_url = args.s3_endpoint
     download_exit_code = utils.s3.aws_s3_get(logger, input_url, inputdir,
                                              project_s3_profile, project_s3_endpoint_url, recursive=False)
+    download_exit_code = utils.s3.aws_s3_get(logger, input_index_url, inputdir,
+                                             project_s3_profile, project_s3_endpoint_url, recursive=False)
+
     download_end_time = time.time()
     download_time = download_end_time - cwl_start
     if not (download_exit_code != 0 or str(utils.pipeline.get_md5(input_bam)) != args.md5):
@@ -210,9 +214,9 @@ if __name__ == '__main__':
     
     # Setup postgres classes for tables
     class HaplotypeCallerStatus(postgres.mixins.StatusTypeMixin, postgres.utils.Base):
-        __tablename__ = 'genomel_recalibration' + project + '_cwl_status'
+        __tablename__ = 'recalibration_' + project + '_cwl_status'
     class HaplotypeCallerMetrics(postgres.mixins.MetricsTypeMixin, postgres.utils.Base):
-        __tablename__ = 'genomel_recalibration' + project + '_cwl_metrics'
+        __tablename__ = 'recalibration_' + project + '_cwl_metrics'
     
     # Run pipeline
     run_pipeline(args, HaplotypeCallerStatus, HaplotypeCallerMetrics)
