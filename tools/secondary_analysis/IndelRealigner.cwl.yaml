@@ -65,7 +65,7 @@ outputs:
   - id: output_bqsr_bam
     type: File
     outputBinding:
-      glob: $(inputs.input_bam_path.nameroot + '.bqsr.bam')
+      glob: $(inputs.input_bam_path.nameroot + '.realigned.bam')
     secondaryFiles:
       - "^.bai"
 
