@@ -47,7 +47,7 @@ def get_args():
     required.add_argument("--basedir", default="/mnt/SCRATCH/", help="Base directory for computations.")
     required.add_argument("--refdir", required=True, help="Path to reference directory.")
     required.add_argument("--cwl", required=True, help="Path to Genomel Recalibration CWL workflow yaml.")
-    required.add_argument("--s3dir", default="s3://", help="S3bin for uploading output files.")
+    required.add_argument("--s3dir", default="s3://", help="S3 dir for uploading output files.")
 
     return parser.parse_args()
 
@@ -155,16 +155,23 @@ def run_pipeline(args, statusclass, metricsclass):
     cwl_failure = False
     if cwl_exit:
         cwl_failure = True
-    
+
     # Get md5 and file size
-    output_bam = os.path.join(resultdir, os.path.basename(input_bam)).replace('.bam', '') + ".left_aligned.realigned.bam" 
-    md5 = utils.pipeline.get_md5(output_tar)
-    file_size = utils.pipeline.get_file_size(output_tar)
+    output_bam = os.path.join(resultdir, os.path.basename(input_bam)).replace('.bam', '.left_aligned.realigned.bam')
+    output_bai = os.path.join(resultdir, os.path.basename(input_bam)).replace('.bam', '.left_aligned.realigned.bai')
+    md5 = utils.pipeline.get_md5(output_bam)
+    file_size = utils.pipeline.get_file_size(output_bam)
     
     # Upload output
     upload_start = time.time()
+    os.chdir(jobdir)
+    upload_dir_location = os.path.join(args.s3dir, str(output_id))
+    upload_bam_location = os.path.join(upload_dir_location, "/%s.bam" % str(output_id))    
+    upload_bai_location = os.path.join(upload_dir_location, "/%s.bai" % str(output_id)) 
     logger.info("Uploading workflow output to %s" % (upload_file_location))
-    upload_exit  = utils.s3.aws_s3_put(logger, upload_dir_location, resultdir, args.s3_profile, args.s3_endpoint, recursive=True)
+    upload_exit  = utils.s3.aws_s3_put(logger, upload_bam_location, output_bam, args.s3_profile, args.s3_endpoint, recursive=True)
+    upload_exit  = utils.s3.aws_s3_put(logger, upload_bai_location, output_bai, args.s3_profile, args.s3_endpoint, recursive=True)
+    
     
     # Establish connection with database
     engine = postgres.utils.get_db_engine(postgres_config)
