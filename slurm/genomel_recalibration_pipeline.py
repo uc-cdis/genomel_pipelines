@@ -1,5 +1,5 @@
 '''
-Main wrapper script for GATK (v3.7) HaplotypeCaller pipeline
+Main wrapper script for Genomel Recalibration workflow
 '''
 import os
 import time
@@ -157,7 +157,7 @@ def run_pipeline(args, statusclass, metricsclass):
         cwl_failure = True
     
     # Get md5 and file size
-    output_bam = os.path.join(resultdir, ".left_aligned.bqsr.bam" % input_bam.replace('.bam', ''))
+    output_bam = os.path.join(resultdir, os.path.basename(input_bam)).replace('.bam', '') + ".left_aligned.realigned.bam" 
     md5 = utils.pipeline.get_md5(output_tar)
     file_size = utils.pipeline.get_file_size(output_tar)
     
@@ -213,10 +213,10 @@ if __name__ == '__main__':
     project = args.project.lower()
     
     # Setup postgres classes for tables
-    class HaplotypeCallerStatus(postgres.mixins.StatusTypeMixin, postgres.utils.Base):
+    class RecalibrationStatus(postgres.mixins.StatusTypeMixin, postgres.utils.Base):
         __tablename__ = 'recalibration_' + project + '_cwl_status'
-    class HaplotypeCallerMetrics(postgres.mixins.MetricsTypeMixin, postgres.utils.Base):
+    class RecalibrationMetrics(postgres.mixins.MetricsTypeMixin, postgres.utils.Base):
         __tablename__ = 'recalibration_' + project + '_cwl_metrics'
     
     # Run pipeline
-    run_pipeline(args, HaplotypeCallerStatus, HaplotypeCallerMetrics)
+    run_pipeline(args, RecalibrationStatus, RecalibrationMetrics)
