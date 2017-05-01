@@ -28,7 +28,7 @@ inputs:
       position: 4
       prefix: "-I"
     secondaryFiles:
-      - "^.bai"
+      - ".bai"
   - id: reference_fasta_path
     type: File
     doc: Reference fasta file with .dict and .fai
