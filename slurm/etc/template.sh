@@ -40,5 +40,5 @@ trap cleanup EXIT
 --s3_endpoint $s3_endpoint \
 --basedir $basedir \
 --refdir $refdir \
---cwl $basedir/haplotypecaller_cwl/workflows/hc-workflow.cwl.yaml \
+--cwl $basedir/genomel_cwl/workflows/recalibration-workflow.cwl.yaml \
 --s3dir $s3dir
