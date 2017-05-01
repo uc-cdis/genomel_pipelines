@@ -169,8 +169,8 @@ def run_pipeline(args, statusclass, metricsclass):
     upload_bam_location = os.path.join(upload_dir_location, "/%s.bam" % str(output_id))    
     upload_bai_location = os.path.join(upload_dir_location, "/%s.bai" % str(output_id)) 
     logger.info("Uploading workflow output to %s" % (upload_file_location))
-    upload_exit  = utils.s3.aws_s3_put(logger, upload_bam_location, output_bam, args.s3_profile, args.s3_endpoint, recursive=True)
-    upload_exit  = utils.s3.aws_s3_put(logger, upload_bai_location, output_bai, args.s3_profile, args.s3_endpoint, recursive=True)
+    upload_exit  = utils.s3.aws_s3_put(logger, upload_bam_location, output_bam, args.s3_profile, args.s3_endpoint, recursive=False)
+    upload_exit  = utils.s3.aws_s3_put(logger, upload_bai_location, output_bai, args.s3_profile, args.s3_endpoint, recursive=False)
     
     
     # Establish connection with database
