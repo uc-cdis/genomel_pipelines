@@ -157,8 +157,8 @@ def run_pipeline(args, statusclass, metricsclass):
         cwl_failure = True
 
     # Get md5 and file size
-    output_bam = os.path.join(resultdir, os.path.basename(input_bam)).replace('.bam', '.left_aligned.realigned.bam')
-    output_bai = os.path.join(resultdir, os.path.basename(input_bam)).replace('.bam', '.left_aligned.realigned.bai')
+    output_bam = os.path.join(workdir, os.path.basename(input_bam)).replace('.bam', '.left_aligned.realigned.bam')
+    output_bai = os.path.join(workdir, os.path.basename(input_bam)).replace('.bam', '.left_aligned.realigned.bai')
     md5 = utils.pipeline.get_md5(output_bam)
     file_size = utils.pipeline.get_file_size(output_bam)
     
