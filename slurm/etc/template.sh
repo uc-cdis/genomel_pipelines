@@ -31,7 +31,7 @@ sudo chown ubuntu:ubuntu -R genomel_cwl
 
 trap cleanup EXIT
 
-/home/ubuntu/.virtualenvs/p2/bin/python cwl/slurm/genomel_recalibration_pipeline.py \
+/home/ubuntu/.virtualenvs/p2/bin/python genomel_cwl/slurm/genomel_recalibration_pipeline.py \
 --input_id $input_id \
 --project $project \
 --md5 $md5 \
