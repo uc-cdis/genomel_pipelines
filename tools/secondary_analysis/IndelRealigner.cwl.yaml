@@ -62,7 +62,7 @@ inputs:
       prefix: "-targetIntervals"
 
 outputs:
-  - id: output_bqsr_bam
+  - id: output_realigned_bam
     type: File
     outputBinding:
       glob: $(inputs.input_bam_path.nameroot + '.realigned.bam')
@@ -80,7 +80,7 @@ arguments:
   - valueFrom: NotPrimaryAlignment
     position: 9
     prefix: -rf
-  - valueFrom: $(inputs.input_bam_path.nameroot + '.bqsr.bam')
+  - valueFrom: $(inputs.input_bam_path.nameroot + '.realigned.bam')
     position: 10
     prefix: "-o"
   - valueFrom: "7"
