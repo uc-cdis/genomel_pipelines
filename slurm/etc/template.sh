@@ -16,8 +16,9 @@ md5="XX_MD5_XX"
 s3_url="XX_S3URL_XX"
 s3_profile="XX_S3PROFILE_XX"
 s3_endpoint="XX_S3ENDPOINT_XX"
+thread_count="XX_THREAD_COUNT_XX"
 
-basedir=`sudo mktemp -d gn.XXXXXXXXXX -p /mnt/SCRATCH/`
+basedir=`sudo mktemp -d genomel.XXXXXXXXXX -p /mnt/SCRATCH/`
 refdir="XX_REFDIR_XX"
 s3dir="XX_S3DIR_XX"
 
@@ -41,4 +42,5 @@ trap cleanup EXIT
 --basedir $basedir \
 --refdir $refdir \
 --cwl $basedir/genomel_cwl/workflows/recalibration-workflow.cwl.yaml \
---s3dir $s3dir
+--s3dir $s3dir \
+--thread_count $thread_count
