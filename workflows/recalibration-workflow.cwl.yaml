@@ -23,9 +23,9 @@ outputs:
   - id: output_target
     type: File
     outputSource: RealignerTargetCreator/output_target
-  - id: output_bqsr_bam
+  - id: output_realigned_bam
     type: File
-    outputSource: IndelRealigner/output_bqsr_bam
+    outputSource: IndelRealigner/output_realigned_bam
 
 steps:
 
@@ -71,4 +71,4 @@ steps:
          source: RealignerTargetCreator/output_target
 
     out:
-       - id: output_bqsr_bam
+       - id: output_realigned_bam
