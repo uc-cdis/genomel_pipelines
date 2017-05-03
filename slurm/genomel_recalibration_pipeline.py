@@ -91,7 +91,7 @@ def run_pipeline(args, statusclass, metricsclass):
     
     # Getting refs
     logger.info("getting resources")
-    reference_data        = utils.pipeline.load_reference_json()
+    reference_data        = utils.pipeline.load_reference_json('etc/reference_recalibration.json')
     reference_fasta_path  = os.path.join(refdir, reference_data["reference_fasta"])
     reference_indel_vcf   = os.path.join(refdir, reference_data["reference_indel_vcf"])
     reference_snp_vcf     = os.path.join(refdir, reference_data["reference_snp_vcf"])    
@@ -168,8 +168,8 @@ def run_pipeline(args, statusclass, metricsclass):
     upload_start = time.time()
     os.chdir(jobdir)
     upload_dir_location = os.path.join(args.s3dir, str(output_id))
-    upload_bam_location = os.path.join(upload_dir_location, "%s.bam" % str(output_id))    
-    upload_bai_location = os.path.join(upload_dir_location, "%s.bai" % str(output_id)) 
+    upload_bam_location = os.path.join(upload_dir_location, os.path.basename(input_bam)).replace('.bam', '.left_aligned.realigned.bam')    
+    upload_bai_location = os.path.join(upload_dir_location, os.path.basename(input_bam)).replace('.bam', '.left_aligned.realigned.bai') 
     logger.info("Uploading workflow output to %s" % (upload_bam_location))
     upload_exit  = utils.s3.aws_s3_put(logger, upload_bam_location, output_bam, args.s3_profile, args.s3_endpoint, recursive=False)
     upload_exit  = utils.s3.aws_s3_put(logger, upload_bai_location, output_bai, args.s3_profile, args.s3_endpoint, recursive=False)
