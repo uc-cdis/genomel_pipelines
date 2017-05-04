@@ -99,3 +99,5 @@ def get_case_from_status(engine, input_table, status_table, input_primary_column
                         completion.s3_profile,
                         completion.s3_endpoint]        
             count += 1
+
+    return s
