@@ -171,7 +171,7 @@ def run_pipeline(args, statusclass, metricsclass):
     upload_start = time.time()
     logger.info("Uploading workflow output to %s" % (upload_bam_location))
     upload_dir_location = os.path.join(args.s3dir, str(output_id))
-    upload_gvcf_location = os.path.join(upload_dir_location, os.path.basename(output_gvcf)))    
+    upload_gvcf_location = os.path.join(upload_dir_location, os.path.basename(output_gvcf))    
     upload_exit  = utils.s3.aws_s3_put(logger, upload_gvcf_location, output_gvcf, args.s3_profile, args.s3_endpoint, recursive=False)
 
     # Establish connection with database
