@@ -43,7 +43,7 @@ trap cleanup EXIT
 --s3_endpoint $s3_endpoint \
 --basedir $basedir \
 --refdir $refdir \
---cwl $basedir/genomel_cwl/workflows/recalibration-workflow.cwl.yaml \
+--cwl $basedir/genomel_cwl/tools/variant_detection/haplotypecaller/HaplotypeCaller.cwl.yaml \
 --s3dir $s3dir \
 --thread_count $thread_count \
 --java_heap $java_heap
