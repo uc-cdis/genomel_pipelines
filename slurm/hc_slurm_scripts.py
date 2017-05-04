@@ -33,7 +33,7 @@ if __name__ == "__main__":
         raise Exception("Cannot find config file: %s" %args.postgres_config)
 
     engine = postgres.utils.get_db_engine(args.postgres_config)
-    cases = postgres.status.get_case(engine, str(args.input_table), str(args.status_table), input_primary_column="id")
+    cases = postgres.status.get_case_from_status(engine, str(args.input_table), str(args.status_table), input_primary_column="id")
 
     for case in cases:
         slurm = open(os.path.join(args.outdir, "%s.%s.sh" %(cases[case][1], cases[case][0])), "w")
