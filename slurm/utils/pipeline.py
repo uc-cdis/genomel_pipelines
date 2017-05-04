@@ -120,10 +120,10 @@ def get_index(logger, inputdir, input_bam):
         sys.exit(index_exit)
     return bai_file
 
-def load_reference_json():
+def load_reference_json(json_file):
     ''' load resource JSON file '''
     reference_json_file = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),
-        "etc/reference.json")
+        json_file)
     dat = {}
     with open(reference_json_file, 'r') as fh:
         dat = json.load(fh)
