@@ -142,7 +142,7 @@ def run_pipeline(args, statusclass, metricsclass):
       "reference_fasta_path": {"class": "File", "path": reference_fasta_path},
       "reference_snp_path": {"class": "File", "path": reference_dbsnp},
       "interval_file_path": {"class": "File", "path": reference_intervals}, 
-      "output_gvcf_name": output_gvcf          
+      "output_gvcf_name": os.path.basename(output_gvcf)          
     }
     with open(input_json_file, 'wt') as o:
         json.dump(input_json_data, o, indent=4)
