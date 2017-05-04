@@ -22,7 +22,7 @@ inputs:
       position: 1
       shellQuote: false
       prefix: "-Xmx"
-      separated: false      
+      separate: false      
   - id: input_bam_path
     type: File
     inputBinding:
