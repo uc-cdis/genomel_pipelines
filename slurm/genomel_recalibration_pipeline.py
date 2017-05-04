@@ -91,7 +91,7 @@ def run_pipeline(args, statusclass, metricsclass):
     
     # Getting refs
     logger.info("getting resources")
-    reference_data        = utils.pipeline.load_reference_json('etc/reference_recalibration.json')
+    reference_data        = utils.pipeline.load_reference_json('etc/reference.json')
     reference_fasta_path  = os.path.join(refdir, reference_data["reference_fasta"])
     reference_indel_vcf   = os.path.join(refdir, reference_data["reference_indel_vcf"])
     reference_snp_vcf     = os.path.join(refdir, reference_data["reference_snp_vcf"])    
@@ -223,9 +223,9 @@ if __name__ == '__main__':
     
     # Setup postgres classes for tables
     class RecalibrationStatus(postgres.mixins.StatusTypeMixin, postgres.utils.Base):
-        __tablename__ = 'recalibration_' + project + '_cwl_status'
+        __tablename__ = project + '_recalibration_cwl_status'
     class RecalibrationMetrics(postgres.mixins.MetricsTypeMixin, postgres.utils.Base):
-        __tablename__ = 'recalibration_' + project + '_cwl_metrics'
+        __tablename__ = project + '_recalibration_cwl_metrics'
     
     # Run pipeline
     run_pipeline(args, RecalibrationStatus, RecalibrationMetrics)
