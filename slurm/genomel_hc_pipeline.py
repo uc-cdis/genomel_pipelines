@@ -107,7 +107,7 @@ def run_pipeline(args, statusclass, metricsclass):
     # Download input bam and index
     input_url = args.s3_url
     input_bam = os.path.join(inputdir, os.path.basename(input_url))
-    input_index_url = input_url + '.bai'
+    input_index_url = input_url.replace('.bam','.bai')
     project_s3_profile = args.s3_profile
     project_s3_endpoint_url = args.s3_endpoint
     download_exit_code = utils.s3.aws_s3_get(logger, input_url, inputdir,
