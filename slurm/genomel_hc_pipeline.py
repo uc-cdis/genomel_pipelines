@@ -221,10 +221,10 @@ if __name__ == '__main__':
     project = args.project.lower()
     
     # Setup postgres classes for tables
-    class HaplotypeCallerStatus(postgres.mixins.StatusTypeMixin, postgres.utils.Base):
+    class CallerStatus(postgres.mixins.StatusTypeMixin, postgres.utils.Base):
         __tablename__ = project + '_hc_cwl_status'
-    class HaplotypeCallerMetrics(postgres.mixins.MetricsTypeMixin, postgres.utils.Base):
+    class CallerMetrics(postgres.mixins.MetricsTypeMixin, postgres.utils.Base):
         __tablename__ = project + '_hc_cwl_metrics'
     
     # Run pipeline
-    run_pipeline(args, RecalibrationStatus, RecalibrationMetrics)
+    run_pipeline(args, CallerStatus, CallerMetrics)
