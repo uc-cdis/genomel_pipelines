@@ -70,3 +70,32 @@ def get_case(engine, input_table, status_table, input_primary_column="id"):
                             row.s3_endpoint]
                 count += 1
     return s
+
+def get_case_from_status(engine, input_table, status_table, input_primary_column="id"):
+    Session = sessionmaker()
+    Session.configure(bind=engine)
+    session = Session()
+    meta = MetaData(engine)
+
+    #read the input table
+    data = Table (input_table, meta, Column(input_primary_column, String, primary_key=True), autoload=True)
+    mapper(Files, data)
+    
+    #read the input table
+    state = Table(status_table, meta, autoload=True)  
+    mapper(State, state)
+    
+    # collect input information from status and/or input tables
+    count = 0
+    s = dict()    
+    cases = session.query(State).all()
+    for row in cases:
+        completion = session.query(Files).filter(Files.input_id == row.input_id[0]).first()
+        if row.status == 'COMPLETED':
+            s[count] = [row.output_id,
+                        completion.project,
+                        row.md5,
+                        row.s3_url,
+                        completion.s3_profile,
+                        completion.s3_endpoint]        
+            count += 1
