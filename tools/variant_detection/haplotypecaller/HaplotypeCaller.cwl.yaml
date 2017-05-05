@@ -55,6 +55,12 @@ inputs:
     inputBinding:
       position: 8
       prefix: "-o"
+  - id: thread_count
+    type: string
+    inputBinding:
+      position: 9
+      prefix: "-nct"
+
 
 outputs:
   - id: output_gvcf
@@ -73,32 +79,32 @@ arguments:
     position: 3
     prefix: -T
   - valueFrom: GVCF
-    position: 8
+    position: 10
     prefix: --emitRefConfidence
   - valueFrom: LINEAR
-    position: 9
+    position: 11
     prefix: --variant_index_type
   - valueFrom: "128000"
-    position: 10
+    position: 12
     prefix: --variant_index_parameter
   - valueFrom: "3"
-    position: 12
+    position: 13
     prefix: -minPruning
   - valueFrom: "10"
-    position: 13
+    position: 14
     prefix: -stand_call_conf
   - valueFrom: Standard
-    position: 14
+    position: 15
     prefix: -G
   - valueFrom: AlleleBalance
-    position: 15
-    prefix: -A
-  - valueFrom: Coverage
     position: 16
     prefix: -A
-  - valueFrom: HomopolymerRun
+  - valueFrom: Coverage
     position: 17
     prefix: -A
-  - valueFrom: QualByDepth
+  - valueFrom: HomopolymerRun
     position: 18
+    prefix: -A
+  - valueFrom: QualByDepth
+    position: 19
     prefix: -A
