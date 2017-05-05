@@ -57,6 +57,7 @@ inputs:
       prefix: "-o"
   - id: thread_count
     type: string
+    default: "1"    
     inputBinding:
       position: 9
       prefix: "-nct"
