@@ -1,5 +1,5 @@
 '''
-Main wrapper script for Genomel Recalibration workflow
+Main wrapper script for Genomel Haplotype caller workflow
 '''
 import os
 import time
@@ -33,7 +33,7 @@ def get_args():
     Loads the parser
     '''
     # Main parser
-    parser = argparse.ArgumentParser(description="Genomel Recalibration Pipeline")
+    parser = argparse.ArgumentParser(description="Genomel Haplotype caller Pipeline")
     # Args
     required = parser.add_argument_group("Required input parameters")
     # Metadata from input table
