@@ -132,7 +132,7 @@ def run_pipeline(args, statusclass, metricsclass):
         sys.exit(download_exit_code)
 
     # Define output
-    output_gvcf = os.path.join(workdir, output_id, '.g.vcf.gz')
+    output_gvcf = os.path.join(workdir, str(output_id) + '.g.vcf.gz')
 
     # Create input json
     input_json_file = os.path.join(resultdir, '{0}.genomel.hc.inputs.json'.format(str(output_id)))
