@@ -30,6 +30,9 @@ inputs:
   - id: prefix_name
     type: string
     default: "output"
+  - id: nthreads
+    type: string
+    default: "1"
 
 outputs:
 
@@ -106,6 +109,8 @@ steps:
          source: interval_file_path
        - id: reference_snp_path
          source: reference_snp_path
+       - id: thread_count
+         source: nthreads         
        - id: output_gvcf_name
          source: input_bam_path
          valueFrom: $(self.basename.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + '.haplotypeCaller.g.vcf.gz')
