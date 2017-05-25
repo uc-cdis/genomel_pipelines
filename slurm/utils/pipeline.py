@@ -138,3 +138,22 @@ def targz_compress(logger, filename, dirname, cmd_prefix=['tar', '-cjvf']):
     exit_code = run_command(cmd, logger=logger)
 
     return exit_code
+
+def get_interval_region(reference_intervals, workdir, chunk, num_intervals):
+
+    exomes = []
+    with open(reference_intervals, 'r') as input_intervals:
+        for line in input_intervals:
+            exomes.append(line)      
+    total = len(exomes)
+    init  = chunk*(total/num_intervals)
+    end   = (chunk+1)*(total/num_intervals)
+    if end > total:
+        end = total 
+
+    chunked_intervals = os.path.join(workdir, reference_data["reference_intervals"].replace('.intervals', '.%d.intervals' % (chunk))) 
+    with open(chunked_intervals, 'wb') as output_intervals:    
+        for line in exomes[init:end]:
+            output_intervals.write(line) 
+
+    return chunked_intervals
