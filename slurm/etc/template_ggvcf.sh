@@ -19,7 +19,7 @@ s3_endpoint="XX_S3ENDPOINT_XX"
 thread_count="XX_THREAD_COUNT_XX"
 java_heap="XX_JAVAHEAP_XX"
 
-basedir=`sudo mktemp -d genomel.hc.XXXXXXXXXX -p /mnt/SCRATCH/`
+basedir=`sudo mktemp -d genomel.ggvcf.XXXXXXXXXX -p /mnt/SCRATCH/`
 refdir="XX_REFDIR_XX"
 s3dir="XX_S3DIR_XX"
 intervals="XX_INTERVALS_XX"
@@ -48,4 +48,4 @@ trap cleanup EXIT
 --thread_count $thread_count \
 --java_heap $java_heap \
 --chunk $chunk \
---intevals $intervals
+--intervals $intervals
