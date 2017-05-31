@@ -73,15 +73,15 @@ def run_pipeline(args, statusclass, metricsclass):
     datetime_start = str(datetime.datetime.now())
     
     # Create directory structure
-    jobdir = tempfile.mkdtemp(prefix="ggvcf_%s_" % str(output_id), dir=args.basedir)
+    jobdir = tempfile.mkdtemp(prefix="ggvcf_%s_" % str(args.output_id), dir=args.basedir)
     workdir = tempfile.mkdtemp(prefix="workdir_", dir=jobdir)
     inputdir = tempfile.mkdtemp(prefix="input_", dir=jobdir)
     resultdir = tempfile.mkdtemp(prefix="result_", dir=jobdir)
     refdir = args.refdir
     
     # Setup logger
-    log_file = os.path.join(resultdir, "%s.genomel.ggvcf.cwl.log" % str(output_id))
-    logger = utils.pipeline.setup_logging(logging.INFO, str(output_id), log_file)
+    log_file = os.path.join(resultdir, "%s.genomel.ggvcf.cwl.log" % str(args.output_id))
+    logger = utils.pipeline.setup_logging(logging.INFO, str(args.output_id), log_file)
     
     # Logging inputs
     logger.info("hostname: %s" % (hostname))
@@ -118,7 +118,7 @@ def run_pipeline(args, statusclass, metricsclass):
         file_array.append({"class": "File", "path": f})
     
     # Create input json
-    input_json_file = os.path.join(resultdir, '{0}.genomel.hc.inputs.json'.format(str(output_id)))
+    input_json_file = os.path.join(resultdir, '{0}.genomel.hc.inputs.json'.format(str(args.output_id)))
     input_json_data = {
       "java_opts": args.java_heap,    
       "input_vcf_path": file_array,
@@ -153,7 +153,7 @@ def run_pipeline(args, statusclass, metricsclass):
     # Upload output
     upload_start = time.time()
     logger.info("Uploading workflow output to %s" % (upload_bam_location))
-    upload_dir_location = os.path.join(args.s3dir, str(output_id))
+    upload_dir_location = os.path.join(args.s3dir, str(args.output_id))
     upload_gvcf_location = os.path.join(upload_dir_location, os.path.basename(output_gvcf))    
     upload_exit  = utils.s3.aws_s3_put(logger, upload_gvcf_location, output_gvcf, args.s3_profile, args.s3_endpoint, recursive=False)
 
@@ -176,12 +176,12 @@ def run_pipeline(args, statusclass, metricsclass):
     
     # Set status table
     logger.info("Updating status")
-    postgres.utils.add_pipeline_status(engine, output_id, [args.input_id], output_id,
+    postgres.utils.add_pipeline_status(engine, args.output_id, [args.input_id], args.output_id,
                                        status, loc, datetime_start, datetime_end,
                                        md5, file_size, hostname, cwl_version, docker_version, statusclass)
     # Set metrics table
     logger.info("Updating metrics")
-    postgres.utils.add_pipeline_metrics(engine, output_id, [args.input_id], download_time,
+    postgres.utils.add_pipeline_metrics(engine, args.output_id, [args.input_id], download_time,
                                         upload_time, args.thread_count, cwl_elapsed,
                                         time_metrics['system_time'],
                                         time_metrics['user_time'],
