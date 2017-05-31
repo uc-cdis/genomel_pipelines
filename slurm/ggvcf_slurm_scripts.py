@@ -35,7 +35,6 @@ if __name__ == "__main__":
         raise Exception("Cannot find config file: %s" %args.postgres_config)
 
     engine = postgres.utils.get_db_engine(args.postgres_config)
-    gvcfs  = postgres.status.get_case_from_status(engine, str(args.input_table), str(args.status_table), input_primary_column="id")
 
     # Generate a uuid
     output_id = uuid.uuid4()
@@ -57,11 +56,11 @@ if __name__ == "__main__":
             if "XX_OUTPUT_ID_XX" in line:
                 line = line.replace("XX_OUTPUT_ID_XX", output_id)                
             if "XX_PROJECT_XX" in line:
-                line = line.replace("XX_PROJECT_XX", str(gvcfs[0][1]))
+                line = line.replace("XX_PROJECT_XX", args.project)
             if "XX_S3PROFILE_XX" in line:
-                line = line.replace("XX_S3PROFILE_XX", str(gvcfs[0][4]))
+                line = line.replace("XX_S3PROFILE_XX", args.s3_profile)
             if "XX_S3ENDPOINT_XX" in line:
-                line = line.replace("XX_S3ENDPOINT_XX", str(gvcfs[0][5]))
+                line = line.replace("XX_S3ENDPOINT_XX", args.s3_endpoint)
             if "XX_REFDIR_XX" in line:
                 line = line.replace("XX_REFDIR_XX", args.refdir)
             if "XX_S3DIR_XX" in line:
