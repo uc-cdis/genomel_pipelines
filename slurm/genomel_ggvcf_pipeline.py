@@ -114,7 +114,7 @@ def run_pipeline(args, statusclass, metricsclass):
 
     # Get input files
     file_array = []
-    for f in glob.glob(args.input_path + '/*.g.vcf.gz')
+    for f in glob.glob(args.input_path + '/*.g.vcf.gz'):
         file_array.append({"class": "File", "path": f})
     
     # Create input json
