@@ -59,7 +59,7 @@ if __name__ == "__main__":
             if "XX_INPUTPATH_XX" in line:
                 line = line.replace("XX_INPUTPATH_XX", args.input_path)
             if "XX_OUTPUT_ID_XX" in line:
-                line = line.replace("XX_OUTPUT_ID_XX", output_id)                
+                line = line.replace("XX_OUTPUT_ID_XX", str(output_id))                
             if "XX_PROJECT_XX" in line:
                 line = line.replace("XX_PROJECT_XX", args.project)
             if "XX_S3PROFILE_XX" in line:
