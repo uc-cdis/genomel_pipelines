@@ -60,10 +60,70 @@ def add_metrics(engine, met):
     #create table if not present
     create_table(engine, met)
 
-    session.add(met)
+    session.add(met)    
     session.commit()
     session.expunge_all()
     session.close()
+
+def update_record_status(engine, table, met):
+    """ update provided status to database if record exist"""
+
+    Session = sessionmaker()
+    Session.configure(bind=engine)
+    session = Session()
+    meta = MetaData(engine)
+    state = Table(table.__tablename__, meta, autoload=True)
+    mapper(State, state)
+    record = session.query(State).filter(State.uuid == met.uuid).first()
+
+    if record:
+        record.output_id         = met.output_id
+        record.status            = met.status
+        record.s3_url            = met.s3_url
+        record.datetime_start    = met.datetime_start
+        record.datetime_end      = met.datetime_end
+        record.md5               = met.md5
+        record.file_size         = met.file_size
+        record.hostname          = met.hostname
+        record.cwl_version       = met.cwl_version
+        record.docker_version    = met.docker_version       
+
+        session.flush()
+        session.commit()
+        session.expunge_all()
+        session.close()
+
+    return record
+
+def update_record_metrics(engine, table, met):
+    """ update provided metrics to database if record exist"""
+
+    Session = sessionmaker()
+    Session.configure(bind=engine)
+    session = Session()
+    meta = MetaData(engine)
+    state = Table(table.__tablename__, meta, autoload=True)
+    mapper(State, state)
+    record = session.query(State).filter(State.uuid == met.uuid).first()
+
+    if record:
+        record.download_time                        = met.download_time
+        record.upload_time                          = met.upload_time
+        record.thread_count                         = met.thread_count
+        record.whole_workflow_elapsed               = met.whole_workflow_elapsed
+        record.main_cwl_systime                     = met.main_cwl_systime
+        record.main_cwl_usertime                    = met.main_cwl_usertime
+        record.main_cwl_walltime                    = met.main_cwl_walltime
+        record.main_cwl_percent_of_cpu              = met.main_cwl_percent_of_cpu
+        record.main_cwl_maximum_resident_set_size   = met.main_cwl_maximum_resident_set_size
+        record.status                               = met.status
+
+        session.flush()
+        session.commit()
+        session.expunge_all()
+        session.close()
+
+    return record
 
 def add_pipeline_status(engine, uuid, input_id, output_id,
                         status, s3_url, datetime_start, datetime_end,
@@ -81,8 +141,10 @@ def add_pipeline_status(engine, uuid, input_id, output_id,
                       hostname          = hostname,
                       cwl_version       = cwl_version,
                       docker_version    = docker_version)
-    create_table(engine, met)
-    add_metrics(engine, met)
+
+    record = update_record_status(engine, statusclass, met)
+    if not record:
+      add_metrics(engine, met)
 
 def add_pipeline_metrics(engine, uuid, input_id, download_time,
                          upload_time, thread_count, whole_workflow_elapsed, main_cwl_systime,
@@ -101,8 +163,10 @@ def add_pipeline_metrics(engine, uuid, input_id, download_time,
                        main_cwl_percent_of_cpu              = main_cwl_percent_of_cpu,
                        main_cwl_maximum_resident_set_size   = main_cwl_maximum_resident_set_size,
                        status                               = status)
-    create_table(engine, met)
-    add_metrics(engine, met)
+
+    record = update_record_status(engine, statusclass, met)
+    if not record:
+      add_metrics(engine, met)
 
 def set_download_error(exit_code, logger, engine,
                        uuid, input_id, output_id,
