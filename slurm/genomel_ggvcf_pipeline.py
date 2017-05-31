@@ -47,7 +47,7 @@ def get_args():
     required.add_argument("--refdir", required=True, help="Path to reference directory.")
     required.add_argument("--cwl", required=True, help="Path to Genomel Recalibration CWL workflow yaml.")
     required.add_argument("--s3dir", default="s3://", help="S3 dir for uploading output files.")
-    required.add_argument('--output_id', type=is_nat, default=30, help='UUID for the output')
+    required.add_argument('--output_id', required=True, help='UUID for the output')
 
 
     required.add_argument('--java_heap', required=True, help='Java heap memory limit.')
