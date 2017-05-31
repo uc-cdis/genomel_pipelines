@@ -1,6 +1,7 @@
 import postgres.status
 import postgres.utils
 import argparse
+import uuid
 import os
 
 def is_nat(x):
