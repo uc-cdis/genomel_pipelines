@@ -37,9 +37,12 @@ if __name__ == "__main__":
     engine = postgres.utils.get_db_engine(args.postgres_config)
     gvcfs  = postgres.status.get_case_from_status(engine, str(args.input_table), str(args.status_table), input_primary_column="id")
 
+    # Generate a uuid
+    output_id = uuid.uuid4()
+
     for chunk in range(0, args.batches):
 
-        slurm = open(os.path.join(args.outdir, "%s.ggvcf.%d.sh" %(gvcfs[0][1], chunk)), "w")
+        slurm = open(os.path.join(args.outdir, "%s.ggvcf.%d.sh" %("GENOMEL", chunk)), "w")
         template = os.path.join(os.path.dirname(os.path.realpath(__file__)), "etc/template_ggvcf.sh")
         temp = open(template, "r")
         for line in temp:
@@ -51,6 +54,8 @@ if __name__ == "__main__":
                 line = line.replace("XX_MEM_XX", str(args.mem))
             if "XX_INPUTPATH_XX" in line:
                 line = line.replace("XX_INPUTPATH_XX", args.input_path)
+            if "XX_OUTPUT_ID_XX" in line:
+                line = line.replace("XX_OUTPUT_ID_XX", output_id)                
             if "XX_PROJECT_XX" in line:
                 line = line.replace("XX_PROJECT_XX", str(gvcfs[0][1]))
             if "XX_S3PROFILE_XX" in line:
