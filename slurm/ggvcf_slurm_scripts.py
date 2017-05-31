@@ -26,6 +26,10 @@ if __name__ == "__main__":
     required.add_argument("--input_table", help="Postgres input table name", required=True)
     required.add_argument("--status_table", default="None", help="Postgres status table name")
     required.add_argument("--batches", type=int, default="None", help="Number of batches for interval regions")    
+    required.add_argument("--project", default="None", help="Project name")    
+    required.add_argument("--s3_profile", default="None", help="S3 profile")    
+    required.add_argument("--s3_endpoint", default="None", help="S3 endpoint")    
+ 
     args = parser.parse_args()
 
     if not os.path.isdir(args.outdir):
