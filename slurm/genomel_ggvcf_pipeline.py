@@ -109,7 +109,7 @@ def run_pipeline(args, statusclass, metricsclass):
     logger.info("docker_version: %s" % (docker_version))
     
     # Define output
-    output_gvcf = os.path.join(workdir, output_id, '.vcf.gz')
+    output_gvcf = os.path.join(workdir, args.output_id, '.vcf.gz')
 
     # Get input files
     file_array = []
