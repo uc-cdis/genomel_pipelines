@@ -20,7 +20,7 @@ if __name__ == "__main__":
     required.add_argument('--java_heap', help='Java heap mem', required=True)
     required.add_argument("--mem", help="Max mem for each node", required=True)
     required.add_argument("--refdir", help="Reference dir on node", required=True)
-    required.add_argument("--input_path", help="Pre-staged location for input files", required=True)    
+    required.add_argument("--input_list", help="File with list of pre-staged input files", required=True)    
     required.add_argument("--s3dir", help="S3bin for uploading output files", required=True)
     required.add_argument("--postgres_config", help="Path to postgres config file", required=True)
     required.add_argument("--outdir", default="./", help="Output directory for slurm scripts")
@@ -56,8 +56,8 @@ if __name__ == "__main__":
                 line = line.replace("XX_JAVAHEAP_XX", args.java_heap)                
             if "XX_MEM_XX" in line:
                 line = line.replace("XX_MEM_XX", str(args.mem))
-            if "XX_INPUTPATH_XX" in line:
-                line = line.replace("XX_INPUTPATH_XX", args.input_path)
+            if "XX_INPUTLIST_XX" in line:
+                line = line.replace("XX_INPUTLIST_XX", args.input_list)
             if "XX_OUTPUT_ID_XX" in line:
                 line = line.replace("XX_OUTPUT_ID_XX", str(output_id))                
             if "XX_PROJECT_XX" in line:

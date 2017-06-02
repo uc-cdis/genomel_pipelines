@@ -10,7 +10,7 @@ function cleanup (){
     sudo rm -rf $basedir;
 }
 
-input_path="XX_INPUTPATH_XX"
+input_list="XX_INPUTLIST_XX"
 output_id="XX_OUTPUT_ID_XX"
 project="XX_PROJECT_XX"
 s3_profile="XX_S3PROFILE_XX"
@@ -36,7 +36,7 @@ sudo chown ubuntu:ubuntu -R genomel_cwl
 trap cleanup EXIT
 
 /home/ubuntu/.virtualenvs/p2/bin/python genomel_cwl/slurm/genomel_ggvcf_pipeline.py \
---input_path $input_path \
+--input_list $input_list \
 --output_id $output_id \
 --project $project \
 --s3_profile $s3_profile \
