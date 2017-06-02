@@ -15,12 +15,14 @@ requirements:
 inputs:
   - id: java_opts
     type: string
-    default: "-Xmx26g"
+    default: "26g"
     doc: |
       "JVM arguments should be a quoted, space separated list (e.g. -Xmx8g -Xmx16g -Xms128m -Xmx512m)"
     inputBinding:
       position: 1
       shellQuote: false
+      prefix: "-Xmx"
+      separate: false  
   - id: input_vcf_path
     type:
       type: array
