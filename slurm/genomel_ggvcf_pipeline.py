@@ -100,7 +100,7 @@ def run_pipeline(args, statusclass, metricsclass):
     postgres_config       = os.path.join(refdir, reference_data["pg_config"])
 
     # Calculating region according to chunk
-    chunked_intervals = utils.get_interval_region(reference_intervals, workdir, args.chunk, args.intervals)
+    chunked_intervals = utils.pipeline.get_interval_region(reference_intervals, workdir, args.chunk, args.intervals)
 
     # Logging pipeline info
     cwl_version    = reference_data["cwl_version"]
