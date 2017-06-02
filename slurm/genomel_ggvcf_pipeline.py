@@ -116,7 +116,7 @@ def run_pipeline(args, statusclass, metricsclass):
     input_id = []
     with open(args.input_list, 'r') as filelist:
         for line in filelist:
-            columns = line.split('\t')
+            columns = line.strip('\n').split('\t')
             input_id.append(columns[0])
             file_array.append({"class": "File", "path": columns[1]})
     
