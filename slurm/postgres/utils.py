@@ -1,7 +1,8 @@
 from sqlalchemy import create_engine
 from sqlalchemy.engine.url import URL
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, mapper
+from sqlalchemy import MetaData, Table
 from sqlalchemy.engine.reflection import Inspector
 from sqlalchemy import exc
 from contextlib import contextmanager
