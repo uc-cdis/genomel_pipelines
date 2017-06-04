@@ -66,6 +66,12 @@ def add_metrics(engine, met):
     session.expunge_all()
     session.close()
 
+class State(object):
+    pass
+
+class Files(object):
+    pass
+
 def update_record_status(engine, table, met):
     """ update provided status to database if record exist"""
 
