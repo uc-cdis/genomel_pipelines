@@ -91,6 +91,7 @@ def run_pipeline(args, statusclass, metricsclass):
     
     # Setup start point
     cwl_start = time.time()
+    download_time = cwl_start - cwl_start
     
     # Getting refs
     logger.info("getting resources")
@@ -100,7 +101,9 @@ def run_pipeline(args, statusclass, metricsclass):
     postgres_config       = os.path.join(refdir, reference_data["pg_config"])
 
     # Calculating region according to chunk
+    logger.info("creating interval file")
     chunked_intervals = utils.pipeline.get_interval_region(reference_intervals, workdir, args.chunk, args.intervals)
+    logger.info("interval file: %s" % chunked_intervals)
 
     # Logging pipeline info
     cwl_version    = reference_data["cwl_version"]
@@ -121,7 +124,7 @@ def run_pipeline(args, statusclass, metricsclass):
             file_array.append({"class": "File", "path": columns[1]})
     
     # Create input json
-    input_json_file = os.path.join(resultdir, '{0}.genomel.hc.inputs.json'.format(str(args.output_id)))
+    input_json_file = os.path.join(resultdir, '{0}.genomel.ggvcf.inputs.json'.format(str(args.output_id)))
     input_json_data = {
       "java_opts": args.java_heap,    
       "input_vcf_path": file_array,
@@ -208,9 +211,9 @@ if __name__ == '__main__':
     
     # Setup postgres classes for tables
     class CallerStatus(postgres.mixins.StatusTypeMixin, postgres.utils.Base):
-        __tablename__ = project + '_hc_cwl_status'
+        __tablename__ = project + '_ggvcf_cwl_status'
     class CallerMetrics(postgres.mixins.MetricsTypeMixin, postgres.utils.Base):
-        __tablename__ = project + '_hc_cwl_metrics'
+        __tablename__ = project + '_ggvcf_cwl_metrics'
     
     # Run pipeline
     run_pipeline(args, CallerStatus, CallerMetrics)
