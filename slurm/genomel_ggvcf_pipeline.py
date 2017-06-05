@@ -199,7 +199,7 @@ def run_pipeline(args, statusclass, metricsclass):
     # Remove job directories, upload final log file
     logger.info("Uploading main log file")
     utils.s3.aws_s3_put(logger, upload_dir_location + '/' + os.path.basename(log_file), log_file, args.s3_profile, args.s3_endpoint, recursive=False)
-    utils.pipeline.remove_dir(jobdir)
+    # utils.pipeline.remove_dir(jobdir)
 
 
 
