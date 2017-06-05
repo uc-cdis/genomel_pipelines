@@ -175,7 +175,7 @@ def run_pipeline(args, statusclass, metricsclass):
     
     # Get status info
     logger.info("Get status/metrics info")
-    status, loc = postgres.status.get_status(upload_exit, cwl_exit, output_gvcf, upload_dir_location, logger)
+    status, loc = postgres.status.get_status(upload_exit, cwl_exit, upload_gvcf_location, upload_dir_location, logger)
     
     # Get metrics info
     time_metrics = utils.pipeline.get_time_metrics(log_file)
