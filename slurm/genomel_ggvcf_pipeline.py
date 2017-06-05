@@ -25,9 +25,10 @@ def is_nat(x):
     '''
     Checks that a value is a natural number.
     '''
-    if int(x) > 0:
+    if int(x) >=
+     0:
         return int(x)
-    raise argparse.ArgumentTypeError('%s must be positive, non-zero' % x)
+    raise argparse.ArgumentTypeError('%s must be positive' % x)
 
 def get_args():
     '''
