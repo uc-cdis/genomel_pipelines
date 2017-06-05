@@ -66,7 +66,7 @@ def add_metrics(engine, met):
 class State(object):
     pass
 
-class Files(object):
+class Metrics(object):
     pass
 
 def update_record_status(engine, table, met):
@@ -106,9 +106,9 @@ def update_record_metrics(engine, table, met):
     Session.configure(bind=engine)
     session = Session()
     meta = MetaData(engine)
-    state = Table(table.__tablename__, meta, autoload=True)
-    mapper(State, state)
-    record = session.query(State).filter(State.uuid == met.uuid).first()
+    metrics = Table(table.__tablename__, meta, autoload=True)
+    mapper(Metrics, metrics)
+    record = session.query(Metrics).filter(Metrics.uuid == met.uuid).first()
 
     if record:
         record.download_time                        = met.download_time
@@ -174,7 +174,7 @@ def add_pipeline_metrics(engine, uuid, input_id, download_time,
     #create table if not present
     create_table(engine, met)
 
-    record = update_record_status(engine, metricsclass, met)
+    record = update_record_metrics(engine, metricsclass, met)
     if not record:
       add_metrics(engine, met)
 
