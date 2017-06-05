@@ -41,10 +41,10 @@ if __name__ == "__main__":
 
     engine = postgres.utils.get_db_engine(args.postgres_config)
 
-    # Generate a uuid
-    output_id = uuid.uuid4()
-
     for chunk in range(0, args.batches):
+
+        # Generate a uuid
+        output_id = uuid.uuid4()
 
         slurm = open(os.path.join(args.outdir, "%s.ggvcf.%d.sh" %("GENOMEL", chunk)), "w")
         template = os.path.join(os.path.dirname(os.path.realpath(__file__)), "etc/template_ggvcf.sh")
