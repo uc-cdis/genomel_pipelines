@@ -58,9 +58,6 @@ def add_metrics(engine, met):
     Session.configure(bind=engine)
     session = Session()
 
-    #create table if not present
-    create_table(engine, met)
-
     session.add(met)    
     session.commit()
     session.expunge_all()
@@ -149,6 +146,9 @@ def add_pipeline_status(engine, uuid, input_id, output_id,
                       cwl_version       = cwl_version,
                       docker_version    = docker_version)
 
+    #create table if not present
+    create_table(engine, met)    
+
     record = update_record_status(engine, statusclass, met)
     if not record:
       add_metrics(engine, met)
@@ -170,6 +170,9 @@ def add_pipeline_metrics(engine, uuid, input_id, download_time,
                        main_cwl_percent_of_cpu              = main_cwl_percent_of_cpu,
                        main_cwl_maximum_resident_set_size   = main_cwl_maximum_resident_set_size,
                        status                               = status)
+
+    #create table if not present
+    create_table(engine, met)
 
     record = update_record_status(engine, statusclass, met)
     if not record:
