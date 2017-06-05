@@ -174,7 +174,7 @@ def add_pipeline_metrics(engine, uuid, input_id, download_time,
     #create table if not present
     create_table(engine, met)
 
-    record = update_record_status(engine, statusclass, met)
+    record = update_record_status(engine, metricsclass, met)
     if not record:
       add_metrics(engine, met)
 
