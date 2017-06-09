@@ -97,7 +97,7 @@ def run_pipeline(args, statusclass, metricsclass):
     logger.info("getting resources")
     reference_data        = utils.pipeline.load_reference_json('etc/reference.json')
     reference_fasta_path  = os.path.join(refdir, reference_data["reference_fasta"])   
-    reference_intervals   = os.path.join(refdir, reference_data["reference_intervals"])     
+    reference_intervals   = os.path.join(refdir, reference_data["reference_bed"])     
     postgres_config       = os.path.join(refdir, reference_data["pg_config"])
 
     # Calculating region according to chunk
