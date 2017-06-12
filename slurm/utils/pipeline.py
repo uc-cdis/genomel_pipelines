@@ -152,9 +152,9 @@ def get_interval_region(reference_intervals, workdir, chunk, num_intervals):
         end = total 
 
     if '.intervals' in reference_intervals:
-        chunked_intervals = os.path.join(workdir, basename(reference_intervals).replace('.intervals', '.%d.intervals' % (chunk))) 
+        chunked_intervals = os.path.join(workdir, os.path.basename(reference_intervals).replace('.intervals', '.%d.intervals' % (chunk))) 
     elif '.bed' in reference_intervals:
-        chunked_intervals = os.path.join(workdir, basename(reference_intervals).replace('.bed', '.%d.bed' % (chunk))) 
+        chunked_intervals = os.path.join(workdir, os.path.basename(reference_intervals).replace('.bed', '.%d.bed' % (chunk))) 
 
     with open(chunked_intervals, 'wb') as output_intervals:    
         for line in exomes[init:end]:
