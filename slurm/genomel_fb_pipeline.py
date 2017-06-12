@@ -112,7 +112,7 @@ def run_pipeline(args, statusclass, metricsclass):
     logger.info("docker_version: %s" % (docker_version))
     
     # Define output
-    output_gvcf = os.path.join(workdir, args.output_id + '.vcf.gz')
+    output_vcf = os.path.join(workdir, args.output_id + '.vcf.gz')
 
     # Get input files
     file_array = []
@@ -129,7 +129,7 @@ def run_pipeline(args, statusclass, metricsclass):
       "input_bam_path": file_array,
       "reference_fasta_path": {"class": "File", "path": reference_fasta_path},
       "interval_file_path": {"class": "File", "path": chunked_intervals}, 
-      "output_vcf_name": os.path.basename(output_gvcf)      
+      "output_vcf_name": os.path.basename(output_vcf)      
     }
 
     with open(input_json_file, 'wt') as o:
@@ -152,15 +152,15 @@ def run_pipeline(args, statusclass, metricsclass):
         cwl_failure = True
 
     # Get md5 and file size
-    md5 = utils.pipeline.get_md5(output_gvcf)
-    file_size = utils.pipeline.get_file_size(output_gvcf)
+    md5 = utils.pipeline.get_md5(output_vcf)
+    file_size = utils.pipeline.get_file_size(output_vcf)
     
     # Upload output
     upload_start = time.time()
     upload_dir_location = os.path.join(args.s3dir, str(args.output_id))
-    upload_gvcf_location = os.path.join(upload_dir_location, os.path.basename(output_gvcf))    
+    upload_gvcf_location = os.path.join(upload_dir_location, os.path.basename(output_vcf))    
     logger.info("Uploading workflow output to %s" % (upload_gvcf_location))
-    upload_exit  = utils.s3.aws_s3_put(logger, upload_gvcf_location, output_gvcf, args.s3_profile, args.s3_endpoint, recursive=False)
+    upload_exit  = utils.s3.aws_s3_put(logger, upload_gvcf_location, output_vcf, args.s3_profile, args.s3_endpoint, recursive=False)
 
     # Establish connection with database
     engine = postgres.utils.get_db_engine(postgres_config)
