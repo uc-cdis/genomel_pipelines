@@ -127,7 +127,7 @@ def run_pipeline(args, statusclass, metricsclass):
     input_json_file = os.path.join(resultdir, '{0}.genomel.ug.inputs.json'.format(str(args.output_id)))
     input_json_data = {
       "java_opts": args.java_heap,    
-      "input_bam_path": {"class": "File", "path": input_bam},
+      "input_bam_path": file_array,
       "reference_fasta_path": {"class": "File", "path": reference_fasta_path},
       "interval_file_path": {"class": "File", "path": chunked_intervals}, 
       "output_gvcf_name": os.path.basename(output_vcf)      
