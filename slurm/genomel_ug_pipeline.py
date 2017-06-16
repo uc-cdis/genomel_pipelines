@@ -130,7 +130,7 @@ def run_pipeline(args, statusclass, metricsclass):
       "input_bam_path": file_array,
       "reference_fasta_path": {"class": "File", "path": reference_fasta_path},
       "interval_file_path": {"class": "File", "path": chunked_intervals}, 
-      "output_gvcf_name": os.path.basename(output_vcf)      
+      "output_vcf_name": os.path.basename(output_vcf)      
     }
 
     with open(input_json_file, 'wt') as o:
