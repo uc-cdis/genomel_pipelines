@@ -60,13 +60,13 @@ if __name__ == "__main__":
             if "XX_MD5_R2_XX" in line:
                 line = line.replace("XX_MD5_R2_XX", str(reads[r][4]))                
             if "XX_S3URL_R1_XX" in line:
-                line = line.replace("XX_S3URL_R1_XX", str(cases[case][5]))
+                line = line.replace("XX_S3URL_R1_XX", str(reads[r][5]))
             if "XX_S3URL_R2_XX" in line:
-                line = line.replace("XX_S3URL_R2_XX", str(cases[case][6]))                
+                line = line.replace("XX_S3URL_R2_XX", str(reads[r][6]))                
             if "XX_S3PROFILE_XX" in line:
-                line = line.replace("XX_S3PROFILE_XX", str(cases[case][7]))
+                line = line.replace("XX_S3PROFILE_XX", str(reads[r][7]))
             if "XX_S3ENDPOINT_XX" in line:
-                line = line.replace("XX_S3ENDPOINT_XX", str(cases[case][8]))
+                line = line.replace("XX_S3ENDPOINT_XX", str(reads[r][8]))
             if "XX_REFDIR_XX" in line:
                 line = line.replace("XX_REFDIR_XX", args.refdir)
             if "XX_S3DIR_XX" in line:
