@@ -4,6 +4,9 @@ cwlVersion: v1.0
 
 class: Workflow
 
+requirements:
+  - class: SubworkflowFeatureRequirement
+
 inputs:
   - id: workflow_nthreads
     type: int
@@ -86,7 +89,7 @@ outputs:
 steps:
 
   - id: alignment_workflow
-    run: ../tools/primary_analysis/alignment-workflow.cwl.yaml
+    run: alignment-workflow.cwl.yaml
     in:
        - id: trimmomatic_java_opts
          source: trimmomatic_java_opts
@@ -149,7 +152,7 @@ steps:
 
 
   - id: mark_duplicates_workflow
-    run: ../tools/primary_analysis/duplicate-marking-workflow.cwl.yaml
+    run: duplicate-marking-workflow.cwl.yaml
     in:
        - id: input_bam_path
          source: alignment_workflow/output_novoaligned_bam_file
