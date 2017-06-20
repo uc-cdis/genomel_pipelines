@@ -56,7 +56,7 @@ def get_reads(engine, input_table, input_primary_column="id"):
                     row.s3_url_r2,                        
                     row.s3_profile,
                     row.s3_endpoint]
-            count += 1
+        count += 1
    
     return s
 
