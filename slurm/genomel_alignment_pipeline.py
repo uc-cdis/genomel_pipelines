@@ -135,6 +135,8 @@ def run_pipeline(args, statusclass, metricsclass):
         if not (download_exit_code != 0 or str(utils.pipeline.get_md5(input_files[r])) != md5sums[r]):
             logger.info("Download input %s successfully in %s, and md5 matches. Input bam is %s." % (reads[r], download_time, input_files[r]))
         else:
+            download_end_time = time.time()
+            download_time = download_end_time - cwl_start
             cwl_elapsed = download_time
             datetime_end = str(datetime.datetime.now())
             engine = postgres.utils.get_db_engine(postgres_config)
