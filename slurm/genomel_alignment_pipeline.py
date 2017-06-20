@@ -127,7 +127,7 @@ def run_pipeline(args, statusclass, metricsclass):
     input_files = []
     for r in range(0,2):
         input_url = s3_urls[r]
-        input_files[r] = os.path.join(inputdir, os.path.basename(input_url))
+        input_files.append(os.path.join(inputdir, os.path.basename(input_url)))
         download_exit_code = utils.s3.aws_s3_get(logger, input_url, inputdir,
                                              project_s3_profile, project_s3_endpoint_url, recursive=False)
 
