@@ -54,6 +54,7 @@ def get_args():
     required.add_argument("--s3dir", default="s3://", help="S3 dir for uploading output files.")
     required.add_argument('--output_id', required=True, help='UUID for the output')
     required.add_argument('--thread_count', type=is_nat, default=8, help='Threads count.')
+    required.add_argument('--java_heap', type=True, help='Jave heap memory')
 
     # Tools parameters
     required.add_argument('--end_mode', default="PE", help="End mode in alignment")
@@ -161,6 +162,7 @@ def run_pipeline(args, statusclass, metricsclass):
     input_json_data = {
         "workflow_nthreads": args.thread_count,
         "workflow_end_mode": args.end_mode,
+        "trimmomatic_java_opts": args.java_heap,
         "trimmomatic_phred": args.phred,
         "trimmomatic_input_read1_fastq_file": {"class": "File", "path": input_files[0]},
         "trimmomatic_input_read2_fastq_file": {"class": "File", "path": input_files[1]},
