@@ -51,6 +51,6 @@ trap cleanup EXIT
 --refdir $refdir \
 --cwl $basedir/genomel_cwl/workflows/alignment_mark_duplicates.cwl.yaml \
 --s3dir $s3dir \
---thread_count $thread_count
---java_heap $java_heap
+--thread_count $thread_count \
+--java_heap $java_heap \
 --output_id $output_id
