@@ -35,6 +35,32 @@ class State(object):
 class Files(object):
     pass
 
+def get_reads(engine, input_table, input_primary_column="id"):
+    Session = sessionmaker()
+    Session.configure(bind=engine)
+    session = Session()
+    meta = MetaData(engine)
+    #read the input table
+    data = Table (input_table, meta, Column(input_primary_column, String, primary_key=True), autoload=True)
+    mapper(Files, data)
+    count = 0
+    s = dict()
+    cases = session.query(Files).all()
+    for row in cases:
+        s[count] = [row.input_id_r1,
+                    row.input_id_r2,
+                    row.project,
+                    row.md5_r1,
+                    row.md5_r2,                        
+                    row.s3_url_r1,
+                    row.s3_url_r2,                        
+                    row.s3_profile,
+                    row.s3_endpoint]
+            count += 1
+   
+    return s
+
+
 def get_case(engine, input_table, status_table, input_primary_column="id"):
     Session = sessionmaker()
     Session.configure(bind=engine)
