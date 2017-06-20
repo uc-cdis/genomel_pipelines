@@ -121,9 +121,9 @@ def run_pipeline(args, statusclass, metricsclass):
     # Download input reads
     project_s3_profile = args.s3_profile
     project_s3_endpoint_url = args.s3_endpoint
-    reads   = [input_r1_id, input_r2_id]
-    s3_urls = [s3_url_r1, s3_url_r2]
-    md5sums = [r1_md5, r2_md5]
+    reads   = [args.input_r1_id, args.input_r2_id]
+    s3_urls = [args.s3_url_r1, args.s3_url_r2]
+    md5sums = [args.r1_md5, args.r2_md5]
     input_files = []
     for r in range(0,2):
         input_url = s3_urls[r]
@@ -234,12 +234,12 @@ def run_pipeline(args, statusclass, metricsclass):
     
     # Set status table
     logger.info("Updating status")
-    postgres.utils.add_pipeline_status(engine, args.output_id, [args.input_id], args.output_id,
+    postgres.utils.add_pipeline_status(engine, args.output_id, [args.input_r1_id,args.input_r2_id], args.output_id,
                                        status, loc, datetime_start, datetime_end,
                                        md5, file_size, hostname, cwl_version, docker_version, statusclass)
     # Set metrics table
     logger.info("Updating metrics")
-    postgres.utils.add_pipeline_metrics(engine, args.output_id, [args.input_id], download_time,
+    postgres.utils.add_pipeline_metrics(engine, args.output_id, [args.input_r1_id,args.input_r2_id], download_time,
                                         upload_time, args.thread_count, cwl_elapsed,
                                         time_metrics['system_time'],
                                         time_metrics['user_time'],
