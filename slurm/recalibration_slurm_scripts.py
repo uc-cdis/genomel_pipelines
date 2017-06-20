@@ -1,5 +1,6 @@
 import postgres.status
 import postgres.utils
+import uuid
 import argparse
 import os
 
