@@ -16,7 +16,7 @@ inputs:
     default: "PE"
   - id: trimmomatic_java_opts
     type: string
-    default: -Xmx4g
+    default: 4g
   - id: trimmomatic_phred
     type: string
   - id: trimmomatic_input_read1_fastq_file

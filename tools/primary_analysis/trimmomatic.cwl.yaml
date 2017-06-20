@@ -14,10 +14,11 @@ requirements:
 inputs:
   - id: java_opts
     type: string
-    default: -Xmx4g
+    default: 4g
     doc: JVM arguments should be a quoted, space separated list (e.g. -Xms128m or -Xmx512m)
     inputBinding:
       position: 1
+      prefix: "-Xmx"
 
   - id: end_mode
     type: string
