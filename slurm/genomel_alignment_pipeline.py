@@ -84,15 +84,15 @@ def run_pipeline(args, statusclass, metricsclass):
     datetime_start = str(datetime.datetime.now())
     
     # Create directory structure
-    jobdir = tempfile.mkdtemp(prefix="alignment_%s_" % str(output_id), dir=args.basedir)
+    jobdir = tempfile.mkdtemp(prefix="alignment_%s_" % str(args.output_id), dir=args.basedir)
     workdir = tempfile.mkdtemp(prefix="workdir_", dir=jobdir)
     inputdir = tempfile.mkdtemp(prefix="input_", dir=jobdir)
     resultdir = tempfile.mkdtemp(prefix="result_", dir=jobdir)
     refdir = args.refdir
     
     # Setup logger
-    log_file = os.path.join(resultdir, "%s.alignment.cwl.log" % str(output_id))
-    logger = utils.pipeline.setup_logging(logging.INFO, str(output_id), log_file)
+    log_file = os.path.join(resultdir, "%s.alignment.cwl.log" % str(args.output_id))
+    logger = utils.pipeline.setup_logging(logging.INFO, str(args.output_id), log_file)
     
     # Logging inputs
     logger.info("hostname: %s" % (hostname))
@@ -139,7 +139,7 @@ def run_pipeline(args, statusclass, metricsclass):
             datetime_end = str(datetime.datetime.now())
             engine = postgres.utils.get_db_engine(postgres_config)
             postgres.utils.set_download_error(download_exit_code, logger, engine,
-                                              output_id, [args.input_files[r]], output_id,
+                                              args.output_id, [args.input_files[r]], args.output_id,
                                               datetime_start, datetime_end,
                                               hostname, cwl_version, docker_version,
                                               download_time, cwl_elapsed, statusclass, metricsclass)
@@ -158,7 +158,7 @@ def run_pipeline(args, statusclass, metricsclass):
  
 
     # Create input json
-    input_json_file = os.path.join(resultdir, '{0}.genomel.alignment.inputs.json'.format(str(output_id)))
+    input_json_file = os.path.join(resultdir, '{0}.genomel.alignment.inputs.json'.format(str(args.output_id)))
     input_json_data = {
         "workflow_nthreads": args.thread_count,
         "workflow_end_mode": args.end_mode,
@@ -207,7 +207,7 @@ def run_pipeline(args, statusclass, metricsclass):
     # Upload output
     upload_start = time.time()
     os.chdir(jobdir)
-    upload_dir_location = os.path.join(args.s3dir, str(output_id))
+    upload_dir_location = os.path.join(args.s3dir, str(args.output_id))
     upload_bam_location = os.path.join(upload_dir_location, os.path.basename(output_bam))    
     upload_bai_location = os.path.join(upload_dir_location, os.path.basename(output_bai))
     logger.info("Uploading workflow output to %s" % (upload_bam_location))
@@ -234,12 +234,12 @@ def run_pipeline(args, statusclass, metricsclass):
     
     # Set status table
     logger.info("Updating status")
-    postgres.utils.add_pipeline_status(engine, output_id, [args.input_id], output_id,
+    postgres.utils.add_pipeline_status(engine, args.output_id, [args.input_id], args.output_id,
                                        status, loc, datetime_start, datetime_end,
                                        md5, file_size, hostname, cwl_version, docker_version, statusclass)
     # Set metrics table
     logger.info("Updating metrics")
-    postgres.utils.add_pipeline_metrics(engine, output_id, [args.input_id], download_time,
+    postgres.utils.add_pipeline_metrics(engine, args.output_id, [args.input_id], download_time,
                                         upload_time, args.thread_count, cwl_elapsed,
                                         time_metrics['system_time'],
                                         time_metrics['user_time'],
