@@ -54,7 +54,7 @@ def get_args():
     required.add_argument("--s3dir", default="s3://", help="S3 dir for uploading output files.")
     required.add_argument('--output_id', required=True, help='UUID for the output')
     required.add_argument('--thread_count', type=is_nat, default=8, help='Threads count.')
-    required.add_argument('--java_heap', type=True, help='Jave heap memory')
+    required.add_argument('--java_heap', required=True, help='Jave heap memory')
 
     # Tools parameters
     required.add_argument('--end_mode', default="PE", help="End mode in alignment")
