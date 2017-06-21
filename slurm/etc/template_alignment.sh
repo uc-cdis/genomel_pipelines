@@ -23,7 +23,7 @@ s3_endpoint="XX_S3ENDPOINT_XX"
 thread_count="XX_THREAD_COUNT_XX"
 output_id="XX_OUTPUT_ID_XX"
 
-basedir=`sudo mktemp -d genomel.algn.XXXXXXXXXX -p /mnt/SCRATCH/`
+basedir=`sudo mktemp -d genomel.align.XXXXXXXXXX -p /mnt/SCRATCH/`
 refdir="XX_REFDIR_XX"
 s3dir="XX_S3DIR_XX"
 
