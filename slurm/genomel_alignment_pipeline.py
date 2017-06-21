@@ -153,9 +153,7 @@ def run_pipeline(args, statusclass, metricsclass):
     # Define output file
     output_name = os.path.basename(input_files[0]).replace('_R1_001.fastq.gz', '')   
     sample_id = output_name.split('_')[0]
-    output_bam = os.path.join(workdir, output_name + '.bam')
-    output_bai = output_bam + '.bai'
- 
+
 
     # Create input json
     input_json_file = os.path.join(resultdir, '{0}.genomel.alignment.inputs.json'.format(str(args.output_id)))
@@ -177,7 +175,7 @@ def run_pipeline(args, statusclass, metricsclass):
         "novoalign_length": args.length,
         "novoalign_output_format": args.output_format,
         "novoalign_readgroup": "@RG\tCN:CGR\tPL:ILLUMINA\tID:%s_HQ_paired\tSM:%s\tPU:%s_HQ_paired\tLB:N/A" % (output_name, sample_id, output_name),
-        "novoalign_output_name": os.path.basename(output_bam),
+        "novoalign_output_name": output_name + '.bam',
         "reference_seq": { "class": "File", "path": reference_fasta_path}
     }
 
@@ -200,6 +198,10 @@ def run_pipeline(args, statusclass, metricsclass):
     if cwl_exit:
         cwl_failure = True
 
+    # Define outputs
+    output_bam = os.path.join(workdir, output_name + '.srt.LENIENT.duplicate_removed.paired.nophix.SILENT.duplicate_removed.bam')
+    output_bai = output_bam.replace('.bam', '.bai')
+
     # Get md5 and file size
     md5 = utils.pipeline.get_md5(output_bam)
     file_size = utils.pipeline.get_file_size(output_bam)
@@ -208,8 +210,8 @@ def run_pipeline(args, statusclass, metricsclass):
     upload_start = time.time()
     os.chdir(jobdir)
     upload_dir_location = os.path.join(args.s3dir, str(args.output_id))
-    upload_bam_location = os.path.join(upload_dir_location, os.path.basename(output_bam))    
-    upload_bai_location = os.path.join(upload_dir_location, os.path.basename(output_bai))
+    upload_bam_location = os.path.join(upload_dir_location, os.path.basename(output_name + '_HQ_paired.bam'))    
+    upload_bai_location = os.path.join(upload_dir_location, os.path.basename(output_name + '_HQ_paired.bam.bai'))
     logger.info("Uploading workflow output to %s" % (upload_bam_location))
     upload_exit  = utils.s3.aws_s3_put(logger, upload_bam_location, output_bam, args.s3_profile, args.s3_endpoint, recursive=False)
     upload_exit  = utils.s3.aws_s3_put(logger, upload_bai_location, output_bai, args.s3_profile, args.s3_endpoint, recursive=False)
