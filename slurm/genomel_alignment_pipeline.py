@@ -177,7 +177,7 @@ def run_pipeline(args, statusclass, metricsclass):
         "novoalign_length": args.length,
         "novoalign_output_format": args.output_format,
         "novoalign_readgroup": "@RG\tCN:CGR\tPL:ILLUMINA\tID:%s_HQ_paired\tSM:%s\tPU:%s_HQ_paired\tLB:N/A" % (output_name, sample_id, output_name),
-        "novoalign_output_name": basename(output_bam),
+        "novoalign_output_name": os.path.basename(output_bam),
         "reference_seq": { "class": "File", "path": reference_fasta_path}
     }
 
