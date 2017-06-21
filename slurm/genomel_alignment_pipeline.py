@@ -146,8 +146,8 @@ def run_pipeline(args, statusclass, metricsclass):
                                               datetime_start, datetime_end,
                                               hostname, cwl_version, docker_version,
                                               download_time, cwl_elapsed, statusclass, metricsclass)
-        # Exit
-        sys.exit(download_exit_code)
+            # Exit
+            sys.exit(download_exit_code)
 
 
     # Define output file
