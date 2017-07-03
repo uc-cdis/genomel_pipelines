@@ -116,7 +116,11 @@ def get_case_from_status(engine, input_table, status_table, input_primary_column
     s = dict()    
     cases = session.query(State).all()
     for row in cases:
-        completion = session.query(Files).filter(Files.input_id == row.input_id[0]).first()
+        if input_id in Files:
+            completion = session.query(Files).filter(Files.input_id == row.input_id[0]).first()
+        else:
+            completion = session.query(Files).filter(Files.input_id_r1 == row.input_id[0]).first()
+
         if row.status == 'COMPLETED':
             s[count] = [row.output_id,
                         completion.project,
