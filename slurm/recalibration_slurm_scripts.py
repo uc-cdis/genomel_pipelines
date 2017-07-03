@@ -22,6 +22,7 @@ if __name__ == "__main__":
     required.add_argument("--s3dir", help="S3bin for uploading output files", required=True)
     required.add_argument("--postgres_config", help="Path to postgres config file", required=True)
     required.add_argument("--outdir", default="./", help="Output directory for slurm scripts")
+    required.add_argument("--cases_from_status", action='store_true', default=False, help="Get cases from input table or status")    
     required.add_argument("--input_table", help="Postgres input table name", required=True)
     required.add_argument("--status_table", default="None", help="Postgres status table name")
     args = parser.parse_args()
@@ -33,7 +34,11 @@ if __name__ == "__main__":
         raise Exception("Cannot find config file: %s" %args.postgres_config)
 
     engine = postgres.utils.get_db_engine(args.postgres_config)
-    cases = postgres.status.get_case(engine, str(args.input_table), str(args.status_table), input_primary_column="id")
+    if args.cases_from_status:
+        cases = postgres.status.get_case_from_status(engine, str(args.input_table), str(args.status_table), input_primary_column="id")
+    else:   
+        cases = postgres.status.get_case(engine, str(args.input_table), str(args.status_table), input_primary_column="id")
+
 
     for case in cases:
         slurm = open(os.path.join(args.outdir, "%s.%s.sh" %(cases[case][1], cases[case][0])), "w")
