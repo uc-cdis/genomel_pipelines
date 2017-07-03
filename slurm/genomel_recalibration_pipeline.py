@@ -48,6 +48,7 @@ def get_args():
     required.add_argument("--refdir", required=True, help="Path to reference directory.")
     required.add_argument("--cwl", required=True, help="Path to Genomel Recalibration CWL workflow yaml.")
     required.add_argument("--s3dir", default="s3://", help="S3 dir for uploading output files.")
+    required.add_argument('--output_id', required=True, help='UUID for the output')
 
     required.add_argument('--thread_count', type=is_nat, default=8, help='Threads count.')
 
@@ -61,8 +62,8 @@ def run_pipeline(args, statusclass, metricsclass):
     if not os.path.isdir(args.basedir):
         raise Exception("Could not find path to base directory: %s" %args.basedir)
     
-    # Generate a uuid
-    output_id = uuid.uuid4()
+    # Get output uuid
+    output_id = args.output_id
     # Get hostname
     hostname = socket.gethostname()
     # Get datetime start

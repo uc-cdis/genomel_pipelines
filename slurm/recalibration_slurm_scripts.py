@@ -39,8 +39,11 @@ if __name__ == "__main__":
     else:   
         cases = postgres.status.get_case(engine, str(args.input_table), str(args.status_table), input_primary_column="id")
 
-
     for case in cases:
+
+        # Generate a uuid
+        output_id = uuid.uuid4()
+
         slurm = open(os.path.join(args.outdir, "%s.%s.sh" %(cases[case][1], cases[case][0])), "w")
         template = os.path.join(os.path.dirname(os.path.realpath(__file__)),
         "etc/template_recalibration.sh")
@@ -50,6 +53,8 @@ if __name__ == "__main__":
                 line = line.replace("XX_THREAD_COUNT_XX", str(args.thread_count))
             if "XX_MEM_XX" in line:
                 line = line.replace("XX_MEM_XX", str(args.mem))
+            if "XX_OUTPUT_ID_XX" in line:
+                line = line.replace("XX_OUTPUT_ID_XX", str(output_id))                   
             if "XX_INPUTID_XX" in line:
                 line = line.replace("XX_INPUTID_XX", str(cases[case][0]))
             if "XX_PROJECT_XX" in line:

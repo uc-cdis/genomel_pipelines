@@ -12,6 +12,7 @@ function cleanup (){
 
 input_id="XX_INPUTID_XX"
 project="XX_PROJECT_XX"
+output_id="XX_OUTPUT_ID_XX"
 md5="XX_MD5_XX"
 s3_url="XX_S3URL_XX"
 s3_profile="XX_S3PROFILE_XX"
@@ -34,6 +35,7 @@ trap cleanup EXIT
 
 /home/ubuntu/.virtualenvs/p2/bin/python genomel_cwl/slurm/genomel_recalibration_pipeline.py \
 --input_id $input_id \
+--output_id $output_id \
 --project $project \
 --md5 $md5 \
 --s3_url $s3_url \
