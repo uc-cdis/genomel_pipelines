@@ -5,11 +5,27 @@ from sqlalchemy import Column, Integer, String, Float
 from sqlalchemy.dialects.postgresql import ARRAY
 from contextlib import contextmanager
 
+class InputTypeMixin(object):
+    """ Gather information about processing status """
+    id               = Column(Integer, primary_key=True)
+    input_id         = Column(String)
+    project          = Column(String)
+    md5              = Column(String)
+    file_size        = Column(String)
+    s3_url           = Column(String)
+    s3_profile       = Column(String)    
+    s3_endpoint      = Column(String)
+
+    def __repr__(self):
+        return "<InputTypeMixin(uuid='%s', status='%s' , s3_url='%s')>" %(self.uuid, self.status, self.s3_url)
+
+
 class StatusTypeMixin(object):
     """ Gather information about processing status """
     id               = Column(Integer, primary_key=True)
     uuid             = Column(String)
     input_id         = Column(ARRAY(String))
+    input_table      = Column(String)  
     output_id        = Column(String)
     status           = Column(String)
     s3_url           = Column(String)
@@ -29,6 +45,7 @@ class MetricsTypeMixin(object):
     id                                 = Column(Integer, primary_key=True)
     uuid                               = Column(String)
     input_id                           = Column(ARRAY(String))
+    input_table                        = Column(String)      
     download_time                      = Column(String)
     upload_time                        = Column(String)
     thread_count                       = Column(String)

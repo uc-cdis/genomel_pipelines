@@ -35,8 +35,10 @@ if __name__ == "__main__":
 
     engine = postgres.utils.get_db_engine(args.postgres_config)
     if args.cases_from_status:
+        input_table = str(args.status_table)
         cases = postgres.status.get_case_from_status(engine, str(args.input_table), str(args.status_table), input_primary_column="id")
     else:   
+        input_table = str(args.input_table)
         cases = postgres.status.get_case(engine, str(args.input_table), str(args.status_table), input_primary_column="id")
 
     for case in cases:
@@ -71,6 +73,9 @@ if __name__ == "__main__":
                 line = line.replace("XX_REFDIR_XX", args.refdir)
             if "XX_S3DIR_XX" in line:
                 line = line.replace("XX_S3DIR_XX", args.s3dir)
+            if "XX_INPUT_TABLE_XX" in line:
+                line = line.replace("XX_INPUT_TABLE_XX", input_table)
+
 
             slurm.write(line)
         slurm.close()

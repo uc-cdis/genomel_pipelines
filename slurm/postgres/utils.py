@@ -129,12 +129,13 @@ def update_record_metrics(engine, table, met):
 
     return record
 
-def add_pipeline_status(engine, uuid, input_id, output_id,
+def add_pipeline_status(engine, uuid, input_id, input_table, output_id,
                         status, s3_url, datetime_start, datetime_end,
                         md5, file_size, hostname, cwl_version, docker_version, statusclass):
     """ add provided status to database """
     met = statusclass(uuid              = uuid,
                       input_id          = input_id,
+                      input_table       = input_table,
                       output_id         = output_id,
                       status            = status,
                       s3_url            = s3_url,
@@ -153,13 +154,14 @@ def add_pipeline_status(engine, uuid, input_id, output_id,
     if not record:
       add_metrics(engine, met)
 
-def add_pipeline_metrics(engine, uuid, input_id, download_time,
+def add_pipeline_metrics(engine, uuid, input_id, input_table, download_time,
                          upload_time, thread_count, whole_workflow_elapsed, main_cwl_systime,
                          main_cwl_usertime, main_cwl_walltime, main_cwl_percent_of_cpu,
                          main_cwl_maximum_resident_set_size, status, metricsclass):
     """ add provided metrics to database """
     met = metricsclass(uuid                                 = uuid,
                        input_id                             = input_id,
+                       input_table                          = input_table,
                        download_time                        = download_time,
                        upload_time                          = upload_time,
                        thread_count                         = thread_count,
@@ -179,7 +181,7 @@ def add_pipeline_metrics(engine, uuid, input_id, download_time,
       add_metrics(engine, met)
 
 def set_download_error(exit_code, logger, engine,
-                       uuid, input_id, output_id,
+                       uuid, input_id, input_table, output_id,
                        datetime_start, datetime_end,
                        hostname, cwl_version, docker_version,
                        download_time, whole_workflow_elapsed, statusclass, metricsclass):
@@ -191,18 +193,18 @@ def set_download_error(exit_code, logger, engine,
     if exit_code != 0:
         logger.info("Input file download error")
         status = "DOWNLOAD_FAILURE"
-        add_pipeline_status(engine, uuid, input_id, output_id,
+        add_pipeline_status(engine, uuid, input_id, input_table, output_id,
                             status, s3_url, datetime_start, datetime_end,
                             md5, file_size, hostname, cwl_version, docker_version, statusclass)
-        add_pipeline_metrics(engine, uuid, input_id, download_time, float(0),
+        add_pipeline_metrics(engine, uuid, input_id, input_table, download_time, float(0),
                              thread_count, whole_workflow_elapsed, float(0), float(0), float(0),
                              float(0), float(0), status, metricsclass)
     else:
         logger.info("Md5 unmatch error")
         status = "UNMATCHED_MD5"
-        add_pipeline_status(engine, uuid, input_id, output_id,
+        add_pipeline_status(engine, uuid, input_id, input_table, output_id,
                             status, s3_url, datetime_start, datetime_end,
                             md5, file_size, hostname, cwl_version, docker_version, statusclass)
-        add_pipeline_metrics(engine, uuid, input_id, download_time, float(0),
+        add_pipeline_metrics(engine, uuid, input_id, input_table, download_time, float(0),
                              thread_count, whole_workflow_elapsed, float(0), float(0), float(0),
                              float(0), float(0), status, metricsclass)
