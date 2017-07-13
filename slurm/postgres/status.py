@@ -97,17 +97,13 @@ def get_case(engine, input_table, status_table, input_primary_column="id"):
                 count += 1
     return s
 
-def get_case_from_status(engine, input_table, status_table, input_primary_column="id"):
+def get_case_from_status(engine, status_table, input_primary_column="id", input_table = None):
     Session = sessionmaker()
     Session.configure(bind=engine)
     session = Session()
     meta = MetaData(engine)
-
-    #read the input table
-    data = Table (input_table, meta, Column(input_primary_column, String, primary_key=True), autoload=True)
-    mapper(Files, data)
     
-    #read the input table
+    #read the status table
     state = Table(status_table, meta, autoload=True)  
     mapper(State, state)
     
@@ -116,18 +112,11 @@ def get_case_from_status(engine, input_table, status_table, input_primary_column
     s = dict()    
     cases = session.query(State).all()
     for row in cases:
-        if hasattr(Files, 'input_id'):
-            completion = session.query(Files).filter(Files.input_id == row.input_id[0]).first()
-        else:
-            completion = session.query(Files).filter(Files.input_id_r1 == row.input_id[0]).first()
-
         if row.status == 'COMPLETED':
-            s[count] = [row.output_id,
-                        completion.project,
-                        row.md5,
-                        row.s3_url,
-                        completion.s3_profile,
-                        completion.s3_endpoint]        
-            count += 1
+            if not input_table or (input_table and row.input_table == input_table):
+                s[count] = [row.output_id,
+                            row.md5,
+                            row.s3_url]        
+                count += 1
 
     return s
