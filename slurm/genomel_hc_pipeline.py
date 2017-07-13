@@ -172,10 +172,21 @@ def run_pipeline(args, statusclass, metricsclass):
     
     # Upload output
     upload_start = time.time()
+    output_tbi = output_gvcf + '.tbi'  
     upload_dir_location = os.path.join(args.s3dir, str(output_id))
-    upload_gvcf_location = os.path.join(upload_dir_location, os.path.basename(output_gvcf))    
+    upload_gvcf_location = os.path.join(upload_dir_location, os.path.basename(output_gvcf))  
+    upload_tbi_location = os.path.join(upload_dir_location, os.path.basename(output_tbi))     
     logger.info("Uploading workflow output to %s" % (upload_gvcf_location))
     upload_exit  = utils.s3.aws_s3_put(logger, upload_gvcf_location, output_gvcf, args.s3_profile, args.s3_endpoint, recursive=False)
+    upload_exit  = utils.s3.aws_s3_put(logger, upload_tbi_location, output_tbi, args.s3_profile, args.s3_endpoint, recursive=False)
+
+
+    upload_bam_location = os.path.join(upload_dir_location, os.path.basename(input_bam)).replace('.bam', '.left_aligned.realigned.bam')    
+    upload_bai_location = os.path.join(upload_dir_location, os.path.basename(input_bam)).replace('.bam', '.left_aligned.realigned.bai') 
+    logger.info("Uploading workflow output to %s" % (upload_bam_location))
+    upload_exit  = utils.s3.aws_s3_put(logger, upload_bam_location, output_bam, args.s3_profile, args.s3_endpoint, recursive=False)
+    upload_exit  = utils.s3.aws_s3_put(logger, upload_bai_location, output_bai, args.s3_profile, args.s3_endpoint, recursive=False)
+    
 
     # Establish connection with database
     engine = postgres.utils.get_db_engine(postgres_config)
