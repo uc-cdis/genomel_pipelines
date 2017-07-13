@@ -39,6 +39,7 @@ def get_args():
     # Metadata from input table
     required.add_argument("--input_id", default=None, help="INPUT_ID, internal production id.")
     required.add_argument("--project", default=None, help="PROJECT, PDC project name.")
+    required.add_argument('--input_table', required=True, help='Table from where input_id was retrieved')    
     required.add_argument("--md5", default=None, help="MD5, md5 of input file.")
     required.add_argument("--s3_url", default=None, help="S3_URL, s3 url of the input.")
     required.add_argument("--s3_profile", required=True, help="S3 profile name for project tenant.")
@@ -195,12 +196,12 @@ def run_pipeline(args, statusclass, metricsclass):
     
     # Set status table
     logger.info("Updating status")
-    postgres.utils.add_pipeline_status(engine, output_id, [args.input_id], output_id,
+    postgres.utils.add_pipeline_status(engine, output_id, input_table, [args.input_id], output_id,
                                        status, loc, datetime_start, datetime_end,
                                        md5, file_size, hostname, cwl_version, docker_version, statusclass)
     # Set metrics table
     logger.info("Updating metrics")
-    postgres.utils.add_pipeline_metrics(engine, output_id, [args.input_id], download_time,
+    postgres.utils.add_pipeline_metrics(engine, output_id, input_table, [args.input_id], download_time,
                                         upload_time, args.thread_count, cwl_elapsed,
                                         time_metrics['system_time'],
                                         time_metrics['user_time'],

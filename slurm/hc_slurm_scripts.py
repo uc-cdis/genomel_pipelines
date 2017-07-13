@@ -25,9 +25,9 @@ if __name__ == "__main__":
     required.add_argument("--outdir", default="./", help="Output directory for slurm scripts")
     required.add_argument("--status_table", default="None", help="Postgres status table name")
     required.add_argument("--input_table", default="None", help="Original input table")
-    required.add_argument("--project", default="None", help="Project name")    
-    required.add_argument("--s3_profile", default="None", help="S3 profile")    
-    required.add_argument("--s3_endpoint", default="None", help="S3 endpoint")  
+    required.add_argument("--project", help="Project name")    
+    required.add_argument("--s3_profile", help="S3 profile")    
+    required.add_argument("--s3_endpoint", help="S3 endpoint")  
 
 
     args = parser.parse_args()
@@ -75,6 +75,9 @@ if __name__ == "__main__":
                 line = line.replace("XX_REFDIR_XX", args.refdir)
             if "XX_S3DIR_XX" in line:
                 line = line.replace("XX_S3DIR_XX", args.s3dir)
+            if "XX_INPUT_TABLE_XX" in line:
+                line = line.replace("XX_INPUT_TABLE_XX", args.status_table)
+
 
             slurm.write(line)
         slurm.close()

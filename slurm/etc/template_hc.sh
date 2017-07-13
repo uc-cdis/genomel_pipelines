@@ -17,6 +17,7 @@ md5="XX_MD5_XX"
 s3_url="XX_S3URL_XX"
 s3_profile="XX_S3PROFILE_XX"
 s3_endpoint="XX_S3ENDPOINT_XX"
+input_table="XX_INPUT_TABLE_XX"
 
 thread_count="XX_THREAD_COUNT_XX"
 java_heap="XX_JAVAHEAP_XX"
@@ -39,6 +40,7 @@ trap cleanup EXIT
 --input_id $input_id \
 --output_id $output_id \
 --project $project \
+--input_table $input_table \
 --md5 $md5 \
 --s3_url $s3_url \
 --s3_profile $s3_profile \
