@@ -90,7 +90,8 @@ def update_record_status(engine, table, met):
         record.file_size         = met.file_size
         record.hostname          = met.hostname
         record.cwl_version       = met.cwl_version
-        record.docker_version    = met.docker_version       
+        record.docker_version    = met.docker_version 
+        record.input_table       = met.input_table      
 
         session.flush()
         session.commit()
@@ -121,6 +122,7 @@ def update_record_metrics(engine, table, met):
         record.main_cwl_percent_of_cpu              = met.main_cwl_percent_of_cpu
         record.main_cwl_maximum_resident_set_size   = met.main_cwl_maximum_resident_set_size
         record.status                               = met.status
+        record.input_table                          = met.input_table
 
         session.flush()
         session.commit()
