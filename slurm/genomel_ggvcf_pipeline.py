@@ -40,6 +40,7 @@ def get_args():
     # Metadata from input table
     required.add_argument("--input_list", default=None, help="Path to pre-staged files")
     required.add_argument("--project", default=None, help="PROJECT, PDC project name.")
+    required.add_argument("--input_table", default=None, help="Input table name")     
     required.add_argument("--s3_profile", required=True, help="S3 profile name for project tenant.")
     required.add_argument("--s3_endpoint", required=True, help="S3 endpoint url for project tenant.")
     # Parameters for pipeline
@@ -182,12 +183,12 @@ def run_pipeline(args, statusclass, metricsclass):
     
     # Set status table
     logger.info("Updating status")
-    postgres.utils.add_pipeline_status(engine, args.output_id, input_id, args.output_id,
+    postgres.utils.add_pipeline_status(engine, args.output_id, input_id, args.input_table, args.output_id,
                                        status, loc, datetime_start, datetime_end,
                                        md5, file_size, hostname, cwl_version, docker_version, statusclass)
     # Set metrics table
     logger.info("Updating metrics")
-    postgres.utils.add_pipeline_metrics(engine, args.output_id, input_id, download_time,
+    postgres.utils.add_pipeline_metrics(engine, args.output_id, input_id, args.input_table, download_time,
                                         upload_time, args.thread_count, cwl_elapsed,
                                         time_metrics['system_time'],
                                         time_metrics['user_time'],

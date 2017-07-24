@@ -15,6 +15,7 @@ output_id="XX_OUTPUT_ID_XX"
 project="XX_PROJECT_XX"
 s3_profile="XX_S3PROFILE_XX"
 s3_endpoint="XX_S3ENDPOINT_XX"
+input_table="XX_INPUT_TABLE_XX"
 
 thread_count="XX_THREAD_COUNT_XX"
 java_heap="XX_JAVAHEAP_XX"
@@ -39,6 +40,7 @@ trap cleanup EXIT
 --input_list $input_list \
 --output_id $output_id \
 --project $project \
+--input_table $input_table \
 --s3_profile $s3_profile \
 --s3_endpoint $s3_endpoint \
 --basedir $basedir \
