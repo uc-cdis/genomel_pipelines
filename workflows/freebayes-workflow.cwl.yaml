@@ -57,7 +57,7 @@ steps:
        - id: input_vcf_path
          source: freeBayes/output_vcf
        - id: reference_fasta_path
-         source: reference_seq
+         source: reference_fasta_path
        - id: output_vcf_name
          source: output_vcf_name
          valueFrom: $(self + '.vcf.gz')
