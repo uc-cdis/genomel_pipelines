@@ -19,7 +19,7 @@ inputs:
     doc: JVM arguments should be a quoted, space separated list. (e.g. -Xmx8g -Xmx16g -Xms128m -Xmx512m)
     inputBinding:
       position: 1
-      shellQuote: false
+      shellQuote: false 
 
   - id: input_bam_path
     type: File
