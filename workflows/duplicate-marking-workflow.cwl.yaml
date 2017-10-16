@@ -62,7 +62,7 @@ outputs:
 steps:
 
   - id: samtools-sort
-    run: ../tools/primary_analysis/samtoolsSort.cwl.yaml
+    run: ../tools/sorting/samtoolsSort.cwl.yaml
     in:
        - id: input_bam_path
          source: input_bam_path
