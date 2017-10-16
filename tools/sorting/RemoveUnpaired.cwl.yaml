@@ -18,6 +18,8 @@ inputs:
     type: File
     inputBinding:
       position: 3
+    secondaryFile:
+      - '^.bai'
 
 outputs:
   - id: paired_output_bam
