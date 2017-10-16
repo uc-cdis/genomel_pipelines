@@ -89,6 +89,7 @@ inputs:
 outputs:
 - id: output_file
   type: File
+  doc: Novoalign BAM output file.
   outputBinding:
     glob: $(inputs.output_name)
 
