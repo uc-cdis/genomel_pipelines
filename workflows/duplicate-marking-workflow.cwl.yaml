@@ -31,33 +31,15 @@ inputs:
 
 outputs:
 
-  - id: output_sorted_bam_file
-    type: File
-    outputSource: samtools-sort/sorted_output_bam
-  - id: output_lldr_bam_file
-    type: File
-    outputSource: lldr-markduplicates-tool/duplicate_removed_output_bam
-  - id: output_lldr_bai_file
-    type: File
-    outputSource: lldr-markduplicates-tool/duplicate_removed_output_bai
-  - id: output_lldr_metrics_file
-    type: File
-    outputSource: lldr-markduplicates-tool/duplicate_removed_output_metrics
-  - id: paired_output_file
-    type: File
-    outputSource: remove-unpaired/paired_output_bam
-  - id: nophix_output_file
-    type: File
-    outputSource: remove-phix/fixed_output_bam
   - id: duplicate_removed_output_bam
     type: File
     outputSource: sldr-markduplicates-tool/duplicate_removed_output_bam
+    secondaryFile:
+      - '^.bai'
+
   - id: duplicate_removed_output_metrics
     type: File
     outputSource: sldr-markduplicates-tool/duplicate_removed_output_metrics
-  - id: duplicate_removed_output_bai
-    type: File
-    outputSource: sldr-markduplicates-tool/duplicate_removed_output_bai
 
 steps:
 
@@ -84,7 +66,6 @@ steps:
     out:
        - id: duplicate_removed_output_bam
        - id: duplicate_removed_output_metrics
-       - id: duplicate_removed_output_bai
 
   - id: remove-unpaired
     run: ../tools/sorting/RemoveUnpaired.cwl.yaml
@@ -117,4 +98,3 @@ steps:
     out:
        - id: duplicate_removed_output_bam
        - id: duplicate_removed_output_metrics
-       - id: duplicate_removed_output_bai

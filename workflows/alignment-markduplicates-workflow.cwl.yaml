@@ -190,13 +190,12 @@ outputs:
 
   - id: duplicate_removed_output_bam
     type: File
+    secondaryFile:
+      - '^.bai'
     outputSource: mark_duplicates_workflow/duplicate_removed_output_bam
   - id: duplicate_removed_output_metrics
     type: File
     outputSource: mark_duplicates_workflow/duplicate_removed_output_metrics
-  - id: duplicate_removed_output_bai
-    type: File
-    outputSource: mark_duplicates_workflow/duplicate_removed_output_bai
 
 steps:
 
@@ -271,14 +270,7 @@ steps:
          source: reference_seq
 
     out:
-       - id: output_sorted_bam_file
-       - id: output_lldr_bam_file
-       - id: output_lldr_bai_file
-       - id: output_lldr_metrics_file
-       - id: paired_output_file
-       - id: nophix_output_file
        - id: duplicate_removed_output_bam
        - id: duplicate_removed_output_metrics
-       - id: duplicate_removed_output_bai
 
 

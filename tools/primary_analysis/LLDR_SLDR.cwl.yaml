@@ -43,14 +43,12 @@ outputs:
     type: File
     outputBinding:
       glob: $(inputs.input_bam_path.nameroot + '.' + inputs.validation_stringency + '.duplicate_removed.bam')
+    secondaryFile:
+      - '^.bai'
   - id: duplicate_removed_output_metrics
     type: File
     outputBinding:
       glob: $(inputs.input_bam_path.nameroot + '.' + inputs.validation_stringency + '.duplicate_removed.metrics.txt')
-  - id: duplicate_removed_output_bai
-    type: File
-    outputBinding:
-      glob: $(inputs.input_bam_path.nameroot + '.' + inputs.validation_stringency + '.duplicate_removed.bai')
 
 baseCommand: java
 arguments:

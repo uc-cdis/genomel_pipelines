@@ -330,23 +330,3 @@ steps:
          source: s3_endpoint
     out:
        - id: output
-
-  - id: put_bai_s3
-    run: ../tools/s3/aws_s3_put.cwl
-    in:
-       - id: aws_config
-         source: aws_config
-       - id: aws_shared_credentials
-         source: aws_shared_credentials
-       - id: input
-         source: alignment_workflow/output_novoalign_bam_file
-         valueFrom: $(self.secondaryFiles[0])
-       - id: s3uri
-         source: s3dir
-         valueFrom: $(self + inputs.uuid + "/")
-       - id: s3_profile
-         source: s3_profile
-       - id: s3_endpoint
-         source: s3_endpoint
-    out:
-       - id: output
