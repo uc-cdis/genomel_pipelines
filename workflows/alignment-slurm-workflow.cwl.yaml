@@ -7,6 +7,10 @@ doc: |
 
 class: Workflow
 
+requirements:
+  - class: SubworkflowFeatureRequirement
+  - class: InlineJavascriptRequirement
+
 inputs:
 
 ###GENERAL_WORKFLOW_INPUTS###
@@ -206,12 +210,12 @@ outputs:
   - id: output_log_file
     type: ['null', File]
     doc: Trimmomatic log file
-    outputSource: trimmomatic_tool/output_log_file
+    outputSource: alignment_workflow/output_log_file
 
   - id: output_novoalign_bam_file
     type: File
     doc: Novoalign output BAM file.
-    outputSource: novoalign_tool/output_file
+    outputSource: alignment_workflow/output_novoalign_bam_file
 
 steps:
 
@@ -311,7 +315,7 @@ steps:
 
   ###UPDATE_TABLES_SUBWORKFLOW###
 
-  ###S3_DOWNLOAD_SUBWORKFLOW###
+  ###S3_UPLOAD_WORKFLOW###
   - id: put_bam_s3
     run: ../tools/s3/aws_s3_put.cwl
     in:

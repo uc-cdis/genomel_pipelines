@@ -183,14 +183,14 @@ inputs:
 ###MARK_DUPLICATES_INPUTS###
   - id: md_java_opts
     type: string
-    default: 16g
+    default: "-Xmx16g"
     doc: JVM arguments for GATK MarkDuplicates (e.g. 512m or 4g). 16g by default
 
 outputs:
 
   - id: duplicate_removed_output_bam
     type: File
-    secondaryFile:
+    secondaryFiles:
       - '^.bai'
     outputSource: mark_duplicates_workflow/duplicate_removed_output_bam
   - id: duplicate_removed_output_metrics

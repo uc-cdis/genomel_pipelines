@@ -34,7 +34,7 @@ outputs:
   - id: duplicate_removed_output_bam
     type: File
     outputSource: sldr-markduplicates-tool/duplicate_removed_output_bam
-    secondaryFile:
+    secondaryFiles:
       - '^.bai'
 
   - id: duplicate_removed_output_metrics
