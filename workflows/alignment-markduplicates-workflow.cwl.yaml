@@ -257,7 +257,7 @@ steps:
 
     out:
        - id: output_log_file
-       - id: output_novoaligned_bam_file
+       - id: output_novoalign_bam_file
 
 ###MARK_DUPLICATES_SUBWORKFLOW###
   - id: mark_duplicates_workflow
@@ -266,7 +266,7 @@ steps:
        - id: markduplicate_java_opts
          source: md_java_opts
        - id: input_bam_path
-         source: alignment_workflow/output_novoaligned_bam_file
+         source: alignment_workflow/output_novoalign_bam_file
        - id: reference_seq
          source: reference_seq
 

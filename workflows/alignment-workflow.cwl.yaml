@@ -182,7 +182,7 @@ outputs:
   - id: output_log_file
     type: ['null', File]
     outputSource: trimmomatic_tool/output_log_file
-  - id: output_novoaligned_bam_file
+  - id: output_novoalign_bam_file
     type: File
     outputSource: novoalign_tool/output_file
 
