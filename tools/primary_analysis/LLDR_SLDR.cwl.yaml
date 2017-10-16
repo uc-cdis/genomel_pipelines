@@ -43,7 +43,7 @@ outputs:
     type: File
     outputBinding:
       glob: $(inputs.input_bam_path.nameroot + '.' + inputs.validation_stringency + '.duplicate_removed.bam')
-    secondaryFile:
+    secondaryFiles:
       - '^.bai'
   - id: duplicate_removed_output_metrics
     type: File
