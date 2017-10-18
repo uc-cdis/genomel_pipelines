@@ -357,7 +357,7 @@ steps:
     out:
        - id: output
 
-  - id: put_bam_s3
+  - id: put_bai_s3
     run: ../tools/s3/aws_s3_put.cwl
     in:
        - id: aws_config
