@@ -125,10 +125,11 @@ def run_pipeline(args, statusclass, metricsclass):
         datetime_end = str(datetime.datetime.now())
         engine = postgres.utils.get_db_engine(postgres_config)
         postgres.utils.set_download_error(download_exit_code, logger, engine,
-                                          output_id, [args.input_id], output_id,
+                                          output_id, [args.input_id], args.input_table, output_id,
                                           datetime_start, datetime_end,
                                           hostname, cwl_version, docker_version,
                                           download_time, cwl_elapsed, statusclass, metricsclass)
+
         # Exit
         sys.exit(download_exit_code)
 
