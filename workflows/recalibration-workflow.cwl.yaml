@@ -38,6 +38,15 @@ outputs:
 
 steps:
 
+  - id: SamtoolsIndex
+    run: ../tools/sorting/samtoolsIndex.cwl.yaml
+    in:
+       - id: input_bam_path
+         source: input_bam_path
+
+    out:
+       - id: output_bai
+
   - id: LeftAlignIndels
     run: ../tools/secondary_analysis/LeftAlignIndels.cwl.yaml
     in:
