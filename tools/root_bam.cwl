@@ -28,6 +28,6 @@ outputs:
     outputBinding:
       glob: $(inputs.bam.basename)
     secondaryFiles:
-      - ^.bai
+      - .bai
 
 baseCommand: "true"
