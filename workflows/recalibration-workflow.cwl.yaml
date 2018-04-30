@@ -47,19 +47,28 @@ steps:
     out:
        - id: output_bai
 
+  - id: root_bam
+    run: ../tools/root_bam.cwl
+    in:
+       - id: bam
+         source: input_bam_path
+       - id: bam_index
+         source: SamtoolsIndex/output_bai
+    out:
+       - id: output
+
   - id: LeftAlignIndels
     run: ../tools/secondary_analysis/LeftAlignIndels.cwl.yaml
     in:
        - id: java_opts
          source: java_opts
        - id: input_bam_path
-         source: input_bam_path
+         source: root_bam/output
        - id: reference_fasta_path
          source: reference_seq
 
     out:
        - id: left_aligned_bam
-
 
   - id: RealignerTargetCreator
     run: ../tools/secondary_analysis/RealignerTargetCreator.cwl.yaml
