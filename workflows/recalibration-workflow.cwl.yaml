@@ -48,7 +48,7 @@ steps:
        - id: output_bai
 
   - id: root_bam
-    run: ../tools/root_bam.cwl
+    run: ../tools/sorting/root_bam.cwl
     in:
        - id: bam
          source: input_bam_path
