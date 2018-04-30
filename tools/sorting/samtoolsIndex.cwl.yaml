@@ -23,9 +23,9 @@ outputs:
   - id: output_bai
     type: File
     outputBinding:
-      glob: $(inputs.input_bam_path.nameroot + '.bai')
+      glob: $(inputs.input_bam_path + '.bai')
 
 baseCommand: ['/home/ubuntu/tools/samtools/samtools', 'index']
 arguments:
-  - valueFrom: $(inputs.input_bam_path.nameroot + '.bai')
+  - valueFrom: $(inputs.input_bam_path + '.bai')
     position: 3
