@@ -113,8 +113,9 @@ def run_pipeline(args, statusclass, metricsclass):
     project_s3_endpoint_url = args.s3_endpoint
     download_exit_code = utils.s3.aws_s3_get(logger, input_url, inputdir,
                                              project_s3_profile, project_s3_endpoint_url, recursive=False)
-    download_exit_code = utils.s3.aws_s3_get(logger, input_index_url, inputdir,
-                                             project_s3_profile, project_s3_endpoint_url, recursive=False)
+    # Commented provisionally. Getting index in the workflow
+    #download_exit_code = utils.s3.aws_s3_get(logger, input_index_url, inputdir,
+    #                                         project_s3_profile, project_s3_endpoint_url, recursive=False)
 
     download_end_time = time.time()
     download_time = download_end_time - cwl_start
