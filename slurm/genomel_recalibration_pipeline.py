@@ -125,7 +125,7 @@ def run_pipeline(args, statusclass, metricsclass):
         cwl_elapsed = download_time
         datetime_end = str(datetime.datetime.now())
         engine = postgres.utils.get_db_engine(postgres_config)
-        postgres.utils.set_download_error(download_exit_code, logger, engine, args.project
+        postgres.utils.set_download_error(download_exit_code, logger, engine, args.project,
                                           output_id, [args.input_id], args.input_table, output_id,
                                           datetime_start, datetime_end,
                                           hostname, cwl_version, docker_version,
