@@ -24,6 +24,7 @@ class StatusTypeMixin(object):
     """ Gather information about processing status """
     id               = Column(Integer, primary_key=True)
     uuid             = Column(String)
+    project          = Column(String)
     input_id         = Column(ARRAY(String))
     input_table      = Column(String)  
     output_id        = Column(String)
