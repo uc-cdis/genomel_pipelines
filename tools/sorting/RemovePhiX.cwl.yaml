@@ -17,8 +17,6 @@ inputs:
     type: File
     inputBinding:
       position: 2
-    secondaryFiles:
-      - '^.bai'
 
 outputs:
 
