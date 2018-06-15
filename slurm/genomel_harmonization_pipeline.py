@@ -164,8 +164,7 @@ def run_pipeline(args, harmo_statusclass, harmo_metricsclass):
         "novoalign_dbname": {"class": "File", "path": reference_database},
         "novoalign_format": args.format,
         "novoalign_length": args.length,
-        "novoalign_output_format": args.output_format,
-        "novoalign_output_name": output_name + '.bam'
+        "novoalign_output_format": args.output_format
     }
 
     with open(input_json_file, 'wt') as o:
