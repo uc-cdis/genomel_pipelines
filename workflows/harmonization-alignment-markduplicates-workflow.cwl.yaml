@@ -173,9 +173,6 @@ inputs:
   - id: novoalign_output_format
     type: string
     doc: Novoalign parameter. Specifies the report format. (e.g. SAM)
-  - id: novoalign_output_name
-    type: string
-    doc: Novoalign parameter. Name of the output file (BAM/SAM file).
 
 ###MARK_DUPLICATES_INPUTS###
   - id: md_java_opts
@@ -295,7 +292,8 @@ steps:
        - id: reference_seq
          source: reference_seq
        - id: novoalign_output_name
-         source: novoalign_output_name
+         source: bam2fastq/output_fastq1
+         valueFrom: $(self.basename.replace('_1.fa.gz', '.bam'))
 
     out:
        - id: output_log_file
