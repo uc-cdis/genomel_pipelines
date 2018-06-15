@@ -36,6 +36,7 @@ def get_args():
     parser = argparse.ArgumentParser(description="Genomel Recalibration Pipeline")
     # Args
     required = parser.add_argument_group("Required input parameters")
+    
     # Metadata from input table
     required.add_argument("--input_id", default=None, help="INPUT_ID, internal production id.")
     required.add_argument("--project", default=None, help="PROJECT, project name.")
@@ -44,6 +45,7 @@ def get_args():
     required.add_argument("--s3_url", default=None, help="S3_URL, s3 url of the input.")
     required.add_argument("--s3_profile", required=True, help="S3 profile name for project tenant.")
     required.add_argument("--s3_endpoint", required=True, help="S3 endpoint url for project tenant.")
+    
     # Parameters for pipeline
     required.add_argument("--basedir", default="/mnt/SCRATCH/", help="Base directory for computations.")
     required.add_argument("--refdir", required=True, help="Path to reference directory.")
@@ -51,8 +53,20 @@ def get_args():
     required.add_argument("--bam_s3dir", default="s3://", help="S3 dir for uploading bam output files.")
     required.add_argument("--fastq_s3dir", default="s3://", help="S3 dir for uploading fastq output files.")
     required.add_argument('--output_id', required=True, help='UUID for the output')
-
     required.add_argument('--thread_count', type=is_nat, default=8, help='Threads count.')
+    required.add_argument('--java_heap', default="20g", help='Jave heap memory')
+
+    # Tools parameters
+    required.add_argument('--end_mode', default="PE", help="End mode in alignment")
+    required.add_argument('--phred', default="33", help="Trimmomatic phred")
+    required.add_argument('--illuminaclip', default="2:30:12", help="Trimmomatic Illumina clip lengths")
+    required.add_argument('--slidingwindow', default="4:15", help="Trimmomatic sliding windows length")    
+    required.add_argument('--leading', default=12, help="Trimmomatic leading")
+    required.add_argument('--trailing', default=12, help="Trimmomatic trailing")
+    required.add_argument('--minlen', default=36, help="Trimmomatic minimal acceptable length")
+    required.add_argument('--format', default="ILM1.8", help="Alignment technology format")    
+    required.add_argument('--length', default="300,125", help="Alignment read length")
+    required.add_argument('--output_format', default="SAM", help="Alignment output format")
 
     return parser.parse_args()
 
