@@ -173,9 +173,6 @@ inputs:
   - id: novoalign_output_format
     type: string
     doc: Novoalign parameter. Specifies the report format. (e.g. SAM)
-  - id: novoalign_readgroup
-    type: string
-    doc: Novoalign parameter. Specifies the readgoup. (e.g. "@RG\tCN:\tPL:\tID:\tSM:\tPU:\tLB:")
   - id: novoalign_output_name
     type: string
     doc: Novoalign parameter. Name of the output file (BAM/SAM file).
@@ -235,10 +232,18 @@ steps:
        - id: output_fastq_o2
        - id: output_fastq_s
 
+  - id: getRG
+    run: ../tools/primary_analysis/getRG.cwl.yaml
+    in:
+       - id: input_bam_path
+         source: input_bam_path
+    out:
+       - id: readgroups
+
 ###ALIGNMENT_SUBWORKFLOW###
   - id: alignment_workflow
     run: alignment-workflow.cwl.yaml
-    scatter: [trimmomatic_input_read1_fastq_file, trimmomatic_input_read2_fastq_file]
+    scatter: [trimmomatic_input_read1_fastq_file, trimmomatic_input_read2_fastq_file, novoalign_readgroup]
     scatterMethod: dotproduct    
     in:
        - id: trimmomatic_java_opts
@@ -286,7 +291,7 @@ steps:
        - id: novoalign_output_format
          source: novoalign_output_format
        - id: novoalign_readgroup
-         source: novoalign_readgroup
+         source: getRG/readgroups
        - id: reference_seq
          source: reference_seq
        - id: novoalign_output_name
