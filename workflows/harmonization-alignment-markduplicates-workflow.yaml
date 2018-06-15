@@ -10,7 +10,7 @@ class: Workflow
 requirements:
   - class: SubworkflowFeatureRequirement
   - class: ScatterFeatureRequirement
-  
+
 inputs:
 
 ###GENERAL_WORKFLOW_INPUTS###
@@ -205,13 +205,17 @@ outputs:
     outputSource: bam2fastq/output_fastq2
 
   - id: duplicate_removed_output_bam
-    type: File
+    type:
+      type: array
+      items: File
     secondaryFiles:
       - '^.bai'
     outputSource: mark_duplicates_workflow/duplicate_removed_output_bam
 
   - id: duplicate_removed_output_metrics
-    type: File
+    type:
+      type: array
+      items: File
     outputSource: mark_duplicates_workflow/duplicate_removed_output_metrics
 
 
@@ -295,6 +299,7 @@ steps:
 ###MARK_DUPLICATES_SUBWORKFLOW###
   - id: mark_duplicates_workflow
     run: duplicate-marking-workflow.cwl.yaml
+    scatter: [input_bam_path]
     in:
        - id: markduplicate_java_opts
          source: md_java_opts
