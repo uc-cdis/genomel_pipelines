@@ -49,7 +49,7 @@ if __name__ == "__main__":
 
         slurm = open(os.path.join(args.outdir, "%s.harmonization.%s.sh" %(cases[case][1], cases[case][0])), "w")
         template = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-        "etc/template_recalibration.sh")
+        "etc/template_harmonization.sh")
         temp = open(template, "r")
         for line in temp:
             if "XX_THREAD_COUNT_XX" in line:
