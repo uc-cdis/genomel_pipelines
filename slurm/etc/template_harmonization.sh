@@ -35,7 +35,7 @@ sudo chown ubuntu:ubuntu -R genomel_cwl
 
 trap cleanup EXIT
 
-/home/ubuntu/.virtualenvs/p2/bin/python genomel_cwl/slurm/genomel_recalibration_pipeline.py \
+/home/ubuntu/.virtualenvs/p2/bin/python genomel_cwl/slurm/genomel_harmonization_pipeline.py \
 --input_id $input_id \
 --output_id $output_id \
 --input_table $input_table \
@@ -46,7 +46,7 @@ trap cleanup EXIT
 --s3_endpoint $s3_endpoint \
 --basedir $basedir \
 --refdir $refdir \
---cwl $basedir/genomel_cwl/workflows/recalibration-workflow.cwl.yaml \
+--cwl $basedir/genomel_cwl/workflows/harmonization-alignment-markduplicates-workflow.cwl.yaml \
 --bam_s3dir $s3dir_bam \
 --fastq_s3dir $s3dir_fastq \
 --thread_count $thread_count
