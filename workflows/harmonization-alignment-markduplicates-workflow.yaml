@@ -27,7 +27,7 @@ inputs:
     doc: Reference fasta file, with .dict and .fai.
 
 ###BIOBAMBAM_BAM2FASTQ_INPUTS###
-  - id: input_bam_file
+  - id: input_bam_path
     type: File
     doc: Input bam file path.
 
@@ -224,7 +224,7 @@ steps:
     run: ../tools/primary_analysis/biobambam2_bamtofastq.cwl
     in:
        - id: filename
-         source: input_bam_file
+         source: input_bam_path
     out:
        - id: output_fastq1
        - id: output_fastq2
