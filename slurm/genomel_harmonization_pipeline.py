@@ -280,9 +280,9 @@ if __name__ == '__main__':
     
     # Setup postgres classes for tables
     class HarmonizationStatus(postgres.mixins.StatusTypeMixin, postgres.utils.Base):
-        __tablename__ = project + '_harmonization_cwl_status'
+        __tablename__ = 'genomel_harmonization_cwl_status'
     class HarmonizationMetrics(postgres.mixins.MetricsTypeMixin, postgres.utils.Base):
-        __tablename__ = project + '_harmonization_cwl_metrics'
+        __tablename__ = 'genomel_harmonization_cwl_metrics'
     
     # Run pipeline
     run_pipeline(args, HarmonizationStatus, HarmonizationMetrics)
