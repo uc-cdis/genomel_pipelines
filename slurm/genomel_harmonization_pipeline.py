@@ -13,6 +13,7 @@ import utils.pipeline
 import datetime
 import socket
 import json
+import glob
 
 import postgres.status
 import postgres.utils
@@ -153,7 +154,6 @@ def run_pipeline(args, harmo_statusclass, harmo_metricsclass):
         "reference_seq": {"class": "File", "path": reference_fasta_path},   
         "workflow_nthreads": args.thread_count,
         "workflow_end_mode": args.end_mode,
-        "trimmomatic_java_opts": args.java_heap,
         "trimmomatic_phred": args.phred,
         "trimmomatic_input_adapters_file": {"class": "File", "path": adapters_file},
         "trimmomatic_illuminaclip": args.illuminaclip,
@@ -164,7 +164,8 @@ def run_pipeline(args, harmo_statusclass, harmo_metricsclass):
         "novoalign_dbname": {"class": "File", "path": reference_database},
         "novoalign_format": args.format,
         "novoalign_length": args.length,
-        "novoalign_output_format": args.output_format
+        "novoalign_output_format": args.output_format,
+        "novoalign_output_name": output_name + '.bam'
     }
 
     with open(input_json_file, 'wt') as o:
