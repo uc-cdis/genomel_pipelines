@@ -10,7 +10,6 @@ function cleanup (){
     sudo rm -rf $basedir;
 }
 
-java_heap="XX_MEM_XX"
 input_id="XX_INPUTID_XX"
 input_table="XX_INPUT_TABLE_XX"
 project="XX_PROJECT_XX"
@@ -50,5 +49,4 @@ trap cleanup EXIT
 --cwl $basedir/genomel_cwl/workflows/harmonization-alignment-markduplicates-workflow.cwl.yaml \
 --bam_s3dir $s3dir_bam \
 --fastq_s3dir $s3dir_fastq \
---java_heap $java_heap \
 --thread_count $thread_count
