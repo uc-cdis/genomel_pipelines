@@ -296,7 +296,7 @@ steps:
          source: reference_seq
        - id: novoalign_output_name
          source: bam2fastq/output_fastq1
-         valueFrom: $(self.basename.replace('_1.fa.gz', '.bam'))
+         valueFrom: ${self.basename.slice(0,-8) + ".bam"}
 
     out:
        - id: output_log_file
