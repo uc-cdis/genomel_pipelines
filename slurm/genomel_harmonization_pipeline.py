@@ -110,8 +110,8 @@ def run_pipeline(args, harmo_statusclass, harmo_metricsclass):
     logger.info("getting resources")
     reference_data        = utils.pipeline.load_reference_json('etc/reference.json')
     reference_fasta_path  = os.path.join(refdir, reference_data["reference_fasta"])
-    reference_indel_vcf   = os.path.join(refdir, reference_data["reference_indel_vcf"])
-    reference_snp_vcf     = os.path.join(refdir, reference_data["reference_snp_vcf"])    
+    reference_database    = os.path.join(refdir, reference_data["reference_database"]) 
+    adapters_file         = os.path.join(refdir, reference_data["adapters_file"])     
     postgres_config       = os.path.join(refdir, reference_data["pg_config"])
     
     # Logging pipeline info
