@@ -13,6 +13,7 @@ requirements:
   - class: StepInputExpressionRequirement
   - class: InlineJavascriptRequirement
   - class: MultipleInputFeatureRequirement
+  - class: ShellCommandRequirement
 
 inputs:
 
@@ -257,7 +258,7 @@ steps:
        - id: trimmomatic_input_read1_fastq_file
          source: bam2fastq/output_fastq1
        - id: trimmomatic_input_read2_fastq_file
-         source: bam2fastq/output_fastq1
+         source: bam2fastq/output_fastq2
        - id: trimmomatic_input_adapters_file
          source: trimmomatic_input_adapters_file
        - id: trimmomatic_illuminaclip
@@ -296,7 +297,7 @@ steps:
          source: reference_seq
        - id: novoalign_output_name
          source: bam2fastq/output_fastq1
-         valueFrom: $(self.basename + ".bam")
+         valueFrom: $(self.nameroot + ".bam")
 
     out:
        - id: output_log_file
