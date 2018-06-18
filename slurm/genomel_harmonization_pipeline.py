@@ -65,7 +65,7 @@ def get_args():
     required.add_argument('--leading', default=12, help="Trimmomatic leading")
     required.add_argument('--trailing', default=12, help="Trimmomatic trailing")
     required.add_argument('--minlen', default=36, help="Trimmomatic minimal acceptable length")
-    required.add_argument('--format', default="ILM1.8", help="Alignment technology format")    
+    required.add_argument('--format', default="STDFQ", help="Alignment technology format")    
     required.add_argument('--length', default="300,125", help="Alignment read length")
     required.add_argument('--output_format', default="SAM", help="Alignment output format")
 
