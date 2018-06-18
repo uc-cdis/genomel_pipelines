@@ -296,7 +296,7 @@ steps:
          source: reference_seq
        - id: novoalign_output_name
          source: bam2fastq/output_fastq1
-         valueFrom: $(self.basename + ".bam")
+         valueFrom: $(self.basename.replace("_1#1_1.fq.gz", ".bam")
 
     out:
        - id: output_log_file
