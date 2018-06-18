@@ -13,7 +13,6 @@ requirements:
   - class: StepInputExpressionRequirement
   - class: InlineJavascriptRequirement
   - class: MultipleInputFeatureRequirement
-  - class: ShellCommandRequirement
 
 inputs:
 
@@ -244,7 +243,7 @@ steps:
 ###ALIGNMENT_SUBWORKFLOW###
   - id: alignment_workflow
     run: alignment-workflow.cwl.yaml
-    scatter: [trimmomatic_input_read1_fastq_file, trimmomatic_input_read2_fastq_file, novoalign_readgroup]
+    scatter: [trimmomatic_input_read1_fastq_file, trimmomatic_input_read2_fastq_file, novoalign_readgroup, novoalign_output_name]
     scatterMethod: dotproduct    
     in:
        - id: trimmomatic_java_opts
@@ -297,7 +296,7 @@ steps:
          source: reference_seq
        - id: novoalign_output_name
          source: bam2fastq/output_fastq1
-         valueFrom: $(self.nameroot + ".bam")
+         valueFrom: $(self.nameroot.replace("_1#1_1.fq.trimmed", "") + ".bam")
 
     out:
        - id: output_log_file
