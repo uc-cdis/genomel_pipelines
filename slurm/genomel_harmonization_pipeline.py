@@ -257,7 +257,7 @@ def run_pipeline(args, harmo_statusclass, harmo_metricsclass):
         cwl_end = time.time()
         upload_time = cwl_end - upload_start
         datetime_end = str(datetime.datetime.now())
-        logger.info("End %s submission: %s" % (bam_filename, datetime_end)
+        logger.info("End %s submission: %s" % (bam_filename, datetime_end))
 
          # Get status info
         logger.info("Get status/metrics info")
