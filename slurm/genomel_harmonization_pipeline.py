@@ -190,7 +190,6 @@ def run_pipeline(args, harmo_statusclass, harmo_metricsclass):
     # Calculate elapsed time
     cwl_end = time.time()
     cwl_elapsed = cwl_end - cwl_start
-    logger.info("datetime_end: %s" % (str(datetime.datetime.now())))
 
     # Get metrics info
     time_metrics = utils.pipeline.get_time_metrics(log_file)
@@ -257,7 +256,9 @@ def run_pipeline(args, harmo_statusclass, harmo_metricsclass):
         # Calculate times
         cwl_end = time.time()
         upload_time = cwl_end - upload_start
-     
+        datetime_end = str(datetime.datetime.now())
+        logger.info("End %s submission: %s" % (bam_filename, datetime_end)
+
          # Get status info
         logger.info("Get status/metrics info")
         status, loc = postgres.status.get_status(upload_exit, cwl_exit, upload_bam_location, upload_dir_location, logger)           
