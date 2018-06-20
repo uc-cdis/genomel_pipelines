@@ -196,15 +196,6 @@ def run_pipeline(args, harmo_statusclass, harmo_metricsclass):
 
     # Getting output files
     output_fastqr1_files = glob.glob(workdir + '/*_1.fq.gz')
-    fqr1_md5sums = []
-    fqr1_file_sizes = []
-    fqr1_filenames = []
-    fqr2_md5sums = []
-    fqr2_file_sizes = []
-    fqr2_filenames = []
-    bam_md5sums = []
-    bam_file_sizes = []
-    bam_filenames = []
     upload_start = time.time()
     for fastqr1 in output_fastqr1_files:
         # Get md5 and file sizes     
@@ -217,20 +208,15 @@ def run_pipeline(args, harmo_statusclass, harmo_metricsclass):
         output_bam     = os.path.join(workdir, bam_filename)
         output_bai     = os.path.join(workdir, bai_filename)
 
-        # Append filenames
-        fqr1_filenames.append(fastqr1_filename)
-        fqr2_filenames.append(fastqr2_filename)
-        bam_filenames.append(bam_filename)
-
         # MD5SUMS
-        fqr1_md5sums.append(utils.pipeline.get_md5(output_fastqr1))
-        fqr2_md5sums.append(utils.pipeline.get_md5(output_fastqr2))
-        bam_md5sums.append(utils.pipeline.get_md5(output_bam))
+        fqr1_md5sum = utils.pipeline.get_md5(output_fastqr1)
+        fqr2_md5sum = utils.pipeline.get_md5(output_fastqr2)
+        bam_md5sum = utils.pipeline.get_md5(output_bam)
         
         # File sizes
-        fqr2_file_sizes.append(utils.pipeline.get_file_size(output_fastqr2))
-        bam_md5sums.append(utils.pipeline.get_md5(output_bam))
-        bam_file_sizes.append(utils.pipeline.get_file_size(output_fastqr1))
+        fqr1_file_size = utils.pipeline.get_file_size(output_fastqr1)
+        fqr2_file_size = utils.pipeline.get_file_size(output_fastqr2)
+        bam_file_size  = utils.pipeline.get_file_size(output_fastqr1)
 
         # Upload FASTQ outputs
         os.chdir(jobdir)
@@ -267,7 +253,7 @@ def run_pipeline(args, harmo_statusclass, harmo_metricsclass):
         logger.info("Updating status for %s" % bam_filename) 
         postgres.utils.add_pipeline_status(engine, args.project, file_id, [args.input_id], args.input_table, job_id,
                                            status, loc, datetime_start, datetime_end,
-                                           bam_md5sums[idx], bam_file_sizes[idx], hostname, cwl_version, docker_version, harmo_statusclass)
+                                           bam_md5sum, bam_file_size, hostname, cwl_version, docker_version, harmo_statusclass)
         # Set metrics table
         logger.info("Updating metrics for %s" % bam_filename)
         postgres.utils.add_pipeline_metrics(engine, file_id, [args.input_id], args.input_table, download_time,
