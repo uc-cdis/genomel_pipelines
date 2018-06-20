@@ -141,7 +141,7 @@ def run_pipeline(args, harmo_statusclass, harmo_metricsclass):
                                           job_id, [args.input_id], args.input_table, job_id,
                                           datetime_start, datetime_end,
                                           hostname, cwl_version, docker_version,
-                                          download_time, cwl_elapsed, statusclass, metricsclass)
+                                          download_time, cwl_elapsed, harmo_statusclass, harmo_metricsclass)
 
         # Exit
         sys.exit(download_exit_code)
