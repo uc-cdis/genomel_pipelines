@@ -249,11 +249,11 @@ def run_pipeline(args, harmo_statusclass, harmo_metricsclass):
         logger.info("Get status/metrics info")
         status, loc = postgres.status.get_status(upload_exit, cwl_exit, upload_bam_location, upload_dir_location, logger)           
 
-        file_id = uuid.uuid4()
+        file_id = str(uuid.uuid4())
         logger.info("Updating status for %s" % bam_filename) 
         postgres.utils.add_pipeline_status(engine, args.project, file_id, [args.input_id], args.input_table, job_id,
                                            status, loc, datetime_start, datetime_end,
-                                           bam_md5sum, bam_file_size, hostname, cwl_version, docker_version, harmo_statusclass)
+                                           bam_md5sum, bam_file_size, hostname, cwl_version, [docker_version], harmo_statusclass)
         # Set metrics table
         logger.info("Updating metrics for %s" % bam_filename)
         postgres.utils.add_pipeline_metrics(engine, file_id, [args.input_id], args.input_table, download_time,
