@@ -97,7 +97,7 @@ def get_case(engine, input_table, status_table, input_primary_column="id"):
                 count += 1
     return s
 
-def get_case_from_status(engine, status_table, input_primary_column="id", input_table = None):
+def get_case_from_status(engine, status_table, input_primary_column, profile, endpoint, input_table = None):
     Session = sessionmaker()
     Session.configure(bind=engine)
     session = Session()
@@ -115,8 +115,11 @@ def get_case_from_status(engine, status_table, input_primary_column="id", input_
         if row.status == 'COMPLETED':
             if not input_table or (input_table and row.input_table == input_table):
                 s[count] = [row.output_id,
+                            row.project,
                             row.md5,
-                            row.s3_url]        
+                            row.s3_url,
+                            profile,
+                            endpoint]
                 count += 1
 
     return s

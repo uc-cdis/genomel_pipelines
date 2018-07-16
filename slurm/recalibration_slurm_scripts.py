@@ -25,6 +25,9 @@ if __name__ == "__main__":
     required.add_argument("--cases_from_status", action='store_true', default=False, help="Get cases from input table or status")    
     required.add_argument("--input_table", help="Postgres input table name", required=True)
     required.add_argument("--status_table", default="None", help="Postgres status table name")
+    required.add_argument("--s3_profile", default="None", help="S3 profile (only for cases_from_status option)")
+    required.add_argument("--s3_endpoint", default="None", help="S3 endpoint (only for cases_from_status option)")
+
     args = parser.parse_args()
 
     if not os.path.isdir(args.outdir):
@@ -36,7 +39,7 @@ if __name__ == "__main__":
     engine = postgres.utils.get_db_engine(args.postgres_config)
     if args.cases_from_status:
         input_table = str(args.status_table)
-        cases = postgres.status.get_case_from_status(engine, str(args.input_table), str(args.status_table), input_primary_column="id")
+        cases = postgres.status.get_case_from_status(engine, str(args.input_table), "id", args.s3_profile, args.s3_endpoint)
     else:   
         input_table = str(args.input_table)
         cases = postgres.status.get_case(engine, str(args.input_table), str(args.status_table), input_primary_column="id")
@@ -50,7 +53,7 @@ if __name__ == "__main__":
         template = os.path.join(os.path.dirname(os.path.realpath(__file__)),
         "etc/template_recalibration.sh")
         temp = open(template, "r")
-        for line in temp:
+        for line in temp:  
             if "XX_THREAD_COUNT_XX" in line:
                 line = line.replace("XX_THREAD_COUNT_XX", str(args.thread_count))
             if "XX_MEM_XX" in line:
