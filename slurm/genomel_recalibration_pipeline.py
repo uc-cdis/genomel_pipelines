@@ -153,6 +153,7 @@ def run_pipeline(args, statusclass, metricsclass):
     cmd = ['/usr/bin/time', '-v',
            '/home/ubuntu/.virtualenvs/p2/bin/cwltool',
            "--debug",
+           "--relax-path-checks", 
            "--tmpdir-prefix", inputdir,
            "--tmp-outdir-prefix", workdir,
            args.cwl,
