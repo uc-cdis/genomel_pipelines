@@ -151,7 +151,7 @@ def run_pipeline(args, statusclass, metricsclass):
     os.chdir(workdir)
     logger.info('Running CWL workflow')
     cmd = ['/usr/bin/time', '-v',
-           '/home/ubuntu/.virtualenvs/p2/bin/cwltool',
+           '/home/ubuntu/.virtualenvs/test/bin/cwltool', #'/home/ubuntu/.virtualenvs/p2/bin/cwltool',
            "--debug",
            "--relax-path-checks", 
            "--tmpdir-prefix", inputdir,
