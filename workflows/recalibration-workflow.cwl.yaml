@@ -2,7 +2,16 @@
 
 cwlVersion: v1.0
 
+doc: |
+    GenoMEL Recalibration Workflow
+
 class: Workflow
+
+requirements:
+  - class: SubworkflowFeatureRequirement
+  - class: StepInputExpressionRequirement
+  - class: InlineJavascriptRequirement
+  - class: MultipleInputFeatureRequirement
 
 inputs:
 
