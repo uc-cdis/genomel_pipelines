@@ -10,6 +10,7 @@ requirements:
       - entryname: $(inputs.bam_index.basename)
         entry: $(inputs.bam_index)
   - class: InlineJavascriptRequirement
+  - class: ShellCommandRequirement
 
 class: CommandLineTool
 
