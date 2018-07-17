@@ -108,11 +108,11 @@ def run_pipeline(args, statusclass, metricsclass):
     
     # Download input bam and index
     input_url = args.s3_url
-    input_bam = os.path.join(inputdir, os.path.basename(input_url))
+    input_bam = os.path.join(inputdir, os.path.basename(input_url)).replace('#','n')
     input_index_url = input_url + '.bai'
     project_s3_profile = args.s3_profile
     project_s3_endpoint_url = args.s3_endpoint
-    download_exit_code = utils.s3.aws_s3_get(logger, input_url, inputdir,
+    download_exit_code = utils.s3.aws_s3_get(logger, input_url, input_bam,
                                              project_s3_profile, project_s3_endpoint_url, recursive=False)
     # Commented provisionally. Getting index in the workflow
     #download_exit_code = utils.s3.aws_s3_get(logger, input_index_url, inputdir,
@@ -139,7 +139,7 @@ def run_pipeline(args, statusclass, metricsclass):
     # Create input json
     input_json_file = os.path.join(resultdir, '{0}.genomel.recalibration.inputs.json'.format(str(output_id)))
     input_json_data = {
-      "input_bam_path": {"class": "File", "path": input_bam.replace('#', '%23')},
+      "input_bam_path": {"class": "File", "path": input_bam},
       "reference_seq": {"class": "File", "path": reference_fasta_path},
       "reference_indel_path": {"class": "File", "path": reference_indel_vcf},
       "reference_snp_path": {"class": "File", "path": reference_snp_vcf},      
