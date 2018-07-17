@@ -13,6 +13,7 @@ import utils.pipeline
 import datetime
 import socket
 import json
+import urllib
 
 import postgres.status
 import postgres.utils
@@ -138,7 +139,7 @@ def run_pipeline(args, statusclass, metricsclass):
     # Create input json
     input_json_file = os.path.join(resultdir, '{0}.genomel.recalibration.inputs.json'.format(str(output_id)))
     input_json_data = {
-      "input_bam_path": {"class": "File", "path": input_bam, "basename": os.path.basename(input_bam)},
+      "input_bam_path": {"class": "File", "path": urllib.quote_plus(input_bam)},
       "reference_seq": {"class": "File", "path": reference_fasta_path},
       "reference_indel_path": {"class": "File", "path": reference_indel_vcf},
       "reference_snp_path": {"class": "File", "path": reference_snp_vcf},      
