@@ -16,7 +16,6 @@ class: CommandLineTool
 inputs:
   - id: bam
     type: File
-    format: "edam:format_2572"
 
   - id: bam_index
     type: File
@@ -24,7 +23,6 @@ inputs:
 outputs:
   - id: output
     type: File
-    format: "edam:format_2572"
     outputBinding:
       glob: $(inputs.bam.basename)
     secondaryFiles:
