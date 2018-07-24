@@ -24,8 +24,6 @@ if __name__ == "__main__":
     required.add_argument("--postgres_config", help="Path to postgres config file", required=True)
     required.add_argument("--outdir", default="./", help="Output directory for slurm scripts")
     required.add_argument("--status_table", default="None", help="Postgres status table name")
-    required.add_argument("--input_table", default="None", help="Original input table")
-    required.add_argument("--project", help="Project name")    
     required.add_argument("--s3_profile", help="S3 profile")    
     required.add_argument("--s3_endpoint", help="S3 endpoint")  
 
@@ -39,7 +37,7 @@ if __name__ == "__main__":
         raise Exception("Cannot find config file: %s" %args.postgres_config)
 
     engine = postgres.utils.get_db_engine(args.postgres_config)
-    cases = postgres.status.get_case_from_status(engine, str(args.status_table), "id", str(args.input_table))
+    cases = postgres.status.get_case_from_status(engine, str(args.status_table), "id", args.s3_profile, args.s3_endpoint)
 
     for case in cases:
 
@@ -62,11 +60,11 @@ if __name__ == "__main__":
             if "XX_INPUTID_XX" in line:
                 line = line.replace("XX_INPUTID_XX", str(cases[case][0]))
             if "XX_PROJECT_XX" in line:
-                line = line.replace("XX_PROJECT_XX", args.project)
+                line = line.replace("XX_PROJECT_XX", str(cases[case][1]))
             if "XX_MD5_XX" in line:
-                line = line.replace("XX_MD5_XX", str(cases[case][1]))
+                line = line.replace("XX_MD5_XX", str(cases[case][2]))
             if "XX_S3URL_XX" in line:
-                line = line.replace("XX_S3URL_XX", str(cases[case][2]))
+                line = line.replace("XX_S3URL_XX", str(cases[case][3]))
             if "XX_S3PROFILE_XX" in line:
                 line = line.replace("XX_S3PROFILE_XX", args.s3_profile)
             if "XX_S3ENDPOINT_XX" in line:
