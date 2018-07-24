@@ -230,9 +230,9 @@ if __name__ == '__main__':
     
     # Setup postgres classes for tables
     class CallerStatus(postgres.mixins.StatusTypeMixin, postgres.utils.Base):
-        __tablename__ = project + '_hc_cwl_status'
+        __tablename__ = program + '_hc_cwl_status'
     class CallerMetrics(postgres.mixins.MetricsTypeMixin, postgres.utils.Base):
-        __tablename__ = project + '_hc_cwl_metrics'
+        __tablename__ = program + '_hc_cwl_metrics'
     
     # Run pipeline
     run_pipeline(args, CallerStatus, CallerMetrics)

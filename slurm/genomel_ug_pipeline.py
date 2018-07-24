@@ -183,7 +183,7 @@ def run_pipeline(args, statusclass, metricsclass):
     
     # Set status table
     logger.info("Updating status")
-    postgres.utils.add_pipeline_status(engine, args.output_id, input_id,  args.input_table, args.output_id,
+    postgres.utils.add_pipeline_status(engine, args.project, args.output_id, input_id,  args.input_table, args.output_id,
                                        status, loc, datetime_start, datetime_end,
                                        md5, file_size, hostname, cwl_version, docker_version, statusclass)
     # Set metrics table
@@ -209,12 +209,13 @@ if __name__ == '__main__':
     # Get args
     args = get_args()
     project = args.project.lower()
+    program = project.split('-')[0]
     
     # Setup postgres classes for tables
     class CallerStatus(postgres.mixins.StatusTypeMixin, postgres.utils.Base):
-        __tablename__ = project + '_ug_cwl_status'
+        __tablename__ = program + '_ug_cwl_status'
     class CallerMetrics(postgres.mixins.MetricsTypeMixin, postgres.utils.Base):
-        __tablename__ = project + '_ug_cwl_metrics'
+        __tablename__ = program + '_ug_cwl_metrics'
     
     # Run pipeline
     run_pipeline(args, CallerStatus, CallerMetrics)
