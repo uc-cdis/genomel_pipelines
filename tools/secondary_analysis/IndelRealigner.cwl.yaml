@@ -69,6 +69,7 @@ outputs:
     secondaryFiles:
       - "^.bai"
 
+
 baseCommand: java
 arguments:
   - valueFrom: /home/ubuntu/tools/GenomeAnalysisTK.jar
