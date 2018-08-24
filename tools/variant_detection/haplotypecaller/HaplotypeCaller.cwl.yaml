@@ -1,6 +1,6 @@
 #!/usr/bin/env cwl-runner
 
-cwlVersion: "cwl:draft-3"
+cwlVersion: v1.0
 
 class: CommandLineTool
 
@@ -10,17 +10,19 @@ requirements:
   - class: ShellCommandRequirement
   - class: MultipleInputFeatureRequirement
   - class: DockerRequirement
-    dockerPull: registry.gitlab.com/uc-cdis/genomel-exome-variant-detection:0.1b
+    dockerPull: registry.gitlab.com/uc-cdis/genomel-exome-variant-detection:0.1d
 
 inputs:
   - id: java_opts
     type: string
-    default: "-Xmx32g -XX:+UseConcMarkSweepGC -XX:-UseGCOverheadLimit"
-    description: |
-      "JVM arguments should be a quoted, space separated list (e.g. \"-Xmx8g -Xmx16g -Xms128m -Xmx512m\")"
+    default: "32g"
+    doc: |
+      "JVM arguments should be a quoted, space separated list (e.g. -Xmx8g -Xmx16g -Xms128m -Xmx512m)"
     inputBinding:
       position: 1
       shellQuote: false
+      prefix: "-Xmx"
+      separate: false      
   - id: input_bam_path
     type: File
     inputBinding:
@@ -42,21 +44,32 @@ inputs:
       position: 6
       prefix: "-L"
   - id: reference_snp_path
-    type: ["null", File]
+    type: File
     inputBinding:
       position: 7
       prefix: "-D"
+    secondaryFiles:
+      - ".tbi"
   - id: output_gvcf_name
     type: string
     inputBinding:
       position: 8
       prefix: "-o"
+  - id: thread_count
+    type: string
+    default: "1"    
+    inputBinding:
+      position: 9
+      prefix: "-nct"
+
 
 outputs:
   - id: output_gvcf
     type: File
     outputBinding:
       glob: $(inputs.output_gvcf_name)
+    secondaryFiles:
+      - ".tbi"
 
 baseCommand: java
 arguments:
@@ -67,26 +80,20 @@ arguments:
     position: 3
     prefix: -T
   - valueFrom: GVCF
-    position: 8
+    position: 10
     prefix: --emitRefConfidence
   - valueFrom: LINEAR
-    position: 9
+    position: 11
     prefix: --variant_index_type
   - valueFrom: "128000"
-    position: 10
-    prefix: --variant_index_parameter
-  - valueFrom: "250"
-    position: 11
-    prefix: -dcov
-  - valueFrom: "3"
     position: 12
-    prefix: -minPruning
-  - valueFrom: "30"
+    prefix: --variant_index_parameter
+  - valueFrom: "3"
     position: 13
-    prefix: -stand_call_conf
-  - valueFrom: "30"
+    prefix: -minPruning
+  - valueFrom: "10"
     position: 14
-    prefix: -stand_emit_conf
+    prefix: -stand_call_conf
   - valueFrom: Standard
     position: 15
     prefix: -G
@@ -102,7 +109,3 @@ arguments:
   - valueFrom: QualByDepth
     position: 19
     prefix: -A
-
-
-description: |
-    This tool uses a Bayesian genotype likelihood model to estimate simultaneously the most likely genotypes and allele frequency in a population of N samples, emitting a genotype for each sample. The system can either emit just the variant sites or complete genotypes (which includes homozygous reference calls) satisfying some phred-scaled confidence value.

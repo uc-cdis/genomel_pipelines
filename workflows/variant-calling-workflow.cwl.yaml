@@ -1,0 +1,149 @@
+#!/usr/bin/env cwl-runner
+
+cwlVersion: v1.0
+
+class: Workflow
+
+requirements:
+  - class: InlineJavascriptRequirement
+  - class: StepInputExpressionRequirement
+  - class: MultipleInputFeatureRequirement
+  - class: ShellCommandRequirement
+  - class: ScatterFeatureRequirement
+
+inputs:
+
+  - id: input_bam_path
+    type: 
+       type: array 
+       items: File
+  - id: reference_seq
+    type: File
+  - id: interval_file_path
+    type: ["null", File]
+  - id: bed_file_path
+    type: ["null", File]
+  - id: reference_snp_path
+    type: File
+  - id: ens_param_file
+    type: File
+  - id: prefix_name
+    type: string
+    default: "output"
+  - id: nthreads
+    type: string
+    default: "1"
+
+outputs:
+
+  - id: fb_vcf_output_file
+    type: File
+    outputSource: select-variants/output_vcf
+  - id: ug_vcf_output_file
+    type: File
+    outputSource: unified-genotyper/output_vcf
+  - id: hc_vcf_output_file
+    type: File
+    outputSource: genotype-gvcf/output_vcf
+
+steps:
+
+  - id: freeBayes
+    run: ../tools/variant_detection/freebayes/freebayes.cwl.yaml
+    in:
+       - id: reference_fasta_path
+         source: reference_seq
+       - id: input_bam_path
+         source: input_bam_path
+       - id: interval_file_path
+         source: bed_file_path
+       - id: output_vcf_name
+         source: prefix_name
+         valueFrom: $(self + '.freebayes.vcf')
+
+    out:
+       - id: output_vcf
+
+
+  - id: select-variants
+    run: ../tools/variant_detection/freebayes/SelectVariants.cwl.yaml
+    in:
+       - id: input_vcf_path
+         source: freeBayes/output_vcf
+       - id: reference_fasta_path
+         source: reference_seq
+       - id: output_vcf_name
+         source: prefix_name
+         valueFrom: $(self + '.combined.freebayes.selectVariants.vcf')
+    out:
+       - id: output_vcf
+
+
+  - id: unified-genotyper
+    run: ../tools/variant_detection/UnifiedGenotyper.cwl.yaml
+    in:
+       - id: input_bam_path
+         source: input_bam_path
+       - id: reference_fasta_path
+         source: reference_seq
+       - id: interval_file_path
+         source: bed_file_path
+       - id: output_vcf_name
+         source: prefix_name
+         valueFrom: $(self + '.combined.unifiedGenotyper.vcf')
+
+    out:
+       - id: output_vcf
+
+
+  - id: haplotype-caller
+    run: ../tools/variant_detection/haplotypecaller/HaplotypeCaller.cwl.yaml
+    scatter: [input_bam_path, output_gvcf_name]
+    scatterMethod: dotproduct
+    in:
+       - id: input_bam_path
+         source: input_bam_path
+       - id: reference_fasta_path
+         source: reference_seq
+       - id: interval_file_path
+         source: interval_file_path
+       - id: reference_snp_path
+         source: reference_snp_path
+       - id: thread_count
+         source: nthreads         
+       - id: output_gvcf_name
+         source: input_bam_path
+         valueFrom: $(self.basename.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + '.haplotypeCaller.g.vcf.gz')
+
+    out:
+       - id: output_gvcf
+
+
+  - id: combine-gvcf
+    run: ../tools/variant_detection/haplotypecaller/CombineGVCFs.cwl.yaml
+    in:
+       - id: input_vcf_path
+         source: haplotype-caller/output_gvcf
+       - id: reference_fasta_path
+         source: reference_seq
+       - id: output_gvcf_name
+         source: prefix_name
+         valueFrom: $(self + '.combinedGVCFs.g.vcf.gz')
+
+    out:
+       - id: output_gvcf
+
+
+  - id: genotype-gvcf
+    run: ../tools/variant_detection/haplotypecaller/GenotypeGVCFs.cwl.yaml
+    in:
+       - id: input_vcf_path
+         source: combine-gvcf/output_gvcf
+       - id: reference_fasta_path
+         source: reference_seq
+       - id: output_vcf_name
+         source: prefix_name
+         valueFrom: $(self + '.combined.haplotype-caller.genotypeGVCF.vcf')
+
+    out:
+       - id: output_vcf

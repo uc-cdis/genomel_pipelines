@@ -1,0 +1,336 @@
+#!/usr/bin/env cwl-runner
+
+cwlVersion: v1.0
+
+doc: |
+    GenoMEL Alignment Workflow
+
+class: Workflow
+
+requirements:
+  - class: SubworkflowFeatureRequirement
+  - class: InlineJavascriptRequirement
+
+inputs:
+
+###GENERAL_WORKFLOW_INPUTS###
+  - id: workflow_nthreads
+    type: int
+    default: 4
+    doc: Number of threads for the entire workflow 
+  - id: workflow_end_mode
+    type: string
+    default: "PE"
+    doc: End mode. SE or PE. Single End (SE) or Paired End (PE) mode
+  - id: reference_seq
+    type: File
+    doc: Reference fasta file, with .dict and .fai.
+  - id: uuid
+    type: string
+    doc: Unique identifier for the output BAM file.
+
+##S3_PARAMETERS##
+  - id: aws_config
+    type: File
+    default: "/home/ubuntu/.aws/config"
+    doc: AWS S3 configuration file. Usually located at ~/.aws/config
+  - id: aws_shared_credentials
+    type: File
+    default: "/home/ubuntu/.aws/credentials"
+    doc: AWS S3 credentials file. Usually located at ~/.aws/credentials
+  - id: s3_profile
+    type: string
+    default: "genomel-cleversafe"
+    doc: S3 profile associated to your bucket.
+  - id: s3_endpoint
+    default: "https://atwood-accessors.osdc.io"
+    type: string
+    doc: S3 endpoint associated to your bucket.
+  - id: input_read1_fastq_s3uri
+    type: string
+    doc: S3 path to FASTQ file for input read (read R1 in Paired End mode)
+  - id: input_read2_fastq_s3uri
+    type: ['null', string]
+    doc: S3 path to FASTQ file for read R2 in Paired End mode.
+  - id: s3dir
+    type: string
+    doc: Remote bucket in S3 to upload file.
+
+###TRIMMOMATIC_INPUTS###
+  - id: trimmomatic_java_opts
+    type: string
+    default: "-Xmx4g"
+    doc: JVM arguments for trimmomatic (e.g. 512m or 4g)
+  - id: trimmomatic_phred
+    type: string
+    doc: Trimmomatic parameter. 33 or 64. It specifies the base quality encoding.
+  - id: trimmomatic_input_adapters_file
+    type: File
+    doc: Trimmomatic input. FASTA file containing adapters, PCR sequences, etc. It is used to search for and remove these sequences in the input FASTQ file(s)
+  - id: trimmomatic_illuminaclip
+    type: string
+    doc: |
+        Trimmomatic illuminaclip parameter:
+        <fastaWithAdaptersEtc>:<seed mismatches>:<palindrome clip threshold>:<simple clip threshold>:<minAdapterLength>:<keepBothReads>
+        Find and remove Illumina adapters.
+        REQUIRED:
+        <fastaWithAdaptersEtc>: specifies the path to a fasta file containing all the adapters, PCR sequences etc.
+        The naming of the various sequences within this file determines how they are used. See below.
+        <seedMismatches>: specifies the maximum mismatch count which will still allow a full match to be performed
+        <palindromeClipThreshold>: specifies how accurate the match between the two 'adapter ligated' reads must be
+        for PE palindrome read alignment.
+        <simpleClipThreshold>: specifies how accurate the match between any adapter etc. sequence must be against a read
+        OPTIONAL:
+        <minAdapterLength>: In addition to the alignment score, palindrome mode can verify
+        that a minimum length of adapter has been detected. If unspecified, this defaults to 8 bases,
+        for historical reasons. However, since palindrome mode has a very low false positive rate, this
+        can be safely reduced, even down to 1, to allow shorter adapter fragments to be removed.
+        <keepBothReads>: After read-though has been detected by palindrome mode, and the
+        adapter sequence removed, the reverse read contains the same sequence information as the
+        forward read, albeit in reverse complement. For this reason, the default behaviour is to
+        entirely drop the reverse read. By specifying „true‟ for this parameter, the reverse read will
+        also be retained, which may be useful e.g. if the downstream tools cannot handle a
+        combination of paired and unpaired reads.    
+  - id: trimmomatic_slidingwindow
+    type: ['null', string]
+    default: null
+    doc: |
+      Trimmomatic slidingwindow parameter (optional):
+      <windowSize>:<requiredQuality>
+      Perform a sliding window trimming, cutting once the average quality within the window falls
+      below a threshold. By considering multiple bases, a single poor quality base will not cause the
+      removal of high quality data later in the read.
+      <windowSize>: specifies the number of bases to average across
+      <requiredQuality>: specifies the average quality required
+  - id: trimmomatic_maxinfo
+    type: ['null', string]
+    default: null
+    doc: |
+      Trimmomatic maxinfo parameter (optional):
+      <targetLength>:<strictness>
+      Performs an adaptive quality trim, balancing the benefits of retaining longer reads against the
+      costs of retaining bases with errors.
+      <targetLength>: This specifies the read length which is likely to allow the
+      location of the read within the target sequence to be determined.
+      <strictness>: This value, which should be set between 0 and 1, specifies the
+      balance between preserving as much read length as possible vs. removal of incorrect
+      bases. A low value of this parameter (<0.2) favours longer reads, while a high value
+      (>0.8) favours read correctness.
+  - id: trimmomatic_leading
+    type: ['null', int]
+    default: null
+    doc: |
+      Trimmomatic quality threshold (optional):
+      <quality>
+      Remove low quality bases from the beginning. As long as a base has a value below this
+      threshold the base is removed and the next base will be investigated.
+      <quality>: Specifies the minimum quality required to keep a base.
+  - id: trimmomatic_trailing
+    type: ['null', int]
+    default: null
+    doc: |
+      Trimmomatic quality threshold (optional):
+      <quality>
+      Remove low quality bases from the end. As long as a base has a value below this threshold
+      the base is removed and the next base (which as trimmomatic is starting from the 3‟ prime end
+      would be base preceding the just removed base) will be investigated. This approach can be
+      used removing the special illumina „low quality segment‟ regions (which are marked with
+      quality score of 2), but we recommend Sliding Window or MaxInfo instead
+      <quality>: Specifies the minimum quality required to keep a base.
+  - id: trimmomatic_crop
+    type: ['null', int]
+    default: null
+    doc: |
+      Trimmomatic quality filter (optional):
+      <length>
+      Removes bases regardless of quality from the end of the read, so that the read has maximally
+      the specified length after this step has been performed. Steps performed after CROP might of
+      course further shorten the read.
+      <length>: The number of bases to keep, from the start of the read.
+  - id: trimmomatic_headcrop
+    type: ['null', int]
+    default: null
+    doc: |
+      Trimmomatic quality filter (optional):
+      <length>
+      Removes the specified number of bases, regardless of quality, from the beginning of the read.
+      <length>: The number of bases to keep, from the start of the read.
+  - id: trimmomatic_minlen
+    type: ['null', int]
+    default: null
+    doc: |
+      Trimmomatic filter threshold (optional):
+      <length>
+      This module removes reads that fall below the specified minimal length. If required, it should
+      normally be after all other processing steps. Reads removed by this step will be counted and
+      included in the „dropped reads‟ count presented in the trimmomatic summary.
+      <length>:  Specifies the minimum length of reads to be kept
+  - id: trimmomatic_avgqual
+    type: ['null', int]
+    default: null
+    doc: |
+      Trimmomatic quality threshold (optional):
+      <quality>
+      Drop the read if the average quality is below the specified level
+      <quality>: Specifies the minimum average quality required to keep a read.
+  - id: trimmomatic_tophred33
+    type: ['null', boolean]
+    default: null
+    doc: Trimmomatic parameter (optional). This (re)encodes the quality part of the FASTQ file to base 33.
+  - id: trimmomatic_tophred64
+    type: ['null', boolean]
+    default: null
+    doc: Trimmomatic parameter (optional). This (re)encodes the quality part of the FASTQ file to base 64.
+
+###NOVOALIGN_INPUTS###
+  - id: novoalign_dbname
+    type: File
+    doc: Novoalign input. Full pathname of indexed reference sequence file created by novoindex.
+  - id: novoalign_format
+    type: string
+    doc: |
+      Novoalign parameter. Specifies a read file format. 
+      For Fastq '_sequence.txt' files from Illumina Pipeline 1.3 please specify -F ILMFQ. 
+      Other values for the -F option could be found at novocraft website.
+  - id: novoalign_length
+    type: string
+    doc: Novoalign parameter. Sets approximate fragment length and standard deviation. (e.g. 300,125)
+  - id: novoalign_output_format
+    type: string
+    doc: Novoalign parameter. Specifies the report format. (e.g. SAM)
+  - id: novoalign_readgroup
+    type: string
+    doc: Novoalign parameter. Specifies the readgoup. (e.g. "@RG\tCN:\tPL:\tID:\tSM:\tPU:\tLB:")
+  - id: novoalign_output_name
+    type: string
+    doc: Novoalign parameter. Name of the output file (BAM/SAM file).
+
+outputs:
+
+  - id: output_log_file
+    type: ['null', File]
+    doc: Trimmomatic log file
+    outputSource: alignment_workflow/output_log_file
+
+  - id: output_novoalign_bam_file
+    type: File
+    doc: Novoalign output BAM file.
+    outputSource: alignment_workflow/output_novoalign_bam_file
+
+steps:
+
+  ###UPDATE_TABLES_SUBWORKFLOW###
+
+  ###S3_DOWNLOAD_SUBWORKFLOW###
+  - id: get_read1
+    run: ../tools/s3/aws_s3_get.cwl
+    in:
+       - id: aws_config
+         source: aws_config
+       - id: aws_shared_credentials
+         source: aws_shared_credentials
+       - id: s3uri
+         source: input_read1_fastq_s3uri
+       - id: s3_profile
+         source: s3_profile
+       - id: s3_endpoint
+         source: s3_endpoint
+    out:
+       - id: output
+
+  - id: get_read2
+    run: ../tools/s3/aws_s3_get.cwl
+    in:
+       - id: aws_config
+         source: aws_config
+       - id: aws_shared_credentials
+         source: aws_shared_credentials
+       - id: s3uri
+         source: input_read2_fastq_s3uri
+       - id: s3_profile
+         source: s3_profile
+       - id: s3_endpoint
+         source: s3_endpoint
+    out:
+       - id: output
+
+  ###ALIGNMENT_SUBWORKFLOW###
+  - id: alignment_workflow
+    run: alignment-workflow.cwl.yaml
+    in:
+       - id: trimmomatic_java_opts
+         source: trimmomatic_java_opts
+       - id: workflow_end_mode
+         source: workflow_end_mode
+       - id: workflow_nthreads
+         source: workflow_nthreads
+       - id: trimmomatic_phred
+         source: trimmomatic_phred
+       - id: trimmomatic_input_read1_fastq_file
+         source: get_read1/output
+       - id: trimmomatic_input_read2_fastq_file
+         source: get_read2/output
+       - id: trimmomatic_input_adapters_file
+         source: trimmomatic_input_adapters_file
+       - id: trimmomatic_illuminaclip
+         source: trimmomatic_illuminaclip
+       - id: trimmomatic_slidingwindow
+         source: trimmomatic_slidingwindow
+       - id: trimmomatic_maxinfo
+         source: trimmomatic_maxinfo
+       - id: trimmomatic_leading
+         source: trimmomatic_leading
+       - id: trimmomatic_trailing
+         source: trimmomatic_trailing
+       - id: trimmomatic_crop
+         source: trimmomatic_crop
+       - id: trimmomatic_headcrop
+         source: trimmomatic_headcrop
+       - id: trimmomatic_minlen
+         source: trimmomatic_minlen
+       - id: trimmomatic_avgqual
+         source: trimmomatic_avgqual
+       - id: trimmomatic_tophred33
+         source: trimmomatic_tophred33
+       - id: trimmomatic_tophred64
+         source: trimmomatic_tophred64
+       - id: novoalign_dbname
+         source: novoalign_dbname
+       - id: novoalign_format
+         source: novoalign_format
+       - id: novoalign_length
+         source: novoalign_length
+       - id: novoalign_output_format
+         source: novoalign_output_format
+       - id: novoalign_readgroup
+         source: novoalign_readgroup
+       - id: reference_seq
+         source: reference_seq
+       - id: novoalign_output_name
+         source: novoalign_output_name
+
+    out:
+       - id: output_log_file
+       - id: output_novoalign_bam_file
+
+  ###UPDATE_TABLES_SUBWORKFLOW###
+
+  ###S3_UPLOAD_WORKFLOW###
+  - id: put_bam_s3
+    run: ../tools/s3/aws_s3_put.cwl
+    in:
+       - id: aws_config
+         source: aws_config
+       - id: aws_shared_credentials
+         source: aws_shared_credentials
+       - id: input
+         source: alignment_workflow/output_novoalign_bam_file
+       - id: s3uri
+         source: s3dir
+         valueFrom: $(self + inputs.uuid + "/")
+       - id: s3_profile
+         source: s3_profile
+       - id: s3_endpoint
+         source: s3_endpoint
+    out:
+       - id: output

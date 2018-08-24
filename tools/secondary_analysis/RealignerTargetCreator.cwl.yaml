@@ -1,6 +1,6 @@
 #!/usr/bin/env cwl-runner
 
-cwlVersion: "cwl:draft-3"
+cwlVersion: v1.0
 
 class: CommandLineTool
 
@@ -10,19 +10,20 @@ requirements:
   - class: ShellCommandRequirement
   - class: MultipleInputFeatureRequirement
   - class: DockerRequirement
-    dockerPull: registry.gitlab.com/uc-cdis/genomel-secondary-analysis:0.1a
+    dockerPull: registry.gitlab.com/uc-cdis/genomel-secondary-analysis:0.1b
 
 inputs:
   - id: java_opts
     type: string
     default: "-Xmx8g"
-    description: |
-      "JVM arguments should be a quoted, space separated list (e.g. \"-Xmx8g -Xmx16g -Xms128m -Xmx512m\")"
+    doc: |
+      "JVM arguments should be a quoted, space separated list (e.g. -Xmx8g -Xmx16g -Xms128m -Xmx512m)"
     inputBinding:
       position: 1
       shellQuote: false
   - id: input_bam_path
     type: File
+    doc: Input bam file
     inputBinding:
       position: 4
       prefix: "-I"
@@ -30,6 +31,7 @@ inputs:
       - "^.bai"
   - id: reference_fasta_path
     type: File
+    doc: Reference fasta file with .dict and .fai
     inputBinding:
       position: 5
       prefix: "-R"
@@ -38,6 +40,7 @@ inputs:
       - ".fai"
   - id: reference_indel_path
     type: File
+    doc: INDEL reference file
     inputBinding:
       position: 6
       prefix: "-known"
@@ -45,6 +48,7 @@ inputs:
       - ".tbi"
   - id: reference_snp_path
     type: File
+    doc: SNP reference file
     inputBinding:
       position: 7
       prefix: "-known"
@@ -55,7 +59,7 @@ outputs:
   - id: output_target
     type: File
     outputBinding:
-      glob: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + '.intervals')
+      glob: $(inputs.input_bam_path.nameroot + '.intervals')
 
 baseCommand: java
 arguments:
@@ -65,10 +69,6 @@ arguments:
   - valueFrom: RealignerTargetCreator
     position: 3
     prefix: -T
-  - valueFrom: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + '.intervals')
+  - valueFrom: $(inputs.input_bam_path.nameroot + '.intervals')
     position: 8
     prefix: "-o"
-
-
-description: |
-    Determining (small) suspicious intervals which are likely in need of realignment.

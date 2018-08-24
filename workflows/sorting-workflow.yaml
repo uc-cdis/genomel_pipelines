@@ -1,0 +1,61 @@
+#!/usr/bin/env cwl-runner
+
+cwlVersion: v1.0
+
+class: Workflow
+
+inputs:
+
+  - id: "#picard_java_opts"
+    type: ["null", string]
+  - id: "#picard_jar_path"
+    type: string
+  - id: "#input_bam_path"
+    type: File
+  - id: "#reference_seq"
+    type: File
+
+outputs:
+
+  - id: "#output_file"
+    type: File
+    source: "#remove-unpaired.paired_output_bam"
+
+steps:
+
+  - id: "#picard-sort"
+    run: ../tools/sorting/PicardSort.cwl.yaml
+    inputs:
+       - id: "#picard-sort.java_opts"
+         source: "#picard_java_opts"
+       - id: "#picard-sort.picard_jar_path"
+         source: "#picard_jar_path"
+       - id: "#picard-sort.input_bam_path"
+         source: "#input_bam_path"
+
+    outputs:
+       - id: "#picard-sort.sorted_output_bam"
+
+  - id: "#picard-reorder"
+    run: ../tools/sorting/PicardReorderSam.cwl.yaml
+    inputs:
+       - id: "#picard-reorder.java_opts"
+         source: "#picard_java_opts"
+       - id: "#picard-reorder.picard_jar_path"
+         source: "#picard_jar_path"
+       - id: "#picard-reorder.input_bam_path"
+         source: "#picard-sort.sorted_output_bam"
+       - id: "#picard-reorder.reference_seq"
+         source: "#reference_seq"
+
+    outputs:
+       - id: "#picard-reorder.reordered_output_bam"
+
+  - id: "#remove-unpaired"
+    run: ../tools/sorting/RemoveUnpaired.cwl.yaml
+    inputs:
+       - id: "#remove-unpaired.input_bam_path"
+         source: "#picard-reorder.reordered_output_bam"
+
+    outputs:
+       - id: "#remove-unpaired.paired_output_bam"

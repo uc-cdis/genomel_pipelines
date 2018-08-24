@@ -1,0 +1,31 @@
+#!/usr/bin/env cwl-runner
+
+cwlVersion: v1.0
+
+class: CommandLineTool
+
+requirements:
+  - $import: ../envvar-global.cwl
+  - class: InlineJavascriptRequirement
+  - class: ShellCommandRequirement
+  - class: MultipleInputFeatureRequirement
+  - class: DockerRequirement
+    dockerPull: registry.gitlab.com/uc-cdis/genomel-primary-analysis:0.2c
+
+inputs:
+  - id: input_bam_path
+    type: File
+    doc: Input bam file
+    inputBinding:
+      position: 2
+
+outputs:
+  - id: output_bai
+    type: File
+    outputBinding:
+      glob: $(inputs.input_bam_path.basename + '.bai')
+
+baseCommand: ['/home/ubuntu/tools/samtools/samtools', 'index']
+arguments:
+  - valueFrom: $(inputs.input_bam_path.basename + '.bai')
+    position: 3

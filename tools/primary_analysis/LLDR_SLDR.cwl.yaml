@@ -1,6 +1,6 @@
 #!/usr/bin/env cwl-runner
 
-cwlVersion: "cwl:draft-3"
+cwlVersion: v1.0
 
 class: CommandLineTool
 
@@ -10,70 +10,29 @@ requirements:
   - class: ShellCommandRequirement
   - class: MultipleInputFeatureRequirement
   - class: DockerRequirement
-    dockerPull: registry.gitlab.com/uc-cdis/genomel-primary-analysis:0.1d
+    dockerPull: registry.gitlab.com/uc-cdis/genomel-primary-analysis:0.2c
 
 inputs:
   - id: java_opts
     type: string
     default: "-Xmx16g"
-    description: |
-      "JVM arguments should be a quoted, space separated list (e.g. \"-Xmx8g -Xmx16g -Xms128m -Xmx512m\")"
+    doc: JVM arguments should be a quoted, space separated list. (e.g. -Xmx8g -Xmx16g -Xms128m -Xmx512m)
     inputBinding:
       position: 1
-      shellQuote: false
-  - id: picard_jar_path
-    type: string
-    default: "/home/ubuntu/tools/picard-tools/picard.jar"
-    inputBinding:
-      position: 2
-      prefix: "-jar"
-  - id: picard_tool
-    type: string
-    default: "MarkDuplicates"
-    inputBinding:
-      position: 3
+      shellQuote: false 
+
   - id: input_bam_path
     type: File
+    doc: Input bam file path.
     inputBinding:
       position: 4
       prefix: "INPUT="
       separate: false
-  - id: remove_duplicates
-    type: string
-    default: "true"
-    description: |
-      true|false
-    inputBinding:
-      position: 7
-      prefix: "REMOVE_DUPLICATES="
-      separate: false
-  - id: create_index
-    type: string
-    default: "true"
-    description: |
-      true|false
-    inputBinding:
-      position: 8
-      prefix: "CREATE_INDEX="
-      separate: false
-  - id: assume_sorted
-    type: string
-    default: "true"
-    description: |
-      true|false
-    inputBinding:
-      position: 9
-      prefix: "ASSUME_SORTED="
-      separate: false
+
   - id: validation_stringency
     type: string
     default: "LENIENT"
-    description: |
-      LENIENT|SILENT
-      <length>
-        LENIENT should be used with LLDR.# set a default toggle with removal_type?
-        SILENT should be used with SLDR.
-      <length>
+    doc: LENIENT or SILENT. LENIENT should be used with LLDR. SILENT should be used with SLDR.
     inputBinding:
       position: 10
       prefix: "VALIDATION_STRINGENCY="
@@ -83,26 +42,38 @@ outputs:
   - id: duplicate_removed_output_bam
     type: File
     outputBinding:
-      glob: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + inputs.validation_stringency + '.duplicate_removed.bam')
+      glob: $(inputs.input_bam_path.nameroot + '.' + inputs.validation_stringency + '.duplicate_removed.bam')
+    secondaryFiles:
+      - '^.bai'
   - id: duplicate_removed_output_metrics
     type: File
     outputBinding:
-      glob: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + inputs.validation_stringency + '.duplicate_removed.metrics.txt')
-  - id: duplicate_removed_output_bai
-    type: File
-    outputBinding:
-      glob: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + inputs.validation_stringency + '.duplicate_removed.bai')
+      glob: $(inputs.input_bam_path.nameroot + '.' + inputs.validation_stringency + '.duplicate_removed.metrics.txt')
 
 baseCommand: java
 arguments:
-  - valueFrom: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + inputs.validation_stringency + '.duplicate_removed.bam')
+  - valueFrom: "/home/ubuntu/tools/picard-tools/picard.jar"
+    position: 2
+    prefix: "-jar"
+  - valueFrom: "MarkDuplicates"
+    position: 3
+  - valueFrom: $(inputs.input_bam_path.nameroot + '.' + inputs.validation_stringency + '.duplicate_removed.bam')
     position: 5
     prefix: "OUTPUT="
     separate: false
-  - valueFrom: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + inputs.validation_stringency + '.duplicate_removed.metrics.txt')
+  - valueFrom: $(inputs.input_bam_path.nameroot + '.' + inputs.validation_stringency + '.duplicate_removed.metrics.txt')
     position: 6
     prefix: "METRICS_FILE="
     separate: false
-
-description: |
-  This module can perform (L)ane or (S)ample (L)evel (D)uplication (R)emoval
+  - valueFrom: "true"
+    position: 7
+    prefix: "REMOVE_DUPLICATES="
+    separate: false
+  - valueFrom: "true"
+    position: 8
+    prefix: "CREATE_INDEX="
+    separate: false
+  - valueFrom: "true"
+    position: 9
+    prefix: "ASSUME_SORTED="
+    separate: false

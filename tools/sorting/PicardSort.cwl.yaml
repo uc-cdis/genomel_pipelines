@@ -1,0 +1,66 @@
+#!/usr/bin/env cwl-runner
+
+cwlVersion: v1.0
+
+class: CommandLineTool
+
+requirements:
+  - $import: ../envvar-global.cwl
+  - class: InlineJavascriptRequirement
+  - class: ShellCommandRequirement
+  - class: MultipleInputFeatureRequirement
+  - class: DockerRequirement
+    dockerPull: registry.gitlab.com/uc-cdis/genomel-primary-analysis:0.1d
+
+inputs:
+  - id: java_opts
+    type: string
+    default: "-Xmx16g"
+    doc: |
+      "JVM arguments should be a quoted, space separated list (e.g. -Xmx8g -Xmx16g -Xms128m -Xmx512m)"
+    inputBinding:
+      position: 1
+      shellQuote: false
+  - id: picard_jar_path
+    type: string
+    default: "/home/ubuntu/tools/picard-tools/picard.jar"
+    inputBinding:
+      position: 2
+      prefix: "-jar"
+  - id: picard_tool
+    type: string
+    default: "SortSam"
+    inputBinding:
+      position: 3
+  - id: input_bam_path
+    type: File
+    inputBinding:
+      position: 4
+      prefix: "INPUT="
+      separate: false
+  - id: sort_type
+    type: string
+    default: "coordinate"
+    inputBinding:
+      position: 6
+      prefix: "SO="
+      separate: false
+
+outputs:
+  - id: sorted_output_bam
+    type: File
+    outputBinding:
+      glob: $(inputs.input_bam_path.nameroot + '.srt.bam')
+    secondaryFiles:
+      - "^.bai"
+
+baseCommand: java
+arguments:
+  - valueFrom: $(inputs.input_bam_path.nameroot + '.srt.bam')
+    position: 5
+    prefix: "OUTPUT="
+    separate: false
+  - valueFrom: "true"
+    position: 7
+    prefix: "CREATE_INDEX="
+    separate: false

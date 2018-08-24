@@ -1,0 +1,65 @@
+#!/usr/bin/env cwl-runner
+
+cwlVersion: v1.0
+
+class: Workflow
+
+requirements:
+  - class: InlineJavascriptRequirement
+  - class: StepInputExpressionRequirement
+  - class: MultipleInputFeatureRequirement
+  - class: ShellCommandRequirement
+  - class: ScatterFeatureRequirement
+
+inputs:
+
+  - id: input_bam_path
+    type: 
+       type: array 
+       items: File
+  - id: reference_fasta_path
+    type: File
+  - id: interval_file_path
+    type: ["null", File]
+  - id: output_vcf_name
+    type: string
+    default: "output"
+
+outputs:
+
+  - id: fb_vcf_output_file
+    type: File
+    outputSource: select-variants/output_vcf
+
+
+steps:
+
+  - id: freeBayes
+    run: ../tools/variant_detection/freebayes/freebayes.cwl.yaml
+    in:
+       - id: reference_fasta_path
+         source: reference_fasta_path
+       - id: input_bam_path
+         source: input_bam_path
+       - id: interval_file_path
+         source: interval_file_path
+       - id: output_vcf_name
+         source: output_vcf_name
+         valueFrom: $(self + '.vcf')
+
+    out:
+       - id: output_vcf
+
+
+  - id: select-variants
+    run: ../tools/variant_detection/freebayes/SelectVariants.cwl.yaml
+    in:
+       - id: input_vcf_path
+         source: freeBayes/output_vcf
+       - id: reference_fasta_path
+         source: reference_fasta_path
+       - id: output_vcf_name
+         source: output_vcf_name
+         valueFrom: $(self + '.vcf.gz')
+    out:
+       - id: output_vcf

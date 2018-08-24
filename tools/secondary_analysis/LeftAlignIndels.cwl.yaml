@@ -1,6 +1,6 @@
 #!/usr/bin/env cwl-runner
 
-cwlVersion: "cwl:draft-3"
+cwlVersion: v1.0
 
 class: CommandLineTool
 
@@ -10,26 +10,28 @@ requirements:
   - class: ShellCommandRequirement
   - class: MultipleInputFeatureRequirement
   - class: DockerRequirement
-    dockerPull: registry.gitlab.com/uc-cdis/genomel-secondary-analysis:0.1a
+    dockerPull: registry.gitlab.com/uc-cdis/genomel-secondary-analysis:0.1b
 
 inputs:
   - id: java_opts
     type: string
     default: "-Xmx8g"
-    description: |
-      "JVM arguments should be a quoted, space separated list (e.g. \"-Xmx8g -Xmx16g -Xms128m -Xmx512m\")"
+    doc: |
+      "JVM arguments should be a quoted, space separated list (e.g. -Xmx8g -Xmx16g -Xms128m -Xmx512m)"
     inputBinding:
       position: 1
       shellQuote: false
   - id: input_bam_path
     type: File
+    doc: Input bam file
     inputBinding:
       position: 4
       prefix: "-I"
     secondaryFiles:
-      - "^.bai"
+      - ".bai"
   - id: reference_fasta_path
     type: File
+    doc: Reference fasta file with .dict and .fai
     inputBinding:
       position: 5
       prefix: "-R"
@@ -41,7 +43,7 @@ outputs:
   - id: left_aligned_bam
     type: File
     outputBinding:
-      glob: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + '.left_aligned.bam')
+      glob: $(inputs.input_bam_path.nameroot + '.left_aligned.bam')
     secondaryFiles:
       - "^.bai"
 
@@ -53,10 +55,6 @@ arguments:
   - valueFrom: LeftAlignIndels
     position: 3
     prefix: -T
-  - valueFrom: $(inputs.input_bam_path.path.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '') + '.left_aligned.bam')
+  - valueFrom: $(inputs.input_bam_path.nameroot + '.left_aligned.bam')
     position: 6
     prefix: "-o"
-
-
-description: |
-    This tool left-aligns any indels within read cigars in order to standardize representation when there are multiple valid representations possible (i.e. where the same indel can be placed at multiple positions and still represent the same haplotype). The standard convention is to place an indel at the left-most position possible, but this is not always followed, so this tool can be used to correct the representation of indels.
