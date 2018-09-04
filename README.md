@@ -2,7 +2,7 @@
 
 General workflow:
 
-![Alt text](https://github.com/uc-cdis/cwl/docs/genomel_general_workflow.pdf "General-workflow")
+![alt text](https://github.com/uc-cdis/cwl/docs/genomel_general_workflow.png "General-workflow")
 
 Workon:
 * Revamp variant calling docker/workflow.
