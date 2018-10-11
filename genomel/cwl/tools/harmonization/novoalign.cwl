@@ -5,11 +5,10 @@ cwlVersion: v1.0
 class: CommandLineTool
 
 requirements:
-  - $import: ../envvar-global.cwl
   - class: InlineJavascriptRequirement
   - class: ShellCommandRequirement
   - class: DockerRequirement
-    dockerPull: registry.gitlab.com/uc-cdis/genomel-primary-analysis:0.2d
+    dockerPull: registry.gitlab.com/uc-cdis/genomel-primary-analysis/harmonization:1.0
 
 inputs:
   - id: nthreads
@@ -77,7 +76,7 @@ inputs:
     type: File
     doc: Reference fasta file, with .dict and .fai.
     inputBinding:
-      position: 13
+      position: 15
     secondaryFiles:
       - "^.dict"
       - ".fai"
@@ -93,21 +92,31 @@ outputs:
   outputBinding:
     glob: $(inputs.output_name)
 
-baseCommand: /home/ubuntu/tools/novocraft/novoalign
+baseCommand: /opt/novocraft/novoalign
 arguments:
-  - valueFrom: "/usr/bin/samtools"
+  - valueFrom: "awk"
     position: 10
+    prefix: "|"
+  - valueFrom: "{if (($2 !~ /phiX174*/) && ($3 !~ /phiX174*/))  print}"
+    position: 11
+
+  - valueFrom: "samtools"
+    position: 12
     prefix: "|"
 
   - valueFrom: "view"
-    position: 11
+    position: 13
 
   - valueFrom: "-bT"
-    position: 12
-
-  - valueFrom: "-"
     position: 14
 
+  - valueFrom: '3'
+    position: 16
+    prefix: -f
+
+  - valueFrom: "-"
+    position: 17
+
   - valueFrom: $(inputs.output_name)
-    position: 15
+    position: 18
     prefix: ">"
