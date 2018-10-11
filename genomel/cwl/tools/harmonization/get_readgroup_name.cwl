@@ -7,7 +7,9 @@ class: CommandLineTool
 requirements:
   - class: InlineJavascriptRequirement
   - class: DockerRequirement
-    dockerPull: registry.gitlab.com/uc-cdis/genomel-primary-analysis:0.2d
+    dockerPull: registry.gitlab.com/uc-cdis/genomel-primary-analysis/harmonization:1.0
+  - class: ShellCommandRequirement
+  - class: MultipleInputFeatureRequirement
 
 inputs:
   - id: input_bam_path
@@ -16,25 +18,32 @@ inputs:
     inputBinding:
       position: 2
 
-stdout: readgroups
+stdout: readgroups_header
 outputs:
-  - id: readgroups
-    type: string
-    type:
-      type: array
-      items: string
+  - id: readgroup_lines
+    type: string[]
     outputBinding:
-      glob: readgroups
+      glob: readgroups_header
       loadContents: true
       outputEval: $(self[0].contents.trim().split('\n'))
 
+  - id: readgroup_names
+    type: string[]
+    outputBinding:
+      glob: readgroups_header
+      loadContents: true
+      outputEval: |
+        ${
+          var rg_name = [];
+          for (var i = 0; i < self[0].contents.trim().split('\n').length; i++){
+            rg_name.push(self[0].contents.trim().split('\n')[i].split('\t')[1].replace('ID:', ''))
+          };
+          return rg_name
+        }
 
-baseCommand: ['/home/ubuntu/tools/samtools/samtools', 'view']
+baseCommand: ['samtools', 'view', '-H']
 arguments:
-  - valueFrom: "-H"
-    position: 1
-  - valueFrom: "grep"
+  - valueFrom: 'grep ^@RG'
     position: 3
     prefix: "|"
-  - valueFrom: "^@RG"
-    position: 4
+    shellQuote: False
