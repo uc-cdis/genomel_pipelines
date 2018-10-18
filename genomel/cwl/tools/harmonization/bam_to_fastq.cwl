@@ -14,6 +14,10 @@ class: CommandLineTool
 inputs:
   job_uuid: string
 
+  readgroup_lines: string[]
+
+  readgroup_names: string[]
+
   collate:
     type: int
     default: 1
@@ -63,6 +67,18 @@ inputs:
     default: tempfq
 
 outputs:
+  output_readgroup_lines:
+    type: string[]
+    outputBinding:
+      outputEval: |
+        ${ return inputs.readgroup_lines.sort(function(a,b) { return a > b ? 1 : (a < b ? -1 : 0) }) }
+
+  output_readgroup_names:
+    type: string[]
+    outputBinding:
+      outputEval: |
+        ${ return inputs.readgroup_names.sort(function(a,b) { return a > b ? 1 : (a < b ? -1 : 0) }) }
+
   output_fastq1:
     type:
       type: array
@@ -78,33 +94,6 @@ outputs:
       items: File
     outputBinding:
       glob: "*_2.fq.gz"
-      outputEval: |
-        ${ return self.sort(function(a,b) { return a.location > b.location ? 1 : (a.location < b.location ? -1 : 0) }) }
-
-  output_fastq_o1:
-    type:
-      type: array
-      items: File
-    outputBinding:
-      glob: "*_o1.fq.gz"
-      outputEval: |
-        ${ return self.sort(function(a,b) { return a.location > b.location ? 1 : (a.location < b.location ? -1 : 0) }) }
-
-  output_fastq_o2:
-    type:
-      type: array
-      items: File
-    outputBinding:
-      glob: "*_o2.fq.gz"
-      outputEval: |
-        ${ return self.sort(function(a,b) { return a.location > b.location ? 1 : (a.location < b.location ? -1 : 0) }) }
-
-  output_fastq_s:
-    type:
-      type: array
-      items: File
-    outputBinding:
-      glob: "*_s.fq.gz"
       outputEval: |
         ${ return self.sort(function(a,b) { return a.location > b.location ? 1 : (a.location < b.location ? -1 : 0) }) }
 

@@ -4,7 +4,7 @@ FROM ubuntu:16.04
 ADD novocraft.tar.bz2 /opt/
 
 RUN apt-get update -y && \
-    apt-get install -y git wget unzip time \
+    apt-get install -y git wget unzip time gawk\
     bzip2 gcc libncurses-dev make zlib1g-dev libbz2-dev liblzma-dev \
     openjdk-8-jre-headless
 

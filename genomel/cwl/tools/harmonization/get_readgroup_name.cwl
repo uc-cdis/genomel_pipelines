@@ -7,27 +7,23 @@ class: CommandLineTool
 requirements:
   - class: InlineJavascriptRequirement
   - class: DockerRequirement
-    dockerPull: registry.gitlab.com/uc-cdis/genomel-primary-analysis/harmonization:1.0
+    dockerPull: registry.gitlab.com/uc-cdis/genomel-primary-analysis/harmonization@sha256:2e2fe50befce7f34f80e54036e93aa195627eeba2256a83ee36f4e713f2f43ce
   - class: ShellCommandRequirement
   - class: MultipleInputFeatureRequirement
 
 inputs:
-  - id: input_bam_path
-    type: File
-    doc: Input bam file
-    inputBinding:
-      position: 2
+  bam: File
 
 stdout: readgroups_header
 outputs:
-  - id: readgroup_lines
+  readgroup_lines:
     type: string[]
     outputBinding:
       glob: readgroups_header
       loadContents: true
       outputEval: $(self[0].contents.trim().split('\n'))
 
-  - id: readgroup_names
+  readgroup_names:
     type: string[]
     outputBinding:
       glob: readgroups_header
@@ -41,9 +37,8 @@ outputs:
           return rg_name
         }
 
-baseCommand: ['samtools', 'view', '-H']
+baseCommand: []
 arguments:
-  - valueFrom: 'grep ^@RG'
-    position: 3
-    prefix: "|"
+  - valueFrom: >-
+      samtools view -H $(inputs.bam.path) | grep "^@RG"
     shellQuote: False

@@ -8,115 +8,65 @@ requirements:
   - class: InlineJavascriptRequirement
   - class: ShellCommandRequirement
   - class: DockerRequirement
-    dockerPull: registry.gitlab.com/uc-cdis/genomel-primary-analysis/harmonization:1.0
+    dockerPull: registry.gitlab.com/uc-cdis/genomel-primary-analysis/harmonization@sha256:2e2fe50befce7f34f80e54036e93aa195627eeba2256a83ee36f4e713f2f43ce
 
 inputs:
-  - id: nthreads
-    type: ["null", int]
-    default: 4
+  job_uuid: string
+  interval_bed: File
+  nthreads:
+    type: int
+    default: 32
     doc: Sets maximum number of threads to use. Defaults to one thread per CPU as reported by sysinfo(). This is usually the number of cores or twice the number of cores if hyper-threading is turned on. Lisenced version only. (e.g. 4)
-    inputBinding:
-      position: 1
-      prefix: "-c"
-
-  - id: dbname
+  dbname:
     type: File
     doc: Full pathname of indexed reference sequence created by novoindex.
-    inputBinding:
-      position: 2
-      prefix: "-d"
-
-  - id: input_read1_fastq_file
+  input_read1_fastq_file:
     type: File
     doc: FASTQ file for input read (read R1 in Paired End mode)
-    inputBinding:
-      position: 3
-      prefix: "-f"
-
-  - id: input_read2_fastq_file
-    type: ["null", File]
+  input_read2_fastq_file:
+    type: File
     doc: FASTQ file for read R2 in Paired End mode, if there is one.
-    inputBinding:
-      position: 4
-
-  - id: format
+  readgroup:
     type: string
-    doc: Specifies a read file format. For Fastq '_sequence.txt' files from Illumina Pipeline 1.3 please specify -F ILMFQ. Other values for the -F option could be found at novocraft website.
-    inputBinding:
-      position: 5
-      prefix: "-F"
-
-  - id: mode
-    type: string
-    doc: Sets mode. (e.g. PE)
-    inputBinding:
-      position: 6
-      prefix: "-i"
-
-  - id: length
-    type: string
-    doc: Sets approximate fragment length and standard deviation. (e.g. 300,125)
-    inputBinding:
-      position: 7
-
-  - id: output_format
-    type: string
-    doc: Specifies the report format. (e.g. SAM)
-    inputBinding:
-      position: 8
-      prefix: "-o"
-
-  - id: readgroup
-    type: string
-    doc: Specifies the readgoup. (e.g. "@RG\tCN:\tPL:\tID:\tSM:\tPU:\tLB:")
-    inputBinding:
-      position: 9
-
-  - id: reference_seq
+    doc: Specifies the readgroup. (e.g. "@RG\tCN:\tPL:\tID:\tSM:\tPU:\tLB:")
+  reference_seq:
     type: File
     doc: Reference fasta file, with .dict and .fai.
-    inputBinding:
-      position: 15
     secondaryFiles:
       - "^.dict"
       - ".fai"
-
-  - id: output_name
+  output_name:
     type: string
     doc: Name of the output file.
 
 outputs:
-- id: output_file
-  type: File
-  doc: Novoalign BAM output file.
-  outputBinding:
-    glob: $(inputs.output_name)
+  readgroup_bam:
+    type: File
+    doc: Novoalign BAM output file.
+    outputBinding:
+      glob: '*bam'
+  time_metrics:
+    type: File
+    outputBinding:
+      glob: $(inputs.job_uuid + '.novoalign_samblasterDedup_sambambaView' + inputs.nthreads + '_threads' + '.time.json')
 
-baseCommand: /opt/novocraft/novoalign
+baseCommand: []
 arguments:
-  - valueFrom: "awk"
-    position: 10
-    prefix: "|"
-  - valueFrom: "{if (($2 !~ /phiX174*/) && ($3 !~ /phiX174*/))  print}"
-    position: 11
-
-  - valueFrom: "samtools"
-    position: 12
-    prefix: "|"
-
-  - valueFrom: "view"
-    position: 13
-
-  - valueFrom: "-bT"
-    position: 14
-
-  - valueFrom: '3'
-    position: 16
-    prefix: -f
-
-  - valueFrom: "-"
-    position: 17
-
-  - valueFrom: $(inputs.output_name)
-    position: 18
-    prefix: ">"
+  - position: 0
+    shellQuote: false
+    valueFrom: >-
+      /usr/bin/time -f \"{\"real_time\": \"%E\", \"user_time\": %U, \"system_time\": %S, \"wall_clock\": %e, \"maximum_resident_set_size\": %M, \"average_total_mem\": %K, \"percent_of_cpu\": \"%P\"}\"
+      -o $(inputs.job_uuid + '.novoalign_samblasterDedup_sambambaView' + inputs.nthreads + '_threads' + '.time.json')
+      /opt/novocraft/novoalign
+      -c $(inputs.nthreads)
+      -d $(inputs.dbname.path)
+      -f $(inputs.input_read1_fastq_file.path) $(inputs.input_read2_fastq_file.path)
+      -F STDFQ
+      -i PE
+      300,125
+      -o SAM
+      \"$(inputs.readgroup)\"
+      | /opt/samblaster-v.0.1.24/samblaster -i /dev/stdin -o /dev/stdout
+      | /opt/sambamba-0.6.8-linux-static view -t $(inputs.nthreads) -f bam -l 0 -S -F "not unmapped" -L $(inputs.interval_bed.path) /dev/stdin
+      | /opt/sambamba-0.6.8-linux-static sort -t $(inputs.nthreads) --natural-sort -m 15GiB --tmpdir ./
+      -o $(inputs.output_name).unsorted.bam -l 5 /dev/stdin
