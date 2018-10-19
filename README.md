@@ -4,6 +4,7 @@ Workon:
 
 * Harmonization workflow optimization:
   > BWA mem version
+  
   > internal scatter for cwl engine + WGS
 
 * Indelrealignment workflow
