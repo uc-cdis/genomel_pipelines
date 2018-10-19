@@ -25,7 +25,7 @@ outputs:
         ${
           var rg_line = [];
           for (var i = 0; i < self[0].contents.trim().split('\n').length; i++ ){
-            rg_line.push(self[0].contents.trim().split('\n')[i].replace(/\#/g, '\%2'))
+            rg_line.push(self[0].contents.trim().split('\n')[i])
           };
           return rg_line
         }
@@ -39,7 +39,7 @@ outputs:
         ${
           var rg_name = [];
           for (var i = 0; i < self[0].contents.trim().split('\n').length; i++ ){
-            rg_name.push(self[0].contents.trim().split('\n')[i].split('\t')[1].replace('ID:', '').replace(/\#/g, '\%2'))
+            rg_name.push(self[0].contents.trim().split('\n')[i].split('\t')[1].replace('ID:', '').replace(/\#/g, '-'))
           };
           return rg_name
         }
