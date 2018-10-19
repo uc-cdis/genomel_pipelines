@@ -84,7 +84,6 @@ steps:
     scatterMethod: dotproduct
     in:
       job_uuid: job_uuid
-      interval_bed: get_fai_bed/output_bed
       nthreads: nthreads
       dbname: dbname
       input_read1_fastq_file: trim_adaptor/output_read1_trimmed_file
@@ -115,6 +114,7 @@ steps:
     in:
       job_uuid: job_uuid
       new_header: get_bam_new_header/bam_new_header
+      interval_bed: get_fai_bed/output_bed
       bam: readgroups_merge/merged_bam
     out: [reheadered_bam, time_metrics]
 
