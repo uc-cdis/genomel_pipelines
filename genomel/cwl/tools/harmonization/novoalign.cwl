@@ -47,7 +47,7 @@ outputs:
   time_metrics:
     type: File
     outputBinding:
-      glob: $(inputs.job_uuid + '.Novoalign_SamblasterDedup_SambambaFilter_' + inputs.nthreads + '_threads' + '.time.json')
+      glob: $(inputs.job_uuid + '.Novoalign_SamblasterDedup_' + inputs.nthreads + '_threads' + '.time.json')
 
 baseCommand: []
 arguments:
@@ -55,7 +55,7 @@ arguments:
     shellQuote: false
     valueFrom: >-
       /usr/bin/time -f \"{\"real_time\": \"%E\", \"user_time\": %U, \"system_time\": %S, \"wall_clock\": %e, \"maximum_resident_set_size\": %M, \"average_total_mem\": %K, \"percent_of_cpu\": \"%P\"}\"
-      -o $(inputs.job_uuid + '.Novoalign_SamblasterDedup_SambambaFilter_' + inputs.nthreads + '_threads' + '.time.json')
+      -o $(inputs.job_uuid + '.Novoalign_SamblasterDedup_' + inputs.nthreads + '_threads' + '.time.json')
       /opt/novocraft/novoalign
       -c $(inputs.nthreads)
       -d $(inputs.dbname.path)
