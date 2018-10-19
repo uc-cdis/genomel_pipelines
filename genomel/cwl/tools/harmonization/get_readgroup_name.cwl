@@ -21,7 +21,14 @@ outputs:
     outputBinding:
       glob: readgroups_header
       loadContents: true
-      outputEval: $(self[0].contents.trim().split('\n'))
+      outputEval: |
+        ${
+          var rg_line = [];
+          for (var i = 0; i < self[0].contents.trim().split('\n').length; i++ ){
+            rg_line.push(self[0].contents.trim().split('\n')[i].replace(/\#/g, '\%2'))
+          };
+          return rg_line
+        }
 
   readgroup_names:
     type: string[]
@@ -31,8 +38,8 @@ outputs:
       outputEval: |
         ${
           var rg_name = [];
-          for (var i = 0; i < self[0].contents.trim().split('\n').length; i++){
-            rg_name.push(self[0].contents.trim().split('\n')[i].split('\t')[1].replace('ID:', ''))
+          for (var i = 0; i < self[0].contents.trim().split('\n').length; i++ ){
+            rg_name.push(self[0].contents.trim().split('\n')[i].split('\t')[1].replace('ID:', '').replace(/\#/g, '\%2'))
           };
           return rg_name
         }
