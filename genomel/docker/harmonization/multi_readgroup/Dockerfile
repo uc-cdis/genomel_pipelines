@@ -2,12 +2,11 @@ FROM ubuntu:16.04
 
 ### add novocraftV3.09.00.Linux3.1X and license
 ADD novocraft.tar.bz2 /opt/
-ADD novoalign_dedup_multithreaded_by_readgroup.py /opt/
 
 RUN apt-get update -y && \
     apt-get install -y git wget unzip gzip time \
     g++ bzip2 gcc libncurses-dev make zlib1g-dev libbz2-dev liblzma-dev \
-    openjdk-8-jre-headless
+    openjdk-8-jre-headless python-dev
 
 RUN cd /opt/ && wget https://github.com/samtools/samtools/releases/download/1.9/samtools-1.9.tar.bz2 \
     && tar xf samtools-1.9.tar.bz2 \
@@ -28,3 +27,5 @@ RUN cd /opt/ && wget https://github.com/samtools/samtools/releases/download/1.9/
     && tar xf samblaster-v.0.1.24.tar.gz \
     && cd samblaster-v.0.1.24 \
     && make && rm /opt/samblaster-v.0.1.24.tar.gz
+
+ADD novoalign_dedup_multithreaded_by_readgroup.py /opt/
