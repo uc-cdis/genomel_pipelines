@@ -71,8 +71,7 @@ steps:
   get_fai_bed:
     run: ../tools/harmonization/fai_to_bed.cwl
     in:
-      ref_fai:
-        source: reference_fai_index
+      ref_fai: reference_fai_index
     out: [output_bed]
 
   novoalign_filter_dedup:
