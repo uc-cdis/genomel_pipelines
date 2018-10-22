@@ -75,17 +75,15 @@ steps:
     out: [output_bed]
 
   novoalign_filter_dedup:
-    run: ../tools/harmonization/novoalign.cwl
-    scatter: [input_read1_fastq_file, input_read2_fastq_file, readgroup, output_name]
-    scatterMethod: dotproduct
+    run: ../tools/harmonization/novoalign_multi_readgroup.cwl
     in:
       job_uuid: job_uuid
       nthreads: nthreads
       dbname: dbname
-      input_read1_fastq_file: trim_adaptor/output_read1_trimmed_file
-      input_read2_fastq_file: trim_adaptor/output_read2_trimmed_file
-      readgroup: trim_adaptor/paired_readgroup_line
-      output_name: trim_adaptor/paired_readgroup_name
+      input_read1_fastq_files: trim_adaptor/output_read1_trimmed_file
+      input_read2_fastq_files: trim_adaptor/output_read2_trimmed_file
+      readgroup_lines: trim_adaptor/paired_readgroup_line
+      readgroup_names: trim_adaptor/paired_readgroup_name
     out: [readgroup_bam, time_metrics]
 
   readgroups_merge:

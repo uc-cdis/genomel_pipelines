@@ -8,7 +8,7 @@ requirements:
   - class: InlineJavascriptRequirement
   - class: ShellCommandRequirement
   - class: DockerRequirement
-    dockerPull: registry.gitlab.com/uc-cdis/genomel-primary-analysis/harmonization@sha256:2e2fe50befce7f34f80e54036e93aa195627eeba2256a83ee36f4e713f2f43ce
+    dockerPull: registry.gitlab.com/uc-cdis/genomel-primary-analysis/harmonization:1.0
 
 inputs:
   job_uuid: string
@@ -28,12 +28,6 @@ inputs:
   readgroup:
     type: string
     doc: Specifies the readgroup. (e.g. "@RG\tCN:\tPL:\tID:\tSM:\tPU:\tLB:")
-  reference_seq:
-    type: File
-    doc: Reference fasta file, with .dict and .fai.
-    secondaryFiles:
-      - "^.dict"
-      - ".fai"
   output_name:
     type: string
     doc: Name of the output file.
@@ -47,7 +41,7 @@ outputs:
   time_metrics:
     type: File
     outputBinding:
-      glob: $(inputs.job_uuid + '.Novoalign_SamblasterDedup_SambambaFilter_' + inputs.nthreads + '_threads' + '.time.json')
+      glob: $(inputs.job_uuid + '.Novoalign_' + inputs.output_name + '_SamblasterDedup_' + inputs.nthreads + '_threads' + '.time.json')
 
 baseCommand: []
 arguments:
@@ -55,7 +49,7 @@ arguments:
     shellQuote: false
     valueFrom: >-
       /usr/bin/time -f \"{\"real_time\": \"%E\", \"user_time\": %U, \"system_time\": %S, \"wall_clock\": %e, \"maximum_resident_set_size\": %M, \"average_total_mem\": %K, \"percent_of_cpu\": \"%P\"}\"
-      -o $(inputs.job_uuid + '.Novoalign_SamblasterDedup_SambambaFilter_' + inputs.nthreads + '_threads' + '.time.json')
+      -o $(inputs.job_uuid + '.Novoalign_' + inputs.output_name + '_SamblasterDedup_' + inputs.nthreads + '_threads' + '.time.json')
       /opt/novocraft/novoalign
       -c $(inputs.nthreads)
       -d $(inputs.dbname.path)

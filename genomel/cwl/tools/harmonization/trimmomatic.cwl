@@ -8,7 +8,7 @@ requirements:
   - class: InlineJavascriptRequirement
   - class: ShellCommandRequirement
   - class: DockerRequirement
-    dockerPull: registry.gitlab.com/uc-cdis/genomel-primary-analysis/harmonization@sha256:2e2fe50befce7f34f80e54036e93aa195627eeba2256a83ee36f4e713f2f43ce
+    dockerPull: registry.gitlab.com/uc-cdis/genomel-primary-analysis/harmonization:1.0
 
 inputs:
   job_uuid: string
@@ -51,7 +51,7 @@ outputs:
   time_metrics:
     type: File
     outputBinding:
-      glob: $(inputs.job_uuid + '.trimmomatic.' + inputs.input_read1_fastq_file.nameroot.replace(/\.[^/.]+$/, "") + '.time.json')
+      glob: $(inputs.job_uuid + '.trimmomatic.' + inputs.readgroup_name + '.time.json')
 
 baseCommand: []
 arguments:
@@ -59,7 +59,7 @@ arguments:
     shellQuote: false
     valueFrom: >-
       /usr/bin/time -f \"{\"real_time\": \"%E\", \"user_time\": %U, \"system_time\": %S, \"wall_clock\": %e, \"maximum_resident_set_size\": %M, \"average_total_mem\": %K, \"percent_of_cpu\": \"%P\"}\"
-      -o $(inputs.job_uuid + '.trimmomatic.' + inputs.input_read1_fastq_file.nameroot.replace(/\.[^/.]+$/, "") + '.time.json')
+      -o $(inputs.job_uuid + '.trimmomatic.' + inputs.readgroup_name + '.time.json')
       java -Xmx32g -jar /opt/Trimmomatic-0.38/trimmomatic-0.38.jar
       PE
       -threads 6

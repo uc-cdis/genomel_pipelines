@@ -2,15 +2,13 @@
 
 Workon:
 
-* Harmonization workflow optimization:
-  > BWA mem version
-  
-  > internal scatter for cwl engine + WGS
-
 * Indelrealignment workflow
-* Recalibration workflow
 * Variant calling workflow
 
 Complete:
 
 * Novoalign harmonization workflow optimization
+
+  > 10-12X faster than original workflow (Same logic/workflow, new tools and merged steps)
+
+  > internal scatter for cwl engine + multiple read groups WGS
