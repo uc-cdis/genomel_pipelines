@@ -8,16 +8,13 @@ requirements:
   - class: InlineJavascriptRequirement
   - class: ShellCommandRequirement
   - class: DockerRequirement
-    dockerPull: registry.gitlab.com/uc-cdis/genomel-primary-analysis/harmonization_multi_readgroup@sha256:408a4631879cdba32a91afa7b62dd2c517899563d323ff306d3d2e00e3e70dcc
+    dockerPull: registry.gitlab.com/uc-cdis/genomel-primary-analysis/harmonization_multi_readgroup:1.0
 
 inputs:
   job_uuid: string
   nthreads:
     type: int
     default: 8
-  concurrents:
-    type: int
-    default: 4
   dbname: File
   input_read1_fastq_files:
     type: File[]
@@ -45,7 +42,7 @@ outputs:
   time_metrics:
     type: File
     outputBinding:
-      glob: $(inputs.job_uuid + '.Novoalign_SamblasterDedup_' + inputs.nthreads + '_threads' + inputs.concurrents + '_concurrents' + '.time.json')
+      glob: $(inputs.job_uuid + '.Novoalign_SamblasterDedup_' + inputs.nthreads + '_threads_each_readgroup' + '.time.json')
 
 baseCommand: []
 arguments:
@@ -53,6 +50,6 @@ arguments:
     shellQuote: false
     valueFrom: >-
       /usr/bin/time -f \"{\"real_time\": \"%E\", \"user_time\": %U, \"system_time\": %S, \"wall_clock\": %e, \"maximum_resident_set_size\": %M, \"average_total_mem\": %K, \"percent_of_cpu\": \"%P\"}\"
-      -o $(inputs.job_uuid + '.Novoalign_SamblasterDedup_' + inputs.nthreads + '_threads' + inputs.concurrents + '_concurrents' + '.time.json')
-      /opt/novoalign_dedup_multithreaded_by_readgroup.py
-      -d $(inputs.dbname.path) -t $(inputs.nthreads) -c $(inputs.concurrents)
+      -o $(inputs.job_uuid + '.Novoalign_SamblasterDedup_' + inputs.nthreads + '_threads_each_readgroup' + '.time.json')
+      python /opt/novoalign_dedup_multithreaded_by_readgroup.py
+      -d $(inputs.dbname.path) -t $(inputs.nthreads)

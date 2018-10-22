@@ -79,7 +79,6 @@ steps:
     in:
       job_uuid: job_uuid
       nthreads: nthreads
-      concurrents: concurrents
       dbname: dbname
       input_read1_fastq_files: trim_adaptor/output_read1_trimmed_file
       input_read2_fastq_files: trim_adaptor/output_read2_trimmed_file
