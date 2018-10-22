@@ -8,7 +8,7 @@ requirements:
   - class: InlineJavascriptRequirement
   - class: ShellCommandRequirement
   - class: DockerRequirement
-    dockerPull: registry.gitlab.com/uc-cdis/genomel-primary-analysis/harmonization@sha256:2e2fe50befce7f34f80e54036e93aa195627eeba2256a83ee36f4e713f2f43ce
+    dockerPull: registry.gitlab.com/uc-cdis/genomel-primary-analysis/harmonization:1.0
 
 inputs:
   job_uuid: string
