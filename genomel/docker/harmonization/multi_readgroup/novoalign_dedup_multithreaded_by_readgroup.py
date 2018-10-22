@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 '''Internal multithreading for Novoalign-dedup on multiple readgroups'''
 
+from __future__ import division
 import sys
 import argparse
 import subprocess
@@ -13,6 +14,15 @@ def is_nat(pos):
     if int(pos) > 0:
         return int(pos)
     raise argparse.ArgumentTypeError('{} must be positive, non-zero'.format(pos))
+
+def get_chunksize(total_number_of_rg, threads):
+    '''get chunksize for pool.map()'''
+    chunksize = float(int(total_number_of_rg)*int(threads)/32)
+    if chunksize % 1 > 0:
+        chunksize = int(chunksize) + 1
+    else:
+        chunksize = int(chunksize)
+    return chunksize
 
 def do_pool_commands(cmd, lock=Lock(), shell_var=True):
     '''run pool commands'''
@@ -28,10 +38,10 @@ def do_pool_commands(cmd, lock=Lock(), shell_var=True):
         print "command failed {}".format(cmd)
     return output.wait()
 
-def multi_commands(cmds, thread_count, concurrent, shell_var=True):
+def multi_commands(cmds, thread_count, chunksize, shell_var=True):
     '''run commands on number of threads'''
     pool = Pool(int(thread_count))
-    output = pool.map(partial(do_pool_commands, shell_var=shell_var), cmds, concurrent)
+    output = pool.map(partial(do_pool_commands, shell_var=shell_var), cmds, chunksize)
     return output
 
 def cmd_template(threads, dbname, cmd_pair):
@@ -101,11 +111,6 @@ def main():
                         required=True, \
                         type=is_nat, \
                         default=8)
-    parser.add_argument('-c', \
-                        '--concurrent_readgroup', \
-                        required=True, \
-                        type=is_nat, \
-                        default=4)
     args = parser.parse_args()
 
     if len(args.fastq_read1) == len(args.fastq_read2) \
@@ -117,14 +122,17 @@ def main():
         sys.exit(1)
     threads = args.thread_count
     dbname = args.dbfile_for_novoalign
-    concurrents = args.concurrent_readgroup
+    chunksize = get_chunksize(len(args.readgroup_names), threads)
     novo_cmd = list(cmd_template(threads, dbname, input_pair))
-    outputs = multi_commands(novo_cmd, threads, concurrents)
+    print 'Running {} readgroup alignment(s). {} thread(s) for each in total {} round(s)'\
+          .format(len(args.readgroup_names), threads, chunksize)
+    outputs = multi_commands(novo_cmd, threads, chunksize)
     if any(x != 0 for x in outputs):
         print 'Failed'
         sys.exit(1)
     else:
-        print 'Completed'
+        print 'Completed {} readgroup alignment(s). {} thread(s) for each in total {} round(s)'\
+              .format(len(args.readgroup_names), threads, chunksize)
 
 if __name__ == '__main__':
     main()
