@@ -39,7 +39,7 @@ outputs:
         ${
           var rg_name = [];
           for (var i = 0; i < self[0].contents.trim().split('\n').length; i++ ){
-            rg_name.push(self[0].contents.trim().split('\n')[i].split('\t')[1].replace('ID:', '').replace(/\#/g, '-'))
+            rg_name.push(self[0].contents.trim().split('\n')[i].split('\t')[1].replace('ID:', '').replace(/\#/g, '%2'))
           };
           return rg_name
         }
