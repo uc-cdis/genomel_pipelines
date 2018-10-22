@@ -15,9 +15,7 @@ inputs:
   input_bam: File
   nthreads: int
   dbname: File
-  reference_seq:
-    type: File
-    secondaryFiles: [.fai, ^.dict]
+  reference_fai_index: File
 
 outputs:
   time_metrics_from_bam_to_fastq:
@@ -74,8 +72,7 @@ steps:
     run: ../tools/harmonization/fai_to_bed.cwl
     in:
       ref_fai:
-        source: reference_seq
-        valueFrom: $(self.secondaryFiles[0])
+        source: reference_fai_index
     out: [output_bed]
 
   novoalign_filter_dedup:
@@ -90,7 +87,6 @@ steps:
       input_read2_fastq_file: trim_adaptor/output_read2_trimmed_file
       readgroup: trim_adaptor/paired_readgroup_line
       output_name: trim_adaptor/paired_readgroup_name
-      reference_seq: reference_seq
     out: [readgroup_bam, time_metrics]
 
   readgroups_merge:
