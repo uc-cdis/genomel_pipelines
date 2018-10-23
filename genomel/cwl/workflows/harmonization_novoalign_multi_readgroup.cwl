@@ -25,7 +25,7 @@ outputs:
     type: File[]
     outputSource: trim_adaptor/time_metrics
   time_metrics_from_novoalign_filter_dedup:
-    type: File[]
+    type: File
     outputSource: novoalign_filter_dedup/time_metrics
   time_metrics_from_merge:
     type: File
