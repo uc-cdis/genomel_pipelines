@@ -62,7 +62,7 @@ arguments:
       -o $(inputs.job_uuid + '.trimmomatic.' + inputs.readgroup_name + '.time.json')
       java -Xmx32g -jar /opt/Trimmomatic-0.38/trimmomatic-0.38.jar
       PE
-      -threads 6
+      -threads 24
       -phred33
       $(inputs.input_read1_fastq_file.path) $(inputs.input_read2_fastq_file.path)
       $(inputs.input_read1_fastq_file.nameroot.replace(/\.[^/.]+$/, "") + '.trimmed.fastq.gz') $(inputs.input_read1_fastq_file.nameroot.replace(/\.[^/.]+$/, "") + '.trimmed.unpaired.fastq.gz')
