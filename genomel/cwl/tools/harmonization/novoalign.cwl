@@ -12,10 +12,6 @@ requirements:
 
 inputs:
   job_uuid: string
-  nthreads:
-    type: int
-    default: 32
-    doc: Sets maximum number of threads to use. Defaults to one thread per CPU as reported by sysinfo(). This is usually the number of cores or twice the number of cores if hyper-threading is turned on. Lisenced version only. (e.g. 4)
   dbname:
     type: File
     doc: Full pathname of indexed reference sequence created by novoindex.
@@ -41,7 +37,7 @@ outputs:
   time_metrics:
     type: File
     outputBinding:
-      glob: $(inputs.job_uuid + '.Novoalign_' + inputs.readgroup_name + '_SamblasterDedup_' + inputs.nthreads + '_threads' + '.time.json')
+      glob: $(inputs.job_uuid + '.Novoalign_' + inputs.readgroup_name + '_SamblasterDedup' + '.time.json')
 
 baseCommand: []
 arguments:
@@ -49,9 +45,9 @@ arguments:
     shellQuote: false
     valueFrom: >-
       /usr/bin/time -f \"{\"real_time\": \"%E\", \"user_time\": %U, \"system_time\": %S, \"wall_clock\": %e, \"maximum_resident_set_size\": %M, \"average_total_mem\": %K, \"percent_of_cpu\": \"%P\"}\"
-      -o $(inputs.job_uuid + '.Novoalign_' + inputs.readgroup_name + '_SamblasterDedup_' + inputs.nthreads + '_threads' + '.time.json')
+      -o $(inputs.job_uuid + '.Novoalign_' + inputs.readgroup_name + '_SamblasterDedup' + '.time.json')
       /opt/novocraft/novoalign
-      -c $(inputs.nthreads)
+      -c 20
       -d $(inputs.dbname.path)
       -f $(inputs.input_read1_fastq_file.path) $(inputs.input_read2_fastq_file.path)
       -F STDFQ
@@ -60,6 +56,6 @@ arguments:
       -o SAM
       \"$(inputs.readgroup_line)\"
       | /opt/samblaster-v.0.1.24/samblaster -i /dev/stdin -o /dev/stdout
-      | /opt/sambamba-0.6.8-linux-static view -t $(inputs.nthreads) -f bam -l 0 -S /dev/stdin
-      | /opt/sambamba-0.6.8-linux-static sort -t $(inputs.nthreads) --natural-sort -m 15GiB --tmpdir ./
+      | /opt/sambamba-0.6.8-linux-static view -t 12 -f bam -l 0 -S /dev/stdin
+      | /opt/sambamba-0.6.8-linux-static sort -t 12 --natural-sort -m 15GiB --tmpdir ./
       -o $(inputs.readgroup_name).unsorted.bam -l 5 /dev/stdin

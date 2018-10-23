@@ -16,7 +16,6 @@ inputs:
   input_read2: File[]
   readgroup_lines: string[]
   readgroup_names: string[]
-  nthreads: int
   reference:
     type: File
     secondaryFiles: [.fai, .64.amb, .64.ann, .64.bwt, .64.pac, .64.sa, .64.alt, ^.dict, .amb, .ann, .bwt, .pac, .sa]
@@ -68,7 +67,6 @@ steps:
     scatterMethod: dotproduct
     in:
       job_uuid: job_uuid
-      nthreads: nthreads
       reference: reference
       input_read1_fastq_file: trim_adaptor/output_read1_trimmed_file
       input_read2_fastq_file: trim_adaptor/output_read2_trimmed_file
