@@ -1,3 +1,4 @@
+
 #!/usr/bin/env cwl-runner
 
 cwlVersion: v1.0
@@ -35,10 +36,10 @@ inputs:
 
 outputs:
   readgroup_bam:
-    type: File
+    type: File[]
     doc: Novoalign BAM output file.
     outputBinding:
-      glob: '*bam'
+      glob: '*.unsorted.bam'
   time_metrics:
     type: File
     outputBinding:
