@@ -25,10 +25,10 @@ inputs:
   input_read2_fastq_file:
     type: File
     doc: FASTQ file for read R2 in Paired End mode, if there is one.
-  readgroup:
+  readgroup_line:
     type: string
-    doc: Specifies the readgroup. (e.g. "@RG\tCN:\tPL:\tID:\tSM:\tPU:\tLB:")
-  output_name:
+    doc: Specifies the readgroup_line. (e.g. "@RG\tCN:\tPL:\tID:\tSM:\tPU:\tLB:")
+  readgroup_name:
     type: string
     doc: Name of the output file.
 
@@ -41,7 +41,7 @@ outputs:
   time_metrics:
     type: File
     outputBinding:
-      glob: $(inputs.job_uuid + '.Novoalign_' + inputs.output_name + '_SamblasterDedup_' + inputs.nthreads + '_threads' + '.time.json')
+      glob: $(inputs.job_uuid + '.Novoalign_' + inputs.readgroup_name + '_SamblasterDedup_' + inputs.nthreads + '_threads' + '.time.json')
 
 baseCommand: []
 arguments:
@@ -49,7 +49,7 @@ arguments:
     shellQuote: false
     valueFrom: >-
       /usr/bin/time -f \"{\"real_time\": \"%E\", \"user_time\": %U, \"system_time\": %S, \"wall_clock\": %e, \"maximum_resident_set_size\": %M, \"average_total_mem\": %K, \"percent_of_cpu\": \"%P\"}\"
-      -o $(inputs.job_uuid + '.Novoalign_' + inputs.output_name + '_SamblasterDedup_' + inputs.nthreads + '_threads' + '.time.json')
+      -o $(inputs.job_uuid + '.Novoalign_' + inputs.readgroup_name + '_SamblasterDedup_' + inputs.nthreads + '_threads' + '.time.json')
       /opt/novocraft/novoalign
       -c $(inputs.nthreads)
       -d $(inputs.dbname.path)
@@ -58,8 +58,8 @@ arguments:
       -i PE
       300,125
       -o SAM
-      \"$(inputs.readgroup)\"
+      \"$(inputs.readgroup_line)\"
       | /opt/samblaster-v.0.1.24/samblaster -i /dev/stdin -o /dev/stdout
       | /opt/sambamba-0.6.8-linux-static view -t $(inputs.nthreads) -f bam -l 0 -S /dev/stdin
       | /opt/sambamba-0.6.8-linux-static sort -t $(inputs.nthreads) --natural-sort -m 15GiB --tmpdir ./
-      -o $(inputs.output_name).unsorted.bam -l 5 /dev/stdin
+      -o $(inputs.readgroup_name).unsorted.bam -l 5 /dev/stdin
