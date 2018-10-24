@@ -27,7 +27,7 @@ outputs:
   time_metrics:
     type: File
     outputBinding:
-      glob: $(inputs.job_uuid + '.SamtoolsReheader' + '.time.json')
+      glob: $(inputs.job_uuid + '.SamtoolsFilter_Reheader' + '.time.json')
 
 baseCommand: []
 arguments:
