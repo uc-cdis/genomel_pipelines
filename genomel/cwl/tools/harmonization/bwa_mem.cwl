@@ -14,8 +14,7 @@ inputs:
   job_uuid: string
   reference:
     type: File
-    secondaryFiles: [.64.amb, .64.ann, .64.bwt, .64.pac,
-      .64.sa, ^.dict, .amb, .ann, .bwt, .pac, .sa]
+    secondaryFiles: [.fai, .64.amb, .64.ann, .64.bwt, .64.pac, .64.sa, ^.dict, .amb, .ann, .bwt, .pac, .sa]
   input_read1_fastq_file:
     type: File
     doc: FASTQ file for input read (read R1 in Paired End mode)
@@ -47,7 +46,7 @@ arguments:
     valueFrom: >-
       /usr/bin/time -f \"{\"real_time\": \"%E\", \"user_time\": %U, \"system_time\": %S, \"wall_clock\": %e, \"maximum_resident_set_size\": %M, \"average_total_mem\": %K, \"percent_of_cpu\": \"%P\"}\"
       -o $(inputs.job_uuid + '.BWA_mem_' + inputs.readgroup_name + '_SamblasterDedup' + '.time.json')
-      /opt/bwa-0.7.17/bwa mem -K 100000000 -p -v 3 -t 30
+      /opt/bwa-0.7.17/bwa mem -K 100000000 -M -v 3 -t 30
       -Y $(inputs.reference.path) -R '$(inputs.readgroup_line)'
       $(inputs.input_read1_fastq_file.path) $(inputs.input_read2_fastq_file.path)
       | /opt/samblaster-v.0.1.24/samblaster -i /dev/stdin -o /dev/stdout
