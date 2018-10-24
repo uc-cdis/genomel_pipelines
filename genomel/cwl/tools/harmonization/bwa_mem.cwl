@@ -15,7 +15,7 @@ inputs:
   reference:
     type: File
     secondaryFiles: [.64.amb, .64.ann, .64.bwt, .64.pac,
-      .64.sa, .64.alt, ^.dict, .amb, .ann, .bwt, .pac, .sa]
+      .64.sa, ^.dict, .amb, .ann, .bwt, .pac, .sa]
   input_read1_fastq_file:
     type: File
     doc: FASTQ file for input read (read R1 in Paired End mode)

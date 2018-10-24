@@ -18,7 +18,7 @@ inputs:
   readgroup_names: string[]
   reference:
     type: File
-    secondaryFiles: [.fai, .64.amb, .64.ann, .64.bwt, .64.pac, .64.sa, .64.alt, ^.dict, .amb, .ann, .bwt, .pac, .sa]
+    secondaryFiles: [.fai, .64.amb, .64.ann, .64.bwt, .64.pac, .64.sa, ^.dict, .amb, .ann, .bwt, .pac, .sa]
 
 outputs:
   time_metrics_from_trim_adaptor:
