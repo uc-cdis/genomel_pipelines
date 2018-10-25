@@ -52,7 +52,7 @@ outputs:
   harmonized_recal_bam:
     type: File
     outputSource: gatk3_printreads_on_harmonized_bam/recal_bam
-  harmonized_realigned_recal_bam
+  harmonized_realigned_recal_bam:
     type: File
     outputSource: gatk3_printreads_on_realigned_bam/recal_bam
 
@@ -83,7 +83,7 @@ steps:
       reference: reference
       known_indel: known_indel
       known_snp: known_snp
-      realigner_target: gatk3_realigntargetcreator/realigner_target
+      realigner_target: gatk3_realignertargetcreator/realigner_target
     out: [realigned_bam, time_metrics]
 
   gatk3_baserecalibrator_on_harmonized_bam:

@@ -36,6 +36,7 @@ outputs:
     type: File
     outputBinding:
       glob: $(inputs.job_uuid + '.harmonized.realigned.bam')
+    secondaryFiles: [^.bai]
 
   time_metrics:
     type: File

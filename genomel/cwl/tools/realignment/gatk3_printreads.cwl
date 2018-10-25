@@ -28,6 +28,7 @@ outputs:
     type: File
     outputBinding:
       glob: $(inputs.job_uuid + '.recal.bam')
+    secondaryFiles: [^.bai]
 
   time_metrics:
     type: File
