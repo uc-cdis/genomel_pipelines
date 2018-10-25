@@ -52,6 +52,6 @@ arguments:
       -nt 30
       -I $(inputs.bam_path.path)
       -R $(inputs.reference.path)
-      -known $(inputs.known_indel.path)
-      -known $(inputs.known_snp.path)
+      -known $(inputs.known_indel1.path)
+      -known $(inputs.known_indel2.path)
       -o $(inputs.job_uuid + '.realigner_target.intervals')

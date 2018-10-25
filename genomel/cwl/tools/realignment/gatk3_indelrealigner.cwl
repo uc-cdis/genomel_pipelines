@@ -53,8 +53,8 @@ arguments:
       java -Xmx100G -jar /opt/GenomeAnalysisTK.jar -T IndelRealigner
       -I $(inputs.bam_path.path)
       -R $(inputs.reference.path)
-      -known $(inputs.known_indel.path)
-      -known $(inputs.known_snp.path)
+      -known $(inputs.known_indel1.path)
+      -known $(inputs.known_indel2.path)
       -targetIntervals $(inputs.realigner_target.path)
       -o $(inputs.job_uuid + '.harmonized.realigned.bam')
       -compress
