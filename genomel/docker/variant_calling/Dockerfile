@@ -2,7 +2,7 @@ FROM ubuntu:bionic-20180426
 
 RUN apt-get update \
     && export DEBIAN_FRONTEND=noninteractive \
-    && apt-get install -y \
+    && apt-get install -y time \
        python-dev \
        openjdk-11-jre-headless \
        wget git g++ gcc make zlib1g-dev libbz2-dev liblzma-dev \
