@@ -8,12 +8,14 @@ requirements:
   - class: InlineJavascriptRequirement
   - class: ShellCommandRequirement
   - class: DockerRequirement
-    dockerPull: registry.gitlab.com/uc-cdis/genomel-exome-variant-detection/haplotypecaller:1.0
+    dockerPull: registry.gitlab.com/uc-cdis/genomel-exome-variant-detection/gatk3_genomel_variant_calling:1.0
 
 inputs:
   job_uuid: string
   bam_file:
-    type: File
+    type: File[]
+    inputBinding:
+      prefix: -b
     secondaryFiles: '^.bai'
   reference:
     type: File
@@ -44,5 +46,5 @@ arguments:
       /usr/bin/time -f \"{\"real_time\": \"%E\", \"user_time\": %U, \"system_time\": %S, \"wall_clock\": %e, \"maximum_resident_set_size\": %M, \"average_total_mem\": %K, \"percent_of_cpu\": \"%P\"}\"
       -o $(inputs.job_uuid + '.gatk3_unifiedgenotyper.time.json')
       python /opt/gatk3_genomel_variant_calling.py
-      -b $(inputs.bam_file.path) -j $(inputs.job_uuid) -r $(inputs.reference.path)
-      -i $(inputs.interval.path) -s $(inputs.snp_ref.path) -c 25 -t unifiedgenotyper
+      -j $(inputs.job_uuid) -r $(inputs.reference.path)
+      -i $(inputs.interval.path) -s $(inputs.snp_ref.path) -c 30 -t unifiedgenotyper

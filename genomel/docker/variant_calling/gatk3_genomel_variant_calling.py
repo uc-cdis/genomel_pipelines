@@ -52,7 +52,6 @@ def unifiedgenotyper_template(cmd_dict):
         '-jar', '/opt/GenomeAnalysisTK.jar',
         '-T', 'UnifiedGenotyper',
         '-R', '${REF}',
-        '-I', '${BAM}',
         '-L', '${INTERVAL}',
         '-D', '${SNP}',
         '-o', '${OUT}',
@@ -65,6 +64,8 @@ def unifiedgenotyper_template(cmd_dict):
         '-A', 'HomopolymerRun',
         '-A', 'QualByDepth'
     ]
+    for bam in cmd_dict['bam']:
+        cmd_list.extend(['-I', bam])
     cmd_str = ' '.join(cmd_list)
     template = string.Template(cmd_str)
     for region in get_region(cmd_dict['interval']):
@@ -73,7 +74,6 @@ def unifiedgenotyper_template(cmd_dict):
         cmd = template.substitute(
             dict(
                 REF=cmd_dict['ref'],
-                BAM=cmd_dict['bam'],
                 INTERVAL=cmd_dict['interval'],
                 SNP=cmd_dict['snp'],
                 OUT=output
@@ -111,7 +111,7 @@ def haplotypecaller_template(cmd_dict):
         cmd = template.substitute(
             dict(
                 REF=cmd_dict['ref'],
-                BAM=cmd_dict['bam'],
+                BAM=cmd_dict['bam'][0],
                 INTERVAL=cmd_dict['interval'],
                 SNP=cmd_dict['snp'],
                 OUT=output
@@ -126,6 +126,7 @@ def main():
     parser.add_argument('-b', \
                         '--bam', \
                         required=True, \
+                        nargs='+', \
                         help='BAM file.')
     parser.add_argument('-j', \
                         '--job_uuid', \

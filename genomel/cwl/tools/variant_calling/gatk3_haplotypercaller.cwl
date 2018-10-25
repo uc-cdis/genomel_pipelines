@@ -8,7 +8,7 @@ requirements:
   - class: InlineJavascriptRequirement
   - class: ShellCommandRequirement
   - class: DockerRequirement
-    dockerPull: registry.gitlab.com/uc-cdis/genomel-exome-variant-detection/haplotypecaller:1.0
+    dockerPull: registry.gitlab.com/uc-cdis/genomel-exome-variant-detection/gatk3_genomel_variant_calling:1.0
 
 inputs:
   job_uuid: string
