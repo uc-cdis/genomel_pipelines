@@ -57,5 +57,5 @@ arguments:
       -known $(inputs.known_indel2.path)
       -targetIntervals $(inputs.realigner_target.path)
       -o $(inputs.job_uuid + '.harmonized.realigned.bam')
-      -compress
+      -compress 7
       -rf NotPrimaryAlignment
