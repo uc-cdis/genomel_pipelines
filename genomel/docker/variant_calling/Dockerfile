@@ -6,4 +6,4 @@ RUN apt-get update -y && \
 
 ###GATK 3.7-0-gcfedb67
 ADD GenomeAnalysisTK.jar /opt/
-ADD haplotypecaller_multithreaded_by_intervals.py /opt/
+ADD gatk3_genomel_variant_calling.py /opt/

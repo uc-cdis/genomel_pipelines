@@ -29,12 +29,12 @@ outputs:
   gvcf_list:
     type: File[]
     outputBinding:
-      glob: '*g.vcf.gz'
+      glob: '*.vcf.gz'
     secondaryFiles: '.tbi'
   time_metrics:
     type: File
     outputBinding:
-      glob: $(inputs.job_uuid + '.gatk3_haplotypecaller.time.json')
+      glob: $(inputs.job_uuid + '.gatk3_unifiedgenotyper.time.json')
 
 baseCommand: []
 arguments:
@@ -42,7 +42,7 @@ arguments:
     shellQuote: false
     valueFrom: >-
       /usr/bin/time -f \"{\"real_time\": \"%E\", \"user_time\": %U, \"system_time\": %S, \"wall_clock\": %e, \"maximum_resident_set_size\": %M, \"average_total_mem\": %K, \"percent_of_cpu\": \"%P\"}\"
-      -o $(inputs.job_uuid + '.gatk3_haplotypecaller.time.json')
+      -o $(inputs.job_uuid + '.gatk3_unifiedgenotyper.time.json')
       python /opt/gatk3_genomel_variant_calling.py
       -b $(inputs.bam_file.path) -j $(inputs.job_uuid) -r $(inputs.reference.path)
-      -i $(inputs.interval.path) -s $(inputs.snp_ref.path) -c 25 -t haplotypecaller
+      -i $(inputs.interval.path) -s $(inputs.snp_ref.path) -c 25 -t unifiedgenotyper
