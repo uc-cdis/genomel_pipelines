@@ -17,7 +17,10 @@ inputs:
   reference:
     type: File
     secondaryFiles: [.fai, ^.dict]
-  known_indel:
+  known_indel1:
+    type: File
+    secondaryFiles: [.tbi]
+  known_indel2:
     type: File
     secondaryFiles: [.tbi]
   known_snp:
@@ -71,8 +74,8 @@ steps:
       job_uuid: job_uuid
       bam_path: gatk3_leftalignindels/left_aligned_bam
       reference: reference
-      known_indel: known_indel
-      known_snp: known_snp
+      known_indel1: known_indel1
+      known_indel2: known_indel2
     out: [realigner_target, time_metrics]
 
   gatk3_indelrealigner:
@@ -81,8 +84,8 @@ steps:
       job_uuid: job_uuid
       bam_path: gatk3_leftalignindels/left_aligned_bam
       reference: reference
-      known_indel: known_indel
-      known_snp: known_snp
+      known_indel1: known_indel1
+      known_indel2: known_indel2
       realigner_target: gatk3_realignertargetcreator/realigner_target
     out: [realigned_bam, time_metrics]
 

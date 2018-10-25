@@ -21,11 +21,11 @@ inputs:
     secondaryFiles:
       - "^.dict"
       - ".fai"
-  known_indel:
+  known_indel1:
     type: File
     secondaryFiles:
       - ".tbi"
-  known_snp:
+  known_indel2:
     type: File
     secondaryFiles:
       - ".tbi"
