@@ -74,7 +74,7 @@ def unifiedgenotyper_template(cmd_dict):
         cmd = template.substitute(
             dict(
                 REF=cmd_dict['ref'],
-                INTERVAL=cmd_dict['interval'],
+                INTERVAL=region,
                 SNP=cmd_dict['snp'],
                 OUT=output
             )
@@ -112,7 +112,7 @@ def haplotypecaller_template(cmd_dict):
             dict(
                 REF=cmd_dict['ref'],
                 BAM=cmd_dict['bam'][0],
-                INTERVAL=cmd_dict['interval'],
+                INTERVAL=region,
                 SNP=cmd_dict['snp'],
                 OUT=output
             )
