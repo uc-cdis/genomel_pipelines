@@ -50,7 +50,7 @@ steps:
     run: ../../tools/variant_calling/picard_sortvcf.cwl
     in:
       job_uuid: job_uuid
-      vcf: gatk3_haplotypecaller/gvcf_list
+      vcf: gatk3_unifiedgenotyper/gvcf_list
       reference_dict:
         source: reference
         valueFrom: $(self.secondaryFiles[1])
