@@ -1,10 +1,10 @@
-FROM ubuntu:bionic-20180426
+FROM ubuntu:16.04
 
 RUN apt-get update \
     && export DEBIAN_FRONTEND=noninteractive \
     && apt-get install -y time \
        python-dev \
-       openjdk-11-jre-headless \
+       openjdk-8-jre-headless \
        wget git g++ gcc make zlib1g-dev libbz2-dev liblzma-dev \
     && apt-get clean \
     && wget https://github.com/broadinstitute/picard/releases/download/2.18.11/picard.jar \
