@@ -44,16 +44,16 @@ steps:
       reference: reference
       interval: interval
       snp_ref: snp_ref
-    out: [gvcf_list, time_metrics]
+    out: [vcf_list, time_metrics]
 
   picard_sortvcf:
     run: ../../tools/variant_calling/picard_sortvcf.cwl
     in:
       job_uuid: job_uuid
-      vcf: gatk3_unifiedgenotyper/gvcf_list
+      vcf: gatk3_unifiedgenotyper/vcf_list
       reference_dict:
         source: reference
         valueFrom: $(self.secondaryFiles[1])
       output_prefix:
-        valueFrom: 'unifiedgenotyper.srt.'
+        valueFrom: 'unifiedgenotyper.srt'
     out: [sorted_vcf, time_metrics]
