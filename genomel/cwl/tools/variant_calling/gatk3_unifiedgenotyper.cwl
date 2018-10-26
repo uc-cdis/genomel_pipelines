@@ -28,7 +28,7 @@ inputs:
     secondaryFiles: '.tbi'
 
 outputs:
-  gvcf_list:
+  vcf_list:
     type: File[]
     outputBinding:
       glob: '*.vcf.gz'
