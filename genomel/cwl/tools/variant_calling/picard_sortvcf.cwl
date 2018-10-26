@@ -19,7 +19,7 @@ inputs:
       inputBinding:
         prefix: I=
         separate: false
-    secondaryFiles: '^.bai'
+    secondaryFiles: '.tbi'
   reference_dict: File
   output_prefix: string
 
