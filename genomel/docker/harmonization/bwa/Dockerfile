@@ -3,7 +3,8 @@ FROM ubuntu:16.04
 RUN apt-get update -y && \
     apt-get install -y git wget unzip gzip time \
     g++ bzip2 gcc libncurses-dev make zlib1g-dev libbz2-dev liblzma-dev \
-    openjdk-8-jre-headless
+    openjdk-8-jre-headless \
+    && apt-get clean
 
 RUN cd /opt/ && wget https://github.com/samtools/samtools/releases/download/1.9/samtools-1.9.tar.bz2 \
     && tar xf samtools-1.9.tar.bz2 \
@@ -27,4 +28,5 @@ RUN cd /opt/ && wget https://github.com/samtools/samtools/releases/download/1.9/
     && cd /opt/ && wget https://github.com/lh3/bwa/releases/download/v0.7.17/bwa-0.7.17.tar.bz2 \
     && tar xf bwa-0.7.17.tar.bz2 \
     && cd bwa-0.7.17 \
-    && make && rm /opt/bwa-0.7.17.tar.bz2
+    && make && rm /opt/bwa-0.7.17.tar.bz2 \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
