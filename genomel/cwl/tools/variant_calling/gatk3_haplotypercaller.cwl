@@ -24,6 +24,7 @@ inputs:
   snp_ref:
     type: File
     secondaryFiles: '.tbi'
+  sample_name: string?
 
 outputs:
   gvcf_list:
@@ -40,9 +41,11 @@ baseCommand: []
 arguments:
   - position: 0
     shellQuote: false
-    valueFrom: >-
-      /usr/bin/time -f \"{\"real_time\": \"%E\", \"user_time\": %U, \"system_time\": %S, \"wall_clock\": %e, \"maximum_resident_set_size\": %M, \"average_total_mem\": %K, \"percent_of_cpu\": \"%P\"}\"
-      -o $(inputs.job_uuid + '.gatk3_haplotypecaller.time.json')
-      python /opt/gatk3_genomel_variant_calling.py
-      -b $(inputs.bam_file.path) -j $(inputs.job_uuid) -r $(inputs.reference.path)
-      -i $(inputs.interval.path) -s $(inputs.snp_ref.path) -c 25 -t haplotypecaller
+    valueFrom: |-
+      ${
+          var time_cmd = "/usr/bin/time -f \"{\"real_time\": \"%E\", \"user_time\": %U, \"system_time\": %S, \"wall_clock\": %e, \"maximum_resident_set_size\": %M, \"average_total_mem\": %K, \"percent_of_cpu\": \"%P\"}\" -o " + inputs.job_uuid + ".gatk3_haplotypecaller.time.json"
+          var base_cmd = " python /opt/gatk3_genomel_variant_calling.py -b " + inputs.bam_file.path + " -j " + inputs.job_uuid + " -r " + inputs.reference.path + " -i " + inputs.interval.path + " -s " + inputs.snp_ref.path + " -c 25 -t haplotypecaller"
+          if (inputs.sample_name != null)
+           return time_cmd + base_cmd + " -m " + inputs.sample_name
+          else return time_cmd + base_cmd
+       }

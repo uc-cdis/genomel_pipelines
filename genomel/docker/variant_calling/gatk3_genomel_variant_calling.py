@@ -103,6 +103,8 @@ def haplotypecaller_template(cmd_dict):
         '-A', 'HomopolymerRun',
         '-A', 'QualByDepth'
     ]
+    if cmd_dict['sample']:
+        cmd_list.extend(['-sn', cmd_dict['sample']])
     cmd_str = ' '.join(cmd_list)
     template = string.Template(cmd_str)
     for region in get_region(cmd_dict['interval']):
@@ -114,7 +116,8 @@ def haplotypecaller_template(cmd_dict):
                 BAM=cmd_dict['bam'][0],
                 INTERVAL=region,
                 SNP=cmd_dict['snp'],
-                OUT=output
+                OUT=output,
+                SM=cmd_dict['sample']
             )
         )
         yield cmd
@@ -149,6 +152,10 @@ def main():
                         required=True, \
                         type=is_nat, \
                         default=25)
+    parser.add_argument('-m', \
+                        '--sample', \
+                        required=False, \
+                        help='sample')
     parser.add_argument('-t', \
                         '--tool', \
                         choices=['haplotypecaller', 'unifiedgenotyper'], \
@@ -159,7 +166,8 @@ def main():
         'bam': args.bam,
         'ref': args.reference,
         'interval': args.interval,
-        'snp': args.snp
+        'snp': args.snp,
+        'sample': args.sample
     }
     threads = args.thread_count
     tool = args.tool

@@ -23,6 +23,7 @@ inputs:
   snp_ref:
     type: File
     secondaryFiles: '.tbi'
+  sample_name: string?
 
 outputs:
   time_metrics_from_gatk3_haplotypecaller:
@@ -44,6 +45,7 @@ steps:
       reference: reference
       interval: interval
       snp_ref: snp_ref
+      sample_name: sample_name
     out: [gvcf_list, time_metrics]
 
   picard_sortvcf:
