@@ -122,6 +122,40 @@ def haplotypecaller_template(cmd_dict):
         )
         yield cmd
 
+def giab_hc_calling_template(cmd_dict):
+    '''cmd template'''
+    cmd_list = [
+        'java', '-Xmx3G',
+        '-jar', '/opt/GenomeAnalysisTK.jar',
+        '-T', 'HaplotypeCaller',
+        '-R', '${REF}',
+        '-I', '${BAM}',
+        '-L', '${INTERVAL}',
+        '-D', '${SNP}',
+        '-o', '${OUT}',
+        '-stand_call_conf', '30',
+        '-G', 'Standard',
+        '-A', 'AlleleBalance',
+        '-A', 'Coverage',
+        '-A', 'HomopolymerRun',
+        '-A', 'QualByDepth'
+    ]
+    cmd_str = ' '.join(cmd_list)
+    template = string.Template(cmd_str)
+    for region in get_region(cmd_dict['interval']):
+        interval_str = str(region).replace(':', '_').replace('-', '_')
+        output = cmd_dict['job_uuid'] + '.' + interval_str + '.vcf.gz'
+        cmd = template.substitute(
+            dict(
+                REF=cmd_dict['ref'],
+                BAM=cmd_dict['bam'][0],
+                INTERVAL=region,
+                SNP=cmd_dict['snp'],
+                OUT=output
+            )
+        )
+        yield cmd
+
 def main():
     '''main'''
     parser = argparse.ArgumentParser('GATK3 GenoMEL HaplotypeCaller/UnifiedGenotyper.')
@@ -158,7 +192,7 @@ def main():
                         help='sample')
     parser.add_argument('-t', \
                         '--tool', \
-                        choices=['haplotypecaller', 'unifiedgenotyper'], \
+                        choices=['haplotypecaller', 'unifiedgenotyper', 'giab'], \
                         help='Call GATK3 HaplotypeCaller or UnifiedGenotyper')
     args = parser.parse_args()
     input_dict = {
@@ -175,6 +209,8 @@ def main():
         cmds = list(haplotypecaller_template(input_dict))
     elif tool == 'unifiedgenotyper':
         cmds = list(unifiedgenotyper_template(input_dict))
+    elif tool == 'giab':
+        cmds = list(giab_hc_calling_template(input_dict))
     else:
         sys.exit('No recoginized tool was selected')
     outputs = multi_commands(cmds, threads)
