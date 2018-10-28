@@ -16,6 +16,7 @@ inputs:
     type: File[]
     inputBinding:
       prefix: -v
+    secondaryFiles: '.tbi'
   reference:
     type: File
     secondaryFiles:

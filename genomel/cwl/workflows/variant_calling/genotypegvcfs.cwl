@@ -11,7 +11,9 @@ requirements:
 
 inputs:
   job_uuid: string
-  gvcf_file: File[]
+  gvcf_file:
+    type: File[]
+    secondaryFiles: '.tbi'
   reference:
     type: File
     secondaryFiles:
