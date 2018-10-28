@@ -47,4 +47,4 @@ arguments:
       -o $(inputs.job_uuid + '.gatk3_haplotypecaller_giab.time.json')
       python /opt/gatk3_genomel_variant_calling.py
       -j $(inputs.job_uuid) -r $(inputs.reference.path)
-      -i $(inputs.interval.path) -s $(inputs.snp_ref.path) -c 30 -t giab
+      -i $(inputs.interval.path) -s $(inputs.snp_ref.path) -c 25 -t giab
