@@ -61,7 +61,7 @@ def genotypegvcfs_template(cmd_dict):
         '-A', 'QualByDepth'
     ]
     for gvcf in cmd_dict['gvcf']:
-        cmd_list.extend(['-I', gvcf])
+        cmd_list.extend(['-V', gvcf])
     cmd_str = ' '.join(cmd_list)
     template = string.Template(cmd_str)
     for region in get_region(cmd_dict['interval']):
