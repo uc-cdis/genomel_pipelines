@@ -13,7 +13,7 @@ requirements:
 inputs:
   job_uuid: string
   bam_file:
-    type: File[]
+    type: File
     inputBinding:
       prefix: -b
     secondaryFiles: '^.bai'
