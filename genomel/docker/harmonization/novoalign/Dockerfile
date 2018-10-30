@@ -6,7 +6,8 @@ ADD novocraft.tar.bz2 /opt/
 RUN apt-get update -y && \
     apt-get install -y git wget unzip gzip time \
     g++ bzip2 gcc libncurses-dev make zlib1g-dev libbz2-dev liblzma-dev \
-    openjdk-8-jre-headless python-dev
+    openjdk-8-jre-headless \
+    && apt-get clean
 
 RUN cd /opt/ && wget https://github.com/samtools/samtools/releases/download/1.9/samtools-1.9.tar.bz2 \
     && tar xf samtools-1.9.tar.bz2 \
@@ -26,6 +27,5 @@ RUN cd /opt/ && wget https://github.com/samtools/samtools/releases/download/1.9/
     && cd /opt/ && wget https://github.com/GregoryFaust/samblaster/releases/download/v.0.1.24/samblaster-v.0.1.24.tar.gz \
     && tar xf samblaster-v.0.1.24.tar.gz \
     && cd samblaster-v.0.1.24 \
-    && make && rm /opt/samblaster-v.0.1.24.tar.gz
-
-ADD novoalign_dedup_multithreaded_by_readgroup.py /opt/
+    && make && rm /opt/samblaster-v.0.1.24.tar.gz \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*

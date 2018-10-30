@@ -9,7 +9,7 @@ requirements:
   - class: InlineJavascriptRequirement
   - class: ShellCommandRequirement
   - class: DockerRequirement
-    dockerPull: registry.gitlab.com/uc-cdis/genomel-primary-analysis/harmonization_multi_readgroup:1.0
+    dockerPull: registry.gitlab.com/uc-cdis/genomel-primary-analysis/harmonization_with_novoalign_in_node_parallel:1.0
 
 inputs:
   job_uuid: string
