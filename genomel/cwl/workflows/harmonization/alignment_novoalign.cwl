@@ -12,6 +12,7 @@ requirements:
 
 inputs:
   job_uuid: string
+  interval_bed: File
   input_read1: File[]
   input_read2: File[]
   readgroup_lines: string[]
@@ -52,12 +53,6 @@ steps:
       input_read2_fastq_file: input_read2
     out: [paired_readgroup_line, paired_readgroup_name, output_read1_trimmed_file, output_read2_trimmed_file, time_metrics]
 
-  get_fai_bed:
-    run: ../../tools/harmonization/fai_to_bed.cwl
-    in:
-      ref_fai: reference_fai_index
-    out: [output_bed]
-
   novoalign_filter_dedup:
     run: ../../tools/harmonization/novoalign.cwl
     scatter: [input_read1_fastq_file, input_read2_fastq_file, readgroup_line, readgroup_name]
@@ -92,7 +87,7 @@ steps:
     in:
       job_uuid: job_uuid
       new_header: get_bam_new_header/bam_new_header
-      interval_bed: get_fai_bed/output_bed
+      interval_bed: interval_bed
       bam: readgroups_merge/merged_bam
     out: [reheadered_bam, time_metrics]
 
