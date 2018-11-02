@@ -57,8 +57,8 @@ outputs:
     type: File[]
     outputSource: extract_time_log/output
   genomel_bam:
-    type: File[]
-    outputSource: extract_genomel_bam/output
+    type: File
+    outputSource: extract_genomel_bam/genomel_bam
   genomel_gvcf:
     type: File
     outputSource: gatk3_haplotypecaller/haplotypecaller_sorted_vcf
@@ -174,7 +174,9 @@ steps:
       harmonized_bam:
         source: extract_bam/output
         valueFrom: $(self[0])
-      harmonized_realigned_bam: gatk3_realignment/harmonized_realigned_bam
+      harmonized_realigned_bam:
+        source: gatk3_realignment/harmonized_realigned_bam
+        valueFrom: $(self[0])
     out: [genomel_bam]
 
   gatk3_haplotypecaller:
