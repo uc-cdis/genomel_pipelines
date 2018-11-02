@@ -4,26 +4,25 @@ Postgres tables for the PDC CWL Workflow
 from sqlalchemy.orm import sessionmaker, mapper
 from sqlalchemy import MetaData, Table
 from sqlalchemy import Column, String
+import re
 
 
-class State(object):
+class Metrics(object):
     pass
 
 
-class Files(object):
+class BamFiles(object):
     pass
 
 
-def get_reads(engine, genomel_fastq_input, input_primary_column="id"):
-    Session = sessionmaker()
-    Session.configure(bind=engine)
-    session = Session()
-    meta = MetaData(engine)
-    # read the input table
-    data = Table(genomel_fastq_input, meta, Column(input_primary_column, String, primary_key=True), autoload=True)
-    mapper(Files, data)
+class FastqFiles(object):
+    pass
+
+# Organize rows of genomel_fastq_input to dictionary
+
+
+def retrive_reads(cases):
     s = dict()
-    cases = session.query(Files).all()
     for row in cases:
         s.setdefault(row.aliquot, {})
         s[row.aliquot].setdefault(row.read_group, {})
@@ -48,17 +47,11 @@ def get_reads(engine, genomel_fastq_input, input_primary_column="id"):
         s[row.aliquot]['project'] = row.project
     return s
 
+# Organize rows of genomel_bam_input to dictionary
 
-def get_case(engine, genomel_bam_input, input_primary_column="id"):
-    Session = sessionmaker()
-    Session.configure(bind=engine)
-    session = Session()
-    meta = MetaData(engine)
-    # read the input table
-    data = Table(genomel_bam_input, meta, Column(input_primary_column, String, primary_key=True), autoload=True)
-    mapper(Files, data)
+
+def retrive_bams(cases):
     s = dict()
-    cases = session.query(Files).all()
     for row in cases:
         s.setdefault(row.aliquot, {})
         s[row.aliquot].setdefault('input_id', [])
@@ -74,29 +67,64 @@ def get_case(engine, genomel_bam_input, input_primary_column="id"):
         s[row.aliquot]['project'] = row.project
     return s
 
+# collect input information from genomel_fastq_input tables
 
-# def get_case_from_metrics(engine, metrics_table, input_primary_column, profile, endpoint, input_table=None):
-#     Session = sessionmaker()
-#     Session.configure(bind=engine)
-#     session = Session()
-#     meta = MetaData(engine)
 
-#     # read the status table
-#     state = Table(metrics_table, meta, autoload=True)
-#     mapper(State, state)
+def get_reads(engine, genomel_fastq_input, input_primary_column="id"):
+    Session = sessionmaker()
+    Session.configure(bind=engine)
+    session = Session()
+    meta = MetaData(engine)
+    # read the input table
+    data = Table(genomel_fastq_input, meta, Column(input_primary_column, String, primary_key=True), autoload=True)
+    mapper(FastqFiles, data)
+    cases = session.query(FastqFiles).all()
+    return retrive_reads(cases)
 
-#     # collect input information from metrics tables
-#     s = dict()
-#     cases = session.query(State).all()
-#     for row in cases:
-#         if row.status == 'COMPLETED':
-#             if not input_table or (input_table and row.input_table == input_table):
-#                 s[count] = [row.output_id,
-#                             row.project,
-#                             row.md5,
-#                             row.s3_url,
-#                             profile,
-#                             endpoint]
-#                 count += 1
+# collect input information from genomel_bam_input tables
 
-#     return s
+
+def get_bams(engine, genomel_bam_input, input_primary_column="id"):
+    Session = sessionmaker()
+    Session.configure(bind=engine)
+    session = Session()
+    meta = MetaData(engine)
+    # read the input table
+    data = Table(genomel_bam_input, meta, Column(input_primary_column, String, primary_key=True), autoload=True)
+    mapper(BamFiles, data)
+    cases = session.query(BamFiles).all()
+    return retrive_bams(cases)
+
+# collect input information from metrics tables
+
+
+def get_case_from_metrics(engine, metrics_table, input_primary_column, genomel_fastq_input, genomel_bam_input):
+    Session = sessionmaker()
+    Session.configure(bind=engine)
+    session = Session()
+    meta = MetaData(engine)
+
+    # read input tables
+    fastqfiles = Table(genomel_fastq_input, meta, autoload=True)
+    mapper(FastqFiles, fastqfiles)
+    fastq_cases = session.query(FastqFiles).all()
+
+    bamfiles = Table(genomel_bam_inpu, meta, autoload=True)
+    mapper(BamFiles, bamfiles)
+    bam_cases = session.query(BamFiles).all()
+
+    # read the metrics table
+    metrics = Table(metrics_table, meta, autoload=True)
+    mapper(Metrics, metrics)
+    cases = session.query(Metrics).all()
+
+    for row in cases:
+        if row.status != 'COMPLETED':
+            input_id = re.sub('[{}]', '', row.input_id)
+            input_ids = input_id.split(",")
+            fastq_cases_filter = list(filter(lambda x: x.input_id_r1 in input_ids, fastq_cases))
+            bam_cases_filter = list(filter(lambda x: x.input_id in input_ids, bam_cases))
+            if fastq_cases_filter:
+                return retrive_reads(fastq_cases_filter)
+            if bam_cases_filter:
+                return retrive_bams(bam_cases_filter)
