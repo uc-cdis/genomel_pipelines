@@ -29,10 +29,10 @@ inputs:
 
   ###Alignment required
   input_is_fastq: int[]
-  fastq_read1_uri: string[]?
-  fastq_read2_uri: string[]?
-  readgroup_lines: string[]?
-  readgroup_names: string[]?
+  fastq_read1_uri: string[]
+  fastq_read2_uri: string[]
+  readgroup_lines: string[]
+  readgroup_names: string[]
 
   ###Harmonization required
   input_is_bam: int[]
@@ -41,10 +41,10 @@ inputs:
   ###Realignment required
   run_gatk3_realignment: int[]
   known_indel1:
-    type: File?
+    type: File
     secondaryFiles: [.tbi]
   known_indel2:
-    type: File?
+    type: File
     secondaryFiles: [.tbi]
 
   ###Upload
