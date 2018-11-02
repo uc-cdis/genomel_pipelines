@@ -169,22 +169,19 @@ steps:
           time_metrics_from_gatk3_indelrealigner]
 
   extract_genomel_bam:
-    run: ./cwl/tools/utils/extract_outputs.cwl
+    run: ./cwl/tools/utils/extract_genomel_bam.cwl
     in:
-      file_array:
-        source: [fastq_input_alignment_with_bwa/sorted_bam,
-                 bam_input_harmonization_with_bwa/sorted_bam,
-                 gatk3_realignment/harmonized_realigned_bam]
-        valueFrom: $([self[0][0], self[1][0], self[2][0]])
-    out: [output]
+      harmonized_bam:
+        source: extract_bam/output
+        valueFrom: $(self[0])
+      harmonized_realigned_bam: gatk3_realignment/harmonized_realigned_bam
+    out: [genomel_bam]
 
   gatk3_haplotypecaller:
     run: ./cwl/workflows/variant_calling/haplotypecaller.cwl
     in:
       job_uuid: job_uuid
-      bam_file:
-        source: extract_genomel_bam/output
-        valueFrom: $(self[0])
+      bam_file: extract_genomel_bam/genomel_bam
       reference: reference
       interval: get_fai_bed/output_bed
       snp_ref: known_snp
@@ -199,18 +196,16 @@ steps:
       aws_shared_credentials: aws_shared_credentials
       s3_profile: upload_s3_profile
       s3_endpoint: upload_s3_endpoint
-      bam:
-        source: extract_genomel_bam/output
-        valueFrom: $(self[0])
+      bam: extract_genomel_bam/genomel_bam
       bam_uri:
-        source: [upload_s3_bucket, job_uuid, extract_genomel_bam/output]
-        valueFrom: $(self[0])/$(self[1])/$(self[2][0].basename)
+        source: [upload_s3_bucket, job_uuid, extract_genomel_bam/genomel_bam]
+        valueFrom: $(self[0])/$(self[1])/$(self[2].basename)
       bam_index:
-        source: extract_genomel_bam/output
-        valueFrom: $(self[0].secondaryFiles[0])
+        source: extract_genomel_bam/genomel_bam
+        valueFrom: $(self.secondaryFiles[0])
       bam_index_uri:
-        source: [upload_s3_bucket, job_uuid, extract_genomel_bam/output]
-        valueFrom: $(self[0])/$(self[1])/$(self[2][0].secondaryFiles[0].basename)
+        source: [upload_s3_bucket, job_uuid, extract_genomel_bam/genomel_bam]
+        valueFrom: $(self[0])/$(self[1])/$(self[2].secondaryFiles[0].basename)
       gvcf: gatk3_haplotypecaller/haplotypecaller_sorted_vcf
       gvcf_uri:
         source: [upload_s3_bucket, job_uuid, gatk3_haplotypecaller/haplotypecaller_sorted_vcf]
