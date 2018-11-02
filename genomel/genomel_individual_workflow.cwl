@@ -253,5 +253,16 @@ steps:
                  upload_results/time_metrics_from_upload_bam_index,
                  upload_results/time_metrics_from_upload_gvcf,
                  upload_results/time_metrics_from_upload_gvcf_index]
-        valueFrom: $([self])
+        valueFrom: |
+          ${
+            var log_list = []
+            for (var i = 0; i < self.length; i++){
+              if (Array.isArray(self[i])){
+                log_list.push(self[i][0])
+              } else {
+                log_list.push(self[i])
+              }
+            }
+            return log_list
+          }
     out: [output]
