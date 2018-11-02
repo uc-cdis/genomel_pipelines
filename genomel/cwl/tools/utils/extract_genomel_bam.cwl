@@ -16,12 +16,10 @@ outputs:
 
 expression: |
   ${
-    var bam = [];
     if (inputs.harmonized_realigned_bam != null){
-        bam.push(inputs.harmonized_realigned_bam)
+        return {"genomel_bam": inputs.harmonized_realigned_bam}
       } else {
-        bam.push(inputs.harmonized_bam)
+        return {"genomel_bam": inputs.harmonized_bam}
       }
-    };
-    return {'genomel_bam': bam[0]};
+    }
   }
