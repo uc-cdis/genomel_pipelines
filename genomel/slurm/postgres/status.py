@@ -117,14 +117,19 @@ def get_case_from_metrics(engine, metrics_table, input_primary_column, genomel_f
     metrics = Table(metrics_table, meta, autoload=True)
     mapper(Metrics, metrics)
     cases = session.query(Metrics).all()
-
+    input_ids = list()
     for row in cases:
         if row.status != 'COMPLETED':
             input_id = re.sub('[{}]', '', row.input_id)
-            input_ids = input_id.split(",")
-            fastq_cases_filter = list(filter(lambda x: x.input_id_r1 in input_ids, fastq_cases))
-            bam_cases_filter = list(filter(lambda x: x.input_id in input_ids, bam_cases))
-            if fastq_cases_filter:
-                return retrive_reads(fastq_cases_filter)
-            if bam_cases_filter:
-                return retrive_bams(bam_cases_filter)
+            input_id = input_id.split(",")
+            for instance in input_id:
+                if input_id not in input_ids:
+                    input_ids.append(input_id)
+
+    fastq_cases_filter = list(filter(lambda x: x.input_id_r1 in input_ids, fastq_cases))
+    bam_cases_filter = list(filter(lambda x: x.input_id in input_ids, bam_cases))
+    if fastq_cases_filter:
+        reads_ids = retrive_reads(fastq_cases_filter)
+    if bam_cases_filter:
+        bam_ids = retrive_bams(bam_cases_filter)
+    return(reads_ids, bam_ids)
