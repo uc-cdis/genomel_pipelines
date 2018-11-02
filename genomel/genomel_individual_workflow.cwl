@@ -148,7 +148,7 @@ steps:
       file_array:
         source: [fastq_input_alignment_with_bwa/sorted_bam,
                  bam_input_harmonization_with_bwa/sorted_bam]
-        valueFrom: $([self])
+        valueFrom: $([self[0][0], self[1][0]])
     out: [output]
 
   gatk3_realignment:
@@ -175,7 +175,7 @@ steps:
         source: [fastq_input_alignment_with_bwa/sorted_bam,
                  bam_input_harmonization_with_bwa/sorted_bam,
                  gatk3_realignment/harmonized_realigned_bam]
-        valueFrom: $([self])
+        valueFrom: $([self[0][0], self[1][0], self[2][0]])
     out: [output]
 
   gatk3_haplotypecaller:
