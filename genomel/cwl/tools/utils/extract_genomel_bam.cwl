@@ -16,10 +16,10 @@ outputs:
 
 expression: |
   ${
-    if (inputs.harmonized_realigned_bam[0] != null){
-        return {"genomel_bam": inputs.harmonized_realigned_bam[0]}
-      } else {
-        return {"genomel_bam": inputs.harmonized_bam}
-      }
+    if (Array.isArray(inputs.harmonized_realigned_bam) && inputs.harmonized_realigned_bam.length == 1){
+      var genomel_bam = inputs.harmonized_realigned_bam[0]
+    } else {
+      var genomel_bam = inputs.harmonized_bam
     }
+    return {"genomel_bam": genomel_bam}
   }
