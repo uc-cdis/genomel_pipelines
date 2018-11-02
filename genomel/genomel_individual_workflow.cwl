@@ -253,7 +253,11 @@ steps:
             var log_list = []
             for (var i = 0; i < self.length; i++){
               if (Array.isArray(self[i])){
-                log_list.push(self[i][0])
+                if (Array.isArray(self[i][0])){
+                  for (var j = 0; j < self[i][0].length; j++){
+                    log_list.push(self[i][0][j])
+                  }
+                } else { log_list.push(self[i][0]) }
               } else {
                 log_list.push(self[i])
               }
