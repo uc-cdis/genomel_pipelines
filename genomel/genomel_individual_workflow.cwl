@@ -174,9 +174,7 @@ steps:
       harmonized_bam:
         source: extract_bam/output
         valueFrom: $(self[0])
-      harmonized_realigned_bam:
-        source: gatk3_realignment/harmonized_realigned_bam
-        valueFrom: $(self[0])
+      harmonized_realigned_bam: gatk3_realignment/harmonized_realigned_bam
     out: [genomel_bam]
 
   gatk3_haplotypecaller:
