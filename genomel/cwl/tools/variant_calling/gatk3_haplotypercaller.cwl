@@ -14,16 +14,15 @@ inputs:
   job_uuid: string
   bam_file:
     type: File
-    secondaryFiles: '^.bai'
+    secondaryFiles: [^.bai]
   reference:
     type: File
-    secondaryFiles:
-      - '.fai'
-      - '^.dict'
+    secondaryFiles: [.fai, ^.dict]
+
   interval: File
   snp_ref:
     type: File
-    secondaryFiles: '.tbi'
+    secondaryFiles: [.tbi]
   sample_name: string?
 
 outputs:
@@ -31,7 +30,7 @@ outputs:
     type: File[]
     outputBinding:
       glob: '*g.vcf.gz'
-    secondaryFiles: '.tbi'
+    secondaryFiles: [.tbi]
   time_metrics:
     type: File
     outputBinding:

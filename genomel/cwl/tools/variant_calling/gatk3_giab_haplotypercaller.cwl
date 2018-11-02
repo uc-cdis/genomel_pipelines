@@ -16,23 +16,22 @@ inputs:
     type: File
     inputBinding:
       prefix: -b
-    secondaryFiles: '^.bai'
+    secondaryFiles: [^.bai]
   reference:
     type: File
-    secondaryFiles:
-      - '.fai'
-      - '^.dict'
+    secondaryFiles: [.fai, ^.dict]
+
   interval: File
   snp_ref:
     type: File
-    secondaryFiles: '.tbi'
+    secondaryFiles: [.tbi]
 
 outputs:
   vcf_list:
     type: File[]
     outputBinding:
       glob: '*.vcf.gz'
-    secondaryFiles: '.tbi'
+    secondaryFiles: [.tbi]
   time_metrics:
     type: File
     outputBinding:

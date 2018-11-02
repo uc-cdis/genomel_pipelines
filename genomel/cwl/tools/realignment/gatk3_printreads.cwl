@@ -14,13 +14,12 @@ inputs:
   job_uuid: string
   bam_path:
     type: File
-    secondaryFiles:
-      - "^.bai"
+    secondaryFiles: [^.bai]
+
   reference:
     type: File
-    secondaryFiles:
-      - "^.dict"
-      - ".fai"
+    secondaryFiles: [.fai, ^.dict]
+
   recal_table: File
 
 outputs:

@@ -19,7 +19,7 @@ inputs:
       inputBinding:
         prefix: I=
         separate: false
-    secondaryFiles: '.tbi'
+    secondaryFiles: [.tbi]
   reference_dict: File
   output_prefix: string
 
@@ -28,7 +28,7 @@ outputs:
     type: File
     outputBinding:
       glob: '*.vcf.gz'
-    secondaryFiles: '.tbi'
+    secondaryFiles: [.tbi]
   time_metrics:
     type: File
     outputBinding:

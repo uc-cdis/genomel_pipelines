@@ -41,10 +41,10 @@ inputs:
   ###Realignment required
   run_gatk3_realignment: int[]
   known_indel1:
-    type: File
+    type: File?
     secondaryFiles: [.tbi]
   known_indel2:
-    type: File
+    type: File?
     secondaryFiles: [.tbi]
 
   ###Upload
@@ -64,24 +64,33 @@ outputs:
     outputSource: gatk3_haplotypecaller/haplotypecaller_sorted_vcf
 
 steps:
-  download_prep:
+  download_fastq_reads:
     run: ./cwl/workflows/utils/download_prep.cwl
+    scatter: [input_is_fastq]
     in:
+      input_is_fastq: input_is_fastq
       aws_config: aws_config
       aws_shared_credentials: aws_shared_credentials
       s3_profile: download_s3_profile
       s3_endpoint: download_s3_endpoint
       fastq_read1_uri: fastq_read1_uri
       fastq_read2_uri: fastq_read2_uri
-      bam_uri: bam_uri
-      input_is_fastq: input_is_fastq
-      input_is_bam: input_is_bam
     out: [downloaded_fastq_read1,
           downloaded_fastq_read2,
-          downloaded_bam,
           time_metrics_from_download_f1,
-          time_metrics_from_download_f2,
-          time_metrics_from_download_bam]
+          time_metrics_from_download_f2]
+
+  download_bam_file:
+    run: ./cwl/tools/utils/awscli_download.cwl
+    scatter: [input_is_bam]
+    in:
+      input_is_bam: input_is_bam
+      aws_config: aws_config
+      aws_shared_credentials: aws_shared_credentials
+      s3uri: bam_uri
+      s3_profile: download_s3_profile
+      s3_endpoint: download_s3_endpoint
+    out: [output, time_metrics]
 
   get_fai_bed:
     run: ./cwl/tools/harmonization/fai_to_bed.cwl
@@ -98,8 +107,12 @@ steps:
       input_is_fastq: input_is_fastq
       job_uuid: job_uuid
       interval_bed: get_fai_bed/output_bed
-      input_read1: download_prep/downloaded_fastq_read1
-      input_read2: download_prep/downloaded_fastq_read2
+      input_read1:
+        source: download_fastq_reads/downloaded_fastq_read1
+        valueFrom: $(self[0])
+      input_read2:
+        source: download_fastq_reads/downloaded_fastq_read2
+        valueFrom: $(self[0])
       readgroup_lines: readgroup_lines
       readgroup_names: readgroup_names
       reference: reference
@@ -118,7 +131,7 @@ steps:
       job_uuid: job_uuid
       interval_bed: get_fai_bed/output_bed
       input_bam:
-        source: download_prep/downloaded_bam
+        source: download_bam_file/output
         valueFrom: $(self[0])
       reference: reference
     out: [sorted_bam,
@@ -217,9 +230,9 @@ steps:
     run: ./cwl/tools/utils/extract_outputs.cwl
     in:
       file_array:
-        source: [download_prep/time_metrics_from_download_f1,
-                 download_prep/time_metrics_from_download_f2,
-                 download_prep/time_metrics_from_download_bam,
+        source: [download_fastq_reads/time_metrics_from_download_f1,
+                 download_fastq_reads/time_metrics_from_download_f2,
+                 download_bam_file/time_metrics,
                  fastq_input_alignment_with_bwa/time_metrics_from_trim_adaptor,
                  fastq_input_alignment_with_bwa/time_metrics_from_bwa_mem_filter_dedup,
                  fastq_input_alignment_with_bwa/time_metrics_from_merge,
