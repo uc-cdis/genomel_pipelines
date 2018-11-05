@@ -128,6 +128,8 @@ def get_case_from_metrics(engine, metrics_table, input_primary_column, genomel_f
 
     fastq_cases_filter = list(filter(lambda x: x.input_id_r1 in input_ids, fastq_cases))
     bam_cases_filter = list(filter(lambda x: x.input_id in input_ids, bam_cases))
+    reads_ids = dict()
+    bam_ids = dict()
     if fastq_cases_filter:
         reads_ids = retrive_reads(fastq_cases_filter)
     if bam_cases_filter:
