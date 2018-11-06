@@ -43,10 +43,10 @@ def get_region(intervals):
         lines = fhandle.readlines()
         for chro, region in groupby(lines, lambda x: x.rstrip().rsplit('\t')[0]):
             chr_bed = '{}.bed'.format(chro)
-            interval_path.append(os.path.abspath(chr_bed))
             with open(chr_bed, 'w') as ohandle:
                 for line in region:
                     ohandle.write('{}'.format(line))
+            interval_path.append(os.path.abspath(chr_bed))
     return interval_path
 
 def unifiedgenotyper_template(cmd_dict):
