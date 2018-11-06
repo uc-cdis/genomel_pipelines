@@ -14,21 +14,20 @@ inputs:
   job_uuid: string
   bam_path:
     type: File
-    secondaryFiles:
-      - "^.bai"
+    secondaryFiles: [^.bai]
+
   reference:
     type: File
-    secondaryFiles:
-      - "^.dict"
-      - ".fai"
+    secondaryFiles: [.fai, ^.dict]
+
   known_indel1:
     type: File
-    secondaryFiles:
-      - ".tbi"
+    secondaryFiles: [.tbi]
+
   known_indel2:
     type: File
-    secondaryFiles:
-      - ".tbi"
+    secondaryFiles: [.tbi]
+
   realigner_target: File
 
 outputs:

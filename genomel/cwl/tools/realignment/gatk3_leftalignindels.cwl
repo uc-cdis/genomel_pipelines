@@ -14,13 +14,11 @@ inputs:
   job_uuid: string
   bam_path:
     type: File
-    secondaryFiles:
-      - "^.bai"
+    secondaryFiles: [^.bai]
+
   reference:
     type: File
-    secondaryFiles:
-      - "^.dict"
-      - ".fai"
+    secondaryFiles: [.fai, ^.dict]
 
 outputs:
   left_aligned_bam:

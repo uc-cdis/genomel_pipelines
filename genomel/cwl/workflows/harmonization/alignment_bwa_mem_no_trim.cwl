@@ -17,16 +17,14 @@ inputs:
   input_read2: File[]
   readgroup_lines: string[]
   readgroup_names: string[]
-  dbname: File
-  reference_fai_index: File
+  reference:
+    type: File
+    secondaryFiles: [.fai, .64.amb, .64.ann, .64.bwt, .64.pac, .64.sa, ^.dict, .amb, .ann, .bwt, .pac, .sa]
 
 outputs:
-  time_metrics_from_trim_adaptor:
+  time_metrics_from_bwa_mem_filter_dedup:
     type: File[]
-    outputSource: trim_adaptor/time_metrics
-  time_metrics_from_novoalign_filter_dedup:
-    type: File[]
-    outputSource: novoalign_filter_dedup/time_metrics
+    outputSource: bwa_mem_filter_dedup/time_metrics
   time_metrics_from_merge:
     type: File
     outputSource: readgroups_merge/time_metrics
@@ -41,36 +39,24 @@ outputs:
     outputSource: bam_sort/sorted_bam
 
 steps:
-  trim_adaptor:
-    run: ../../tools/harmonization/trimmomatic.cwl
-    scatter: [readgroup_line, readgroup_name, input_read1_fastq_file, input_read2_fastq_file]
-    scatterMethod: dotproduct
-    in:
-      job_uuid: job_uuid
-      readgroup_line: readgroup_lines
-      readgroup_name: readgroup_names
-      input_read1_fastq_file: input_read1
-      input_read2_fastq_file: input_read2
-    out: [paired_readgroup_line, paired_readgroup_name, output_read1_trimmed_file, output_read2_trimmed_file, time_metrics]
-
-  novoalign_filter_dedup:
-    run: ../../tools/harmonization/novoalign.cwl
+  bwa_mem_filter_dedup:
+    run: ../../tools/harmonization/bwa_mem.cwl
     scatter: [input_read1_fastq_file, input_read2_fastq_file, readgroup_line, readgroup_name]
     scatterMethod: dotproduct
     in:
       job_uuid: job_uuid
-      dbname: dbname
-      input_read1_fastq_file: trim_adaptor/output_read1_trimmed_file
-      input_read2_fastq_file: trim_adaptor/output_read2_trimmed_file
-      readgroup_line: trim_adaptor/paired_readgroup_line
-      readgroup_name: trim_adaptor/paired_readgroup_name
+      reference: reference
+      input_read1_fastq_file: input_read1
+      input_read2_fastq_file: input_read2
+      readgroup_line: readgroup_lines
+      readgroup_name: readgroup_names
     out: [readgroup_bam, time_metrics]
 
   readgroups_merge:
     run: ../../tools/harmonization/sambamba_merge.cwl
     in:
       job_uuid: job_uuid
-      bams: novoalign_filter_dedup/readgroup_bam
+      bams: bwa_mem_filter_dedup/readgroup_bam
       base_file_name:
         source: job_uuid
         valueFrom: $(self)

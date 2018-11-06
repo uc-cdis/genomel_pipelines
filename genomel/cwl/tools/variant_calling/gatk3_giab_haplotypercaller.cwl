@@ -8,7 +8,7 @@ requirements:
   - class: InlineJavascriptRequirement
   - class: ShellCommandRequirement
   - class: DockerRequirement
-    dockerPull: registry.gitlab.com/uc-cdis/genomel-exome-variant-detection/genomel_variant_calling:1.0
+    dockerPull: registry.gitlab.com/uc-cdis/genomel-exome-variant-detection/genomel_gatk3_calling:1.0
 
 inputs:
   job_uuid: string
@@ -16,23 +16,22 @@ inputs:
     type: File
     inputBinding:
       prefix: -b
-    secondaryFiles: '^.bai'
+    secondaryFiles: [^.bai]
   reference:
     type: File
-    secondaryFiles:
-      - '.fai'
-      - '^.dict'
+    secondaryFiles: [.fai, ^.dict]
+
   interval: File
   snp_ref:
     type: File
-    secondaryFiles: '.tbi'
+    secondaryFiles: [.tbi]
 
 outputs:
   vcf_list:
     type: File[]
     outputBinding:
       glob: '*.vcf.gz'
-    secondaryFiles: '.tbi'
+    secondaryFiles: [.tbi]
   time_metrics:
     type: File
     outputBinding:

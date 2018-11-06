@@ -69,7 +69,7 @@ steps:
     out: [left_aligned_bam, time_metrics]
 
   gatk3_realignertargetcreator:
-    run: ../../tools/realignment/gatk3_realigntargetcreator.cwl
+    run: ../../tools/realignment/gatk3_realignertargetcreator.cwl
     in:
       job_uuid: job_uuid
       bam_path: gatk3_leftalignindels/left_aligned_bam
