@@ -39,7 +39,7 @@ def retrive_reads(cases):
         s[row.aliquot][row.read_group].setdefault('size_r2', [])
         s[row.aliquot][row.read_group]['size_r2'].append(row.size_r2)
         s[row.aliquot][row.read_group].setdefault('s3_url_r1', [])
-        s[row.aliquot][row.read_group]['s3_url_r11'].append(row.s3_url_r1)
+        s[row.aliquot][row.read_group]['s3_url_r1'].append(row.s3_url_r1)
         s[row.aliquot][row.read_group].setdefault('s3_url_r2', [])
         s[row.aliquot][row.read_group]['s3_url_r2'].append(row.s3_url_r2)
         s[row.aliquot]['s3_profile'] = row.s3_profile
@@ -109,7 +109,7 @@ def get_case_from_metrics(engine, metrics_table, input_primary_column, genomel_f
     mapper(FastqFiles, fastqfiles)
     fastq_cases = session.query(FastqFiles).all()
 
-    bamfiles = Table(genomel_bam_inpu, meta, autoload=True)
+    bamfiles = Table(genomel_bam_input, meta, autoload=True)
     mapper(BamFiles, bamfiles)
     bam_cases = session.query(BamFiles).all()
 
@@ -120,12 +120,9 @@ def get_case_from_metrics(engine, metrics_table, input_primary_column, genomel_f
     input_ids = list()
     for row in cases:
         if row.status != 'COMPLETED':
-            input_id = re.sub('[{}]', '', row.input_id)
-            input_id = input_id.split(",")
-            for instance in input_id:
-                if input_id not in input_ids:
-                    input_ids.append(input_id)
-
+            for instance in row.input_id:
+                if instance not in input_ids:
+                    input_ids.append(instance)
     fastq_cases_filter = list(filter(lambda x: x.input_id_r1 in input_ids, fastq_cases))
     bam_cases_filter = list(filter(lambda x: x.input_id in input_ids, bam_cases))
     reads_ids = dict()
@@ -133,5 +130,5 @@ def get_case_from_metrics(engine, metrics_table, input_primary_column, genomel_f
     if fastq_cases_filter:
         reads_ids = retrive_reads(fastq_cases_filter)
     if bam_cases_filter:
-        bam_ids = retrive_bams(bam_cases_filter)
-    return(reads_ids, bam_ids)
+        bams_ids = retrive_bams(bam_cases_filter)
+    return {'reads_ids':reads_ids, 'bams_ids':bams_ids}
