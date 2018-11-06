@@ -80,7 +80,7 @@ def update_record_metrics(engine, table, met):
   session = Session()
   meta = MetaData(engine)
   metrics = Table(table.__tablename__, meta, autoload=True)
-  mapper(Metircs, metrics)
+  mapper(Metrics, metrics)
   record = session.query(Metrics).filter(Metrics.job_uuid == met.job_uuid).first()
 
   if record:
