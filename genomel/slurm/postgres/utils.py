@@ -68,10 +68,6 @@ def add_metrics(engine, met):
   session.close()
 
 
-class State(object):
-  pass
-
-
 class Metrics(object):
   pass
 
@@ -85,7 +81,7 @@ def update_record_metrics(engine, table, met):
   meta = MetaData(engine)
   state = Table(table.__tablename__, meta, autoload=True)
   mapper(State, state)
-  record = session.query(State).filter(State.uuid == met.uuid).first()
+  record = session.query(State).filter(State.job_uuid == met.job_uuid).first()
 
   if record:
     record.input_id = met.input_id
