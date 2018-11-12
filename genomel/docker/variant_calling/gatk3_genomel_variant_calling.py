@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 '''Internal multithreading for GATK3 HaplotypeCaller/UnifiedGenotyper'''
 
+import os
 import sys
 import argparse
 import subprocess
 import string
+from itertools import groupby
 from functools import partial
 from multiprocessing.dummy import Pool, Lock
 
@@ -36,14 +38,16 @@ def multi_commands(cmds, thread_count, shell_var=True):
 
 def get_region(intervals):
     '''get region from intervals'''
-    interval_list = []
+    interval_path = []
     with open(intervals, 'r') as fhandle:
-        line = fhandle.readlines()
-        for bed in line:
-            blocks = bed.rstrip().rsplit('\t')
-            intv = '{}:{}-{}'.format(blocks[0], int(blocks[1])+1, blocks[2])
-            interval_list.append(intv)
-    return interval_list
+        lines = fhandle.readlines()
+        for chro, region in groupby(lines, lambda x: x.rstrip().rsplit('\t')[0]):
+            chr_bed = '{}.bed'.format(chro)
+            with open(chr_bed, 'w') as ohandle:
+                for line in region:
+                    ohandle.write('{}'.format(line))
+            interval_path.append(os.path.abspath(chr_bed))
+    return interval_path
 
 def unifiedgenotyper_template(cmd_dict):
     '''cmd template'''
@@ -69,7 +73,7 @@ def unifiedgenotyper_template(cmd_dict):
     cmd_str = ' '.join(cmd_list)
     template = string.Template(cmd_str)
     for region in get_region(cmd_dict['interval']):
-        interval_str = str(region).replace(':', '_').replace('-', '_')
+        interval_str = os.path.basename(region).split('.')[0]
         output = cmd_dict['job_uuid'] + '.' + interval_str + '.vcf.gz'
         cmd = template.substitute(
             dict(
@@ -108,7 +112,7 @@ def haplotypecaller_template(cmd_dict):
     cmd_str = ' '.join(cmd_list)
     template = string.Template(cmd_str)
     for region in get_region(cmd_dict['interval']):
-        interval_str = str(region).replace(':', '_').replace('-', '_')
+        interval_str = os.path.basename(region).split('.')[0]
         output = cmd_dict['job_uuid'] + '.' + interval_str + '.g.vcf.gz'
         cmd = template.substitute(
             dict(
@@ -143,7 +147,7 @@ def giab_hc_calling_template(cmd_dict):
     cmd_str = ' '.join(cmd_list)
     template = string.Template(cmd_str)
     for region in get_region(cmd_dict['interval']):
-        interval_str = str(region).replace(':', '_').replace('-', '_')
+        interval_str = os.path.basename(region).split('.')[0]
         output = cmd_dict['job_uuid'] + '.' + interval_str + '.vcf.gz'
         cmd = template.substitute(
             dict(
