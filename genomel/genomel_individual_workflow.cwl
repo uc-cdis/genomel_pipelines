@@ -49,7 +49,7 @@ outputs:
     outputSource: extract_time_log/output
   genomel_bam:
     type: File
-    outputSource: extract_bam/output
+    outputSource: extract_genomel_bam/genomel_bam
   genomel_gvcf:
     type: File
     outputSource: gatk3_haplotypecaller/haplotypecaller_sorted_vcf
@@ -142,11 +142,19 @@ steps:
         valueFrom: $([self[0][0], self[1][0]])
     out: [output]
 
+  extract_genomel_bam:
+    run: ./cwl/tools/utils/extract_genomel_bam.cwl
+    in:
+      harmonized_bam:
+        source: extract_bam/output
+        valueFrom: $(self[0])
+    out: [genomel_bam]
+
   gatk3_haplotypecaller:
     run: ./cwl/workflows/variant_calling/haplotypecaller.cwl
     in:
       job_uuid: job_uuid
-      bam_file: extract_bam/output
+      bam_file: extract_genomel_bam/genomel_bam
       reference: reference
       interval: get_fai_bed/output_bed
       snp_ref: known_snp
@@ -161,15 +169,15 @@ steps:
       aws_shared_credentials: aws_shared_credentials
       s3_profile: upload_s3_profile
       s3_endpoint: upload_s3_endpoint
-      bam: extract_bam/output
+      bam: extract_genomel_bam/genomel_bam
       bam_uri:
-        source: [upload_s3_bucket, job_uuid, extract_bam/output]
+        source: [upload_s3_bucket, job_uuid, extract_genomel_bam/genomel_bam]
         valueFrom: $(self[0])/$(self[1])/$(self[2].basename)
       bam_index:
-        source: extract_bam/output
+        source: extract_genomel_bam/genomel_bam
         valueFrom: $(self.secondaryFiles[0])
       bam_index_uri:
-        source: [upload_s3_bucket, job_uuid, extract_bam/output]
+        source: [upload_s3_bucket, job_uuid, extract_genomel_bam/genomel_bam]
         valueFrom: $(self[0])/$(self[1])/$(self[2].secondaryFiles[0].basename)
       gvcf: gatk3_haplotypecaller/haplotypecaller_sorted_vcf
       gvcf_uri:
