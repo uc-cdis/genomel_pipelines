@@ -38,15 +38,6 @@ inputs:
   input_is_bam: int[]
   bam_uri: string
 
-  ###Realignment required
-  run_gatk3_realignment: int[]
-  known_indel1:
-    type: File
-    secondaryFiles: [.tbi]
-  known_indel2:
-    type: File
-    secondaryFiles: [.tbi]
-
   ###Upload
   upload_s3_profile: string
   upload_s3_endpoint: string
@@ -58,7 +49,7 @@ outputs:
     outputSource: extract_time_log/output
   genomel_bam:
     type: File
-    outputSource: extract_genomel_bam/genomel_bam
+    outputSource: extract_bam/output
   genomel_gvcf:
     type: File
     outputSource: gatk3_haplotypecaller/haplotypecaller_sorted_vcf
@@ -151,37 +142,11 @@ steps:
         valueFrom: $([self[0][0], self[1][0]])
     out: [output]
 
-  gatk3_realignment:
-    run: ./cwl/workflows/realignment/gatk3_realignment.cwl
-    scatter: run_gatk3_realignment
-    in:
-      run_gatk3_realignment: run_gatk3_realignment
-      job_uuid: job_uuid
-      bam_path:
-        source: extract_bam/output
-        valueFrom: $(self[0])
-      reference: reference
-      known_indel1: known_indel1
-      known_indel2: known_indel2
-    out: [harmonized_realigned_bam,
-          time_metrics_from_gatk3_leftalignindels,
-          time_metrics_from_gatk3_realignertargetcreator,
-          time_metrics_from_gatk3_indelrealigner]
-
-  extract_genomel_bam:
-    run: ./cwl/tools/utils/extract_genomel_bam.cwl
-    in:
-      harmonized_bam:
-        source: extract_bam/output
-        valueFrom: $(self[0])
-      harmonized_realigned_bam: gatk3_realignment/harmonized_realigned_bam
-    out: [genomel_bam]
-
   gatk3_haplotypecaller:
     run: ./cwl/workflows/variant_calling/haplotypecaller.cwl
     in:
       job_uuid: job_uuid
-      bam_file: extract_genomel_bam/genomel_bam
+      bam_file: extract_bam/output
       reference: reference
       interval: get_fai_bed/output_bed
       snp_ref: known_snp
@@ -196,15 +161,15 @@ steps:
       aws_shared_credentials: aws_shared_credentials
       s3_profile: upload_s3_profile
       s3_endpoint: upload_s3_endpoint
-      bam: extract_genomel_bam/genomel_bam
+      bam: extract_bam/output
       bam_uri:
-        source: [upload_s3_bucket, job_uuid, extract_genomel_bam/genomel_bam]
+        source: [upload_s3_bucket, job_uuid, extract_bam/output]
         valueFrom: $(self[0])/$(self[1])/$(self[2].basename)
       bam_index:
-        source: extract_genomel_bam/genomel_bam
+        source: extract_bam/output
         valueFrom: $(self.secondaryFiles[0])
       bam_index_uri:
-        source: [upload_s3_bucket, job_uuid, extract_genomel_bam/genomel_bam]
+        source: [upload_s3_bucket, job_uuid, extract_bam/output]
         valueFrom: $(self[0])/$(self[1])/$(self[2].secondaryFiles[0].basename)
       gvcf: gatk3_haplotypecaller/haplotypecaller_sorted_vcf
       gvcf_uri:
@@ -239,9 +204,6 @@ steps:
                  bam_input_harmonization_with_bwa/time_metrics_from_merge,
                  bam_input_harmonization_with_bwa/time_metrics_from_sort,
                  bam_input_harmonization_with_bwa/time_metrics_from_reheader,
-                 gatk3_realignment/time_metrics_from_gatk3_leftalignindels,
-                 gatk3_realignment/time_metrics_from_gatk3_realignertargetcreator,
-                 gatk3_realignment/time_metrics_from_gatk3_indelrealigner,
                  gatk3_haplotypecaller/time_metrics_from_gatk3_haplotypecaller,
                  gatk3_haplotypecaller/time_metrics_from_picard_sortvcf,
                  upload_results/time_metrics_from_upload_bam,
