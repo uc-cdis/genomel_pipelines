@@ -5,7 +5,7 @@
   "aws_config": {"class": "File", "path": "/home/ubuntu/.aws/config"},
   "aws_shared_credentials": {"class": "File", "path": "/home/ubuntu/.aws/credentials"},
   "download_s3_profile": "genomel-cleversafe",
-  "download_s3_endpoint": "https://bionimbus-objstore-cs.opensciencedatacloud.org/",
+  "download_s3_endpoint": "https://atwood-accessors.osdc.io",
   "input_is_fastq": [],
   "fastq_read1_uri": [],
   "fastq_read2_uri": [],
@@ -18,7 +18,7 @@
   "known_indel2": {"class": "File", "path": "/mnt/SCRATCH/genomel_references/Mills_and_1000G_gold_standard.indels.hg19.vcf.gz"},
   "upload_s3_bucket": "s3://genomel",
   "upload_s3_profile": "genomel-cleversafe",
-  "upload_s3_endpoint": "https://bionimbus-objstore-cs.opensciencedatacloud.org/"
+  "upload_s3_endpoint": "https://atwood-accessors.osdc.io"
 },
 {
   "job_uuid": "XX_JOB_ID_XX",
@@ -27,7 +27,7 @@
   "aws_config": {"class": "File", "path": "/home/ubuntu/.aws/config"},
   "aws_shared_credentials": {"class": "File", "path": "/home/ubuntu/.aws/credentials"},
   "download_s3_profile": "genomel-cleversafe",
-  "download_s3_endpoint": "https://bionimbus-objstore-cs.opensciencedatacloud.org/",
+  "download_s3_endpoint": "https://atwood-accessors.osdc.io",
   "input_is_fastq": [1],
   "fastq_read1_uri": ["XX_RG_1_READ_1_XX", "XX_RG_2_READ_1_XX"],
   "fastq_read2_uri": ["XX_RG_1_READ_2_XX", "XX_RG_2_READ_2_XX"],
@@ -40,5 +40,5 @@
   "known_indel2": {"class": "File", "path": "/mnt/SCRATCH/genomel_references/Mills_and_1000G_gold_standard.indels.hg19.vcf.gz"},
   "upload_s3_bucket": "s3://genomel",
   "upload_s3_profile": "genomel-cleversafe",
-  "upload_s3_endpoint": "https://bionimbus-objstore-cs.opensciencedatacloud.org/"
+  "upload_s3_endpoint": "https://atwood-accessors.osdc.io"
 }
