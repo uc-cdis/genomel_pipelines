@@ -13,9 +13,6 @@
   "readgroup_names": [],
   "input_is_bam": [1],
   "bam_uri": "XX_BAM_URI_XX",
-  "run_gatk3_realignment": [],
-  "known_indel1": {"class": "File", "path": "/mnt/SCRATCH/genomel_references/1000G_phase1.indels.hg19.vcf.gz"},
-  "known_indel2": {"class": "File", "path": "/mnt/SCRATCH/genomel_references/Mills_and_1000G_gold_standard.indels.hg19.vcf.gz"},
   "upload_s3_bucket": "s3://genomel",
   "upload_s3_profile": "genomel-cleversafe",
   "upload_s3_endpoint": "https://atwood-accessors.osdc.io"
@@ -35,9 +32,6 @@
   "readgroup_names": ["XX_RG_1_XX", "XX_RG_2_XX"],
   "input_is_bam": [],
   "bam_uri": "",
-  "run_gatk3_realignment": [],
-  "known_indel1": {"class": "File", "path": "/mnt/SCRATCH/genomel_references/1000G_phase1.indels.hg19.vcf.gz"},
-  "known_indel2": {"class": "File", "path": "/mnt/SCRATCH/genomel_references/Mills_and_1000G_gold_standard.indels.hg19.vcf.gz"},
   "upload_s3_bucket": "s3://genomel",
   "upload_s3_profile": "genomel-cleversafe",
   "upload_s3_endpoint": "https://atwood-accessors.osdc.io"
