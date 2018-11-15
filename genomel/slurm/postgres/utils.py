@@ -122,7 +122,7 @@ def update_record_metrics(engine, table, met):
   return record
 
 
-def add_pipeline_metrics(engine, project, uuid, input_id, input_table, status, datetime_start, datetime_end, download_time, bam_upload_time, gvcf_upload_time, bam_url, gvcf_url, bam_md5sum, gvcf_md5sum, bam_filesize, gvcf_filesize, harmonization_cwl_walltime, harmonization_cwl_cpu_percentage, realignment_cwl_walltime, realignment_cwl_cpu_percentage, haplotypecaller_cwl_walltime, haplotypecaller_cwl_cpu_percentage, whole_workflow_elapsed, hostname, cwl_version, docker_version, cwl_input_json, time_metrics_json, metricsclass, git_hash, debug_path):
+def add_pipeline_metrics(engine, project, uuid, aliquot_id, input_table, status, datetime_start, datetime_end, download_time, bam_upload_time, gvcf_upload_time, bam_url, gvcf_url, bam_md5sum, gvcf_md5sum, bam_filesize, gvcf_filesize, harmonization_cwl_walltime, harmonization_cwl_cpu_percentage, realignment_cwl_walltime, realignment_cwl_cpu_percentage, haplotypecaller_cwl_walltime, haplotypecaller_cwl_cpu_percentage, whole_workflow_elapsed, hostname, cwl_version, docker_version, cwl_input_json, time_metrics_json, metricsclass, git_hash, debug_path):
   """ add provided status to database """
   met = metricsclass(job_uuid=uuid,
                      aliquot_id=aliquot_id,
