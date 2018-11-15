@@ -84,7 +84,7 @@ def update_record_metrics(engine, table, met):
   record = session.query(Metrics).filter(Metrics.job_uuid == met.job_uuid).first()
 
   if record:
-    record.input_id = met.input_id
+    record.aliquot_id = met.aliquot_id
     record.input_table = met.input_table
     record.project = met.project
     record.status = met.status
@@ -111,6 +111,8 @@ def update_record_metrics(engine, table, met):
     record.docker_version = met.docker_version,
     record.cwl_input_json = met.cwl_input_json,
     record.time_metrics_json = met.time_metrics_json
+    record.git_hash = met.git_hash
+    record.debug_path = met.debug_path
 
     session.flush()
     session.commit()
@@ -120,10 +122,10 @@ def update_record_metrics(engine, table, met):
   return record
 
 
-def add_pipeline_metrics(engine, project, uuid, input_id, input_table, status, datetime_start, datetime_end, download_time, bam_upload_time, gvcf_upload_time, bam_url, gvcf_url, bam_md5sum, gvcf_md5sum, bam_filesize, gvcf_filesize, harmonization_cwl_walltime, harmonization_cwl_cpu_percentage, realignment_cwl_walltime, realignment_cwl_cpu_percentage, haplotypecaller_cwl_walltime, haplotypecaller_cwl_cpu_percentage, whole_workflow_elapsed, hostname, cwl_version, docker_version, cwl_input_json, time_metrics_json, metricsclass):
+def add_pipeline_metrics(engine, project, uuid, input_id, input_table, status, datetime_start, datetime_end, download_time, bam_upload_time, gvcf_upload_time, bam_url, gvcf_url, bam_md5sum, gvcf_md5sum, bam_filesize, gvcf_filesize, harmonization_cwl_walltime, harmonization_cwl_cpu_percentage, realignment_cwl_walltime, realignment_cwl_cpu_percentage, haplotypecaller_cwl_walltime, haplotypecaller_cwl_cpu_percentage, whole_workflow_elapsed, hostname, cwl_version, docker_version, cwl_input_json, time_metrics_json, metricsclass, git_hash, debug_path):
   """ add provided status to database """
   met = metricsclass(job_uuid=uuid,
-                     input_id=input_id,
+                     aliquot_id=aliquot_id,
                      input_table=input_table,
                      project=project,
                      status=status,
@@ -149,7 +151,9 @@ def add_pipeline_metrics(engine, project, uuid, input_id, input_table, status, d
                      cwl_version=cwl_version,
                      docker_version=docker_version,
                      cwl_input_json=cwl_input_json,
-                     time_metrics_json=time_metrics_json)
+                     time_metrics_json=time_metrics_json,
+                     git_hash=git_hash,
+                     debug_path=debug_path)
 
   # create table if not present
   create_table(engine, met)
@@ -159,12 +163,12 @@ def add_pipeline_metrics(engine, project, uuid, input_id, input_table, status, d
     add_metrics(engine, met)
 
 
-def set_download_error(exit_code, logger, engine, project, uuid, input_id, input_table, datetime_start, datetime_end, hostname, cwl_version, docker_version, download_time, whole_workflow_elapsed, metricsclass):
-  ''' Sets the status for download errors '''
-  if exit_code != 0:
-    logger.info("Input file download error")
-    status = "DOWNLOAD_FAILURE"
-  else:
-    logger.info("Md5 unmatch error")
-    status = "UNMATCHED_MD5"
-  add_pipeline_metrics(engine, project, uuid, input_id, input_table, status, datetime_start, datetime_end, download_time, float(0), float(0), str(0), str(0), str(0), str(0), float(0), float(0), float(0), float(0), float(0), float(0), float(0), float(0), whole_workflow_elapsed, hostname, cwl_version, docker_version, str(0), str(0), metricsclass)
+# def set_download_error(exit_code, logger, engine, project, uuid, input_id, input_table, datetime_start, datetime_end, hostname, cwl_version, docker_version, download_time, whole_workflow_elapsed, metricsclass, git_hash, debug_path):
+#   ''' Sets the status for download errors '''
+#   if exit_code != 0:
+#     logger.info("Input file download error")
+#     status = "DOWNLOAD_FAILURE"
+#   else:
+#     logger.info("Md5 unmatch error")
+#     status = "UNMATCHED_MD5"
+#   add_pipeline_metrics(engine, project, uuid, input_id, input_table, status, datetime_start, datetime_end, download_time, float(0), float(0), str(0), str(0), str(0), str(0), float(0), float(0), float(0), float(0), float(0), float(0), float(0), float(0), whole_workflow_elapsed, hostname, cwl_version, docker_version, str(0), str(0), metricsclass, git_hash, debug_path)

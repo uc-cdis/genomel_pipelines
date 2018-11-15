@@ -34,10 +34,6 @@ def retrive_reads(cases):
         s[row.aliquot][row.read_group]['md5_r1'].append(row.md5_r1)
         s[row.aliquot][row.read_group].setdefault('md5_r2', [])
         s[row.aliquot][row.read_group]['md5_r2'].append(row.md5_r2)
-        s[row.aliquot][row.read_group].setdefault('size_r1', [])
-        s[row.aliquot][row.read_group]['size_r1'].append(row.size_r1)
-        s[row.aliquot][row.read_group].setdefault('size_r2', [])
-        s[row.aliquot][row.read_group]['size_r2'].append(row.size_r2)
         s[row.aliquot][row.read_group].setdefault('s3_url_r1', [])
         s[row.aliquot][row.read_group]['s3_url_r1'].append(row.s3_url_r1)
         s[row.aliquot][row.read_group].setdefault('s3_url_r2', [])
@@ -60,8 +56,6 @@ def retrive_bams(cases):
         s[row.aliquot]['md5'].append(row.md5)
         s[row.aliquot].setdefault('s3_url', [])
         s[row.aliquot]['s3_url'].append(row.s3_url)
-        s[row.aliquot].setdefault('file_size', [])
-        s[row.aliquot]['file_size'].append(row.file_size)
         s[row.aliquot]['s3_profile'] = row.s3_profile
         s[row.aliquot]['s3_endpoint'] = row.s3_endpoint
         s[row.aliquot]['project'] = row.project
@@ -116,19 +110,19 @@ def get_case_from_metrics(engine, metrics_table, input_primary_column, genomel_f
     # read the metrics table
     metrics = Table(metrics_table, meta, autoload=True)
     mapper(Metrics, metrics)
-    cases = session.query(Metrics).all()
-    input_ids = list()
-    for row in cases:
+    aliquots = session.query(Metrics).all()
+    aliquot_ids = list()
+    for row in aliquots:
         if row.status != 'COMPLETED':
-            for instance in row.input_id:
-                if instance not in input_ids:
-                    input_ids.append(instance)
-    fastq_cases_filter = list(filter(lambda x: x.input_id_r1 in input_ids, fastq_cases))
-    bam_cases_filter = list(filter(lambda x: x.input_id in input_ids, bam_cases))
+            for instance in row.aliquot_id:
+                if instance not in aliquot_ids:
+                    aliquot_ids.append(instance)
+    fastq_cases_filter = list(filter(lambda x: aliquot_id in aliquot_ids, fastq_cases))
+    bam_cases_filter = list(filter(lambda x: x.aliquot_id in aliquot_ids, bam_cases))
     reads_ids = dict()
     bam_ids = dict()
     if fastq_cases_filter:
         reads_ids = retrive_reads(fastq_cases_filter)
     if bam_cases_filter:
         bams_ids = retrive_bams(bam_cases_filter)
-    return {'reads_ids':reads_ids, 'bams_ids':bams_ids}
+    return {'reads_ids': reads_ids, 'bams_ids': bams_ids}

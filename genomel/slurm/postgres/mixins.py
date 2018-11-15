@@ -9,7 +9,7 @@ class IndMetricsTypeMixin(object):
     ''' Gather timing metrics with input uuids '''
     id = Column(Integer, primary_key=True)
     job_uuid = Column(String)
-    input_id = Column(ARRAY(String))
+    aliquot_id = Column(String)
     input_table = Column(String)
     project = Column(String)
     status = Column(String)
@@ -36,6 +36,8 @@ class IndMetricsTypeMixin(object):
     docker_version = Column(String)
     cwl_input_json = Column(String)
     time_metrics_json = Column(Float)
+    git_hash = Column(String)
+    debug_path = Column(String)
 
     def __repr__(self):
         return "<IndMetricsTypeMixin(job_uuid='%s', whole_workflow_elapsed='%s', status='%s')>" % (self.job_uuid, self.whole_workflow_elapsed, self.status)
