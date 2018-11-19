@@ -21,6 +21,7 @@ inputs:
   known_snp:
     type: File
     secondaryFiles: [.tbi]
+  exome_bed: File
   ###Download
   aws_config: File
   aws_shared_credentials: File
@@ -31,12 +32,15 @@ inputs:
   input_is_fastq: int[]
   fastq_read1_uri: string[]
   fastq_read2_uri: string[]
+  fastq_read1_md5: string[]
+  fastq_read2_md5: string[]
   readgroup_lines: string[]
   readgroup_names: string[]
 
   ###Harmonization required
   input_is_bam: int[]
   bam_uri: string
+  bam_md5: string
 
   ###Upload
   upload_s3_profile: string
@@ -56,7 +60,7 @@ outputs:
 
 steps:
   download_fastq_reads:
-    run: ./cwl/workflows/utils/download_prep.cwl
+    run: ./workflows/utils/download_fastq.cwl
     scatter: [input_is_fastq]
     in:
       input_is_fastq: input_is_fastq
@@ -66,38 +70,32 @@ steps:
       s3_endpoint: download_s3_endpoint
       fastq_read1_uri: fastq_read1_uri
       fastq_read2_uri: fastq_read2_uri
+      fastq_read1_md5: fastq_read1_md5
+      fastq_read2_md5: fastq_read2_md5
     out: [downloaded_fastq_read1,
           downloaded_fastq_read2,
           time_metrics_from_download_f1,
           time_metrics_from_download_f2]
 
   download_bam_file:
-    run: ./cwl/tools/utils/awscli_download.cwl
+    run: ./workflows/utils/download_check.cwl
     scatter: [input_is_bam]
     in:
       input_is_bam: input_is_bam
       aws_config: aws_config
       aws_shared_credentials: aws_shared_credentials
       s3uri: bam_uri
+      md5: bam_md5
       s3_profile: download_s3_profile
       s3_endpoint: download_s3_endpoint
-    out: [output, time_metrics]
-
-  get_fai_bed:
-    run: ./cwl/tools/harmonization/fai_to_bed.cwl
-    in:
-      ref_fai:
-        source: reference
-        valueFrom: $(self.secondaryFiles[0])
-    out: [output_bed]
+    out: [verified_file, time_metrics_from_download]
 
   fastq_input_alignment_with_bwa:
-    run: ./cwl/workflows/harmonization/alignment_bwa_mem.cwl
+    run: ./workflows/harmonization/alignment_bwa_mem_prod.cwl
     scatter: input_is_fastq
     in:
       input_is_fastq: input_is_fastq
       job_uuid: job_uuid
-      interval_bed: get_fai_bed/output_bed
       input_read1:
         source: download_fastq_reads/downloaded_fastq_read1
         valueFrom: $(self[0])
@@ -109,32 +107,31 @@ steps:
       reference: reference
     out: [sorted_bam,
           time_metrics_from_trim_adaptor,
-          time_metrics_from_bwa_mem_filter_dedup,
+          time_metrics_from_bwa_mem,
           time_metrics_from_merge,
           time_metrics_from_sort,
-          time_metrics_from_reheader]
+          time_metrics_from_mrkdup]
 
   bam_input_harmonization_with_bwa:
-    run: ./cwl/workflows/harmonization/harmonization_bwa_mem.cwl
+    run: ./workflows/harmonization/harmonization_bwa_mem_prod.cwl
     scatter: input_is_bam
     in:
       input_is_bam: input_is_bam
       job_uuid: job_uuid
-      interval_bed: get_fai_bed/output_bed
       input_bam:
-        source: download_bam_file/output
+        source: download_bam_file/verified_file
         valueFrom: $(self[0])
       reference: reference
     out: [sorted_bam,
           time_metrics_from_bam_to_fastq,
           time_metrics_from_trim_adaptor,
-          time_metrics_from_bwa_mem_filter_dedup,
+          time_metrics_from_bwa_mem,
           time_metrics_from_merge,
           time_metrics_from_sort,
-          time_metrics_from_reheader]
+          time_metrics_from_mrkdup]
 
   extract_bam:
-    run: ./cwl/tools/utils/extract_outputs.cwl
+    run: ./tools/utils/extract_outputs.cwl
     in:
       file_array:
         source: [fastq_input_alignment_with_bwa/sorted_bam,
@@ -143,7 +140,7 @@ steps:
     out: [output]
 
   extract_genomel_bam:
-    run: ./cwl/tools/utils/extract_genomel_bam.cwl
+    run: ./tools/utils/extract_genomel_bam.cwl
     in:
       harmonized_bam:
         source: extract_bam/output
@@ -151,19 +148,19 @@ steps:
     out: [genomel_bam]
 
   gatk3_haplotypecaller:
-    run: ./cwl/workflows/variant_calling/haplotypecaller.cwl
+    run: ./workflows/variant_calling/haplotypecaller.cwl
     in:
       job_uuid: job_uuid
       bam_file: extract_genomel_bam/genomel_bam
       reference: reference
-      interval: get_fai_bed/output_bed
+      interval: exome_bed
       snp_ref: known_snp
     out: [haplotypecaller_sorted_vcf,
           time_metrics_from_gatk3_haplotypecaller,
           time_metrics_from_picard_sortvcf]
 
   upload_results:
-    run: ./cwl/workflows/utils/upload_results.cwl
+    run: ./workflows/utils/upload_results.cwl
     in:
       aws_config: aws_config
       aws_shared_credentials: aws_shared_credentials
@@ -195,23 +192,23 @@ steps:
           time_metrics_from_upload_gvcf_index]
 
   extract_time_log:
-    run: ./cwl/tools/utils/extract_outputs.cwl
+    run: ./tools/utils/extract_outputs.cwl
     in:
       file_array:
         source: [download_fastq_reads/time_metrics_from_download_f1,
                  download_fastq_reads/time_metrics_from_download_f2,
-                 download_bam_file/time_metrics,
+                 download_bam_file/time_metrics_from_download,
                  fastq_input_alignment_with_bwa/time_metrics_from_trim_adaptor,
-                 fastq_input_alignment_with_bwa/time_metrics_from_bwa_mem_filter_dedup,
+                 fastq_input_alignment_with_bwa/time_metrics_from_bwa_mem,
                  fastq_input_alignment_with_bwa/time_metrics_from_merge,
                  fastq_input_alignment_with_bwa/time_metrics_from_sort,
-                 fastq_input_alignment_with_bwa/time_metrics_from_reheader,
+                 fastq_input_alignment_with_bwa/time_metrics_from_mrkdup,
                  bam_input_harmonization_with_bwa/time_metrics_from_bam_to_fastq,
                  bam_input_harmonization_with_bwa/time_metrics_from_trim_adaptor,
-                 bam_input_harmonization_with_bwa/time_metrics_from_bwa_mem_filter_dedup,
+                 bam_input_harmonization_with_bwa/time_metrics_from_bwa_mem,
                  bam_input_harmonization_with_bwa/time_metrics_from_merge,
                  bam_input_harmonization_with_bwa/time_metrics_from_sort,
-                 bam_input_harmonization_with_bwa/time_metrics_from_reheader,
+                 bam_input_harmonization_with_bwa/time_metrics_from_mrkdup,
                  gatk3_haplotypecaller/time_metrics_from_gatk3_haplotypecaller,
                  gatk3_haplotypecaller/time_metrics_from_picard_sortvcf,
                  upload_results/time_metrics_from_upload_bam,
