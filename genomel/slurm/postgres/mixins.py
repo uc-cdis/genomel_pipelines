@@ -2,8 +2,6 @@
 Postgres mixins
 '''
 from sqlalchemy import Column, Integer, String, Float
-# from sqlalchemy.dialects.postgresql import ARRAY
-
 
 class IndMetricsTypeMixin(object):
     ''' Gather timing metrics with input uuids '''
@@ -20,14 +18,14 @@ class IndMetricsTypeMixin(object):
     gvcf_upload_time = Column(Float)
     bam_url = Column(String)
     gvcf_url = Column(String)
+    bam_local_path = Column(String)
+    gvcf_local_path = Column(String)
     bam_md5sum = Column(String)
     gvcf_md5sum = Column(String)
     bam_filesize = Column(Integer)
     gvcf_filesize = Column(Integer)
     harmonization_cwl_walltime = Column(Float)
     harmonization_cwl_cpu_percentage = Column(Float)
-    realignment_cwl_walltime = Column(Float)
-    realignment_cwl_cpu_percentage = Column(Float)
     haplotypecaller_cwl_walltime = Column(Float)
     haplotypecaller_cwl_cpu_percentage = Column(Float)
     whole_workflow_elapsed = Column(Float)
@@ -35,9 +33,11 @@ class IndMetricsTypeMixin(object):
     cwl_version = Column(String)
     docker_version = Column(String)
     cwl_input_json = Column(String)
-    time_metrics_json = Column(Float)
+    time_metrics_json = Column(String)
     git_hash = Column(String)
     debug_path = Column(String)
 
     def __repr__(self):
-        return "<IndMetricsTypeMixin(job_uuid='%s', whole_workflow_elapsed='%s', status='%s')>" % (self.job_uuid, self.whole_workflow_elapsed, self.status)
+        return "<IndMetricsTypeMixin(job_uuid={}, whole_workflow_elapsed={}, status={})>".format(
+            self.job_uuid, self.whole_workflow_elapsed, self.status
+        )
