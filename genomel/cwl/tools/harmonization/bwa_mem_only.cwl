@@ -49,4 +49,6 @@ arguments:
       /opt/bwa-0.7.17/bwa mem -K 100000000 -M -v 3 -t 30
       -Y $(inputs.reference.path) -R '$(inputs.readgroup_line)'
       $(inputs.input_read1_fastq_file.path) $(inputs.input_read2_fastq_file.path)
-      | /opt/sambamba-0.6.8-linux-static view -t 30 -f bam -S -o $(inputs.readgroup_name).unsorted.bam /dev/stdin
+      | /opt/sambamba-0.6.8-linux-static view -t 30 -f bam -S /dev/stdin
+      | /opt/sambamba-0.6.8-linux-static sort -t 30 --natural-sort -m 15GiB --tmpdir ./
+      -o $(inputs.readgroup_name).unsorted.bam -l 5 /dev/stdin
