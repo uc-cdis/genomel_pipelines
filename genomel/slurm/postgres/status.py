@@ -5,14 +5,18 @@ from sqlalchemy.orm import sessionmaker, mapper
 from sqlalchemy import MetaData, Table
 from sqlalchemy import Column, String
 
+
 class Metrics(object):
     pass
+
 
 class BamFiles(object):
     pass
 
+
 class FastqFiles(object):
     pass
+
 
 def retrive_reads(cases):
     '''Organize rows of genomel_fastq_input to dictionary'''
@@ -37,6 +41,7 @@ def retrive_reads(cases):
         s[row.aliquot_id]['project'] = row.project
     return s
 
+
 def retrive_bams(cases):
     '''Organize rows of genomel_bam_input to dictionary'''
     s = dict()
@@ -53,6 +58,7 @@ def retrive_bams(cases):
         s[row.aliquot_id]['project'] = row.project
     return s
 
+
 def get_reads(engine, genomel_fastq_input, input_primary_column="id"):
     '''collect input information from genomel_fastq_input tables'''
     Session = sessionmaker()
@@ -66,6 +72,7 @@ def get_reads(engine, genomel_fastq_input, input_primary_column="id"):
     cases = session.query(FastqFiles).all()
     return retrive_reads(cases)
 
+
 def get_bams(engine, genomel_bam_input, input_primary_column="id"):
     '''collect input information from genomel_bam_input tables'''
     Session = sessionmaker()
@@ -78,6 +85,7 @@ def get_bams(engine, genomel_bam_input, input_primary_column="id"):
     mapper(BamFiles, data)
     cases = session.query(BamFiles).all()
     return retrive_bams(cases)
+
 
 def get_case_from_metrics(engine, metrics_table, genomel_fastq_input, genomel_bam_input):
     '''collect input information from metrics tables'''
@@ -98,16 +106,12 @@ def get_case_from_metrics(engine, metrics_table, genomel_fastq_input, genomel_ba
     # read the metrics table
     metrics = Table(metrics_table, meta, autoload=True)
     mapper(Metrics, metrics)
-    cases = session.query(Metrics).all()
-    aliquot_ids = list()
-    for row in cases:
-        if row.status != 'COMPLETED':
-            if row.aliquot_id not in aliquot_ids:
-                aliquot_ids.append(row.aliquot_id)
-    fastq_cases_filter = list([x for x in aliquot_ids \
-                         if x.aliquot_id in fastq_cases])
-    bam_cases_filter = list([x for x in aliquot_ids \
-                       if x.aliquot_id in bam_cases])
+    cases = session.query(Metrics).filter(Metrics.status == 'COMPLETED').all()
+
+    fastq_cases_filter = list([x for x in fastq_cases
+                               if x.aliquot_id not in cases.aliquot_id])
+    bam_cases_filter = list([x for x in bam_cases
+                             if x.aliquot_id not in cases.aliquot_id])
     reads_ids = dict()
     bams_ids = dict()
     if fastq_cases_filter:
