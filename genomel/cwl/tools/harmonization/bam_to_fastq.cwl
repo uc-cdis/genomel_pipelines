@@ -21,9 +21,6 @@ inputs:
   collate:
     type: int
     default: 1
-  exclude:
-    type: string
-    default: QCFAIL,SECONDARY,SUPPLEMENTARY
   filename:
     type: File
   gz:
@@ -112,7 +109,6 @@ arguments:
       samtools view -@ 8 -Shb $(inputs.filename.path)
       | /opt/biobambam2/2.0.87-release-20180301132713/x86_64-etch-linux-gnu/bin/bamtofastq
       collate=$(inputs.collate)
-      exclude=$(inputs.exclude)
       filename=/dev/stdin
       gz=$(inputs.gz)
       inputformat=$(inputs.inputformat)
