@@ -12,8 +12,7 @@ import git
 
 def pg_data_template():
     '''create postgres default dict'''
-    git_path = os.path.dirname(os.path.dirname(\
-               os.path.dirname(os.path.dirname(os.path.realpath('__file__')))))
+    git_path = os.path.dirname(os.path.realpath('__file__'))
     pg_data = {
         'job_uuid': None,
         'aliquot_id': None,
@@ -43,7 +42,7 @@ def pg_data_template():
         'docker_version': 'Docker version 18.09.0, build 4d60db4',
         'cwl_input_json': None,
         'time_metrics_json': None,
-        'git_hash': git.Repo(git_path).head.object.hexsha,
+        'git_hash': git.Repo(git_path, search_parent_directories=True).head.object.hexsha,
         'debug_path': None
     }
     return pg_data
@@ -80,7 +79,7 @@ def remove_dir(dirname):
     if os.path.isdir(dirname):
         shutil.rmtree(dirname)
     else:
-        raise Exception("Invalid directory: %s" % dirname)
+        raise Exception("Invalid directory: {}".format(dirname))
 
 def get_file_size(filename):
     ''' Gets file size '''
@@ -108,6 +107,17 @@ def load_template_json():
     with open(template_json_file, 'r') as fhandle:
         dat = json.load(fhandle)
     return dat
+
+def load_template_slurm():
+    ''' load resource JSON file '''
+    template_slurm_file = os.path.join(\
+                         os.path.dirname(\
+                         os.path.dirname(os.path.realpath('__file__'))),
+                         "etc/template.sh")
+    template_slurm_str = None
+    with open(template_slurm_file, 'r') as fhandle:
+        template_slurm_str = fhandle.read()
+    return template_slurm_str
 
 def targz_compress(logger, filename, dirname):
     '''Runs tar -cjvf'''
