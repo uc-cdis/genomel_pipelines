@@ -30,28 +30,28 @@ class ScriptCreator(object):
         self.input_table = args.input_table
         self.pipeline = args.pipeline
         self.outdir = args.outdir
-        self.alignment_cmd = """
-        --fastq_read1_uri ${fastq_read1_uri[*]}
-        --fastq_read2_uri ${fastq_read2_uri[*]}
-        --fastq_read1_md5 ${fastq_read1_md5[*]}
-        --fastq_read2_md5 ${fastq_read2_md5[*]}
-        --readgroup_names ${readgroup_names[*]}
-        """
-        self.alignment_variable = """
-        fastq_read1_uri=({FASTQ_READ1_URI})
-        fastq_read2_uri=({FASTQ_READ2_URI})
-        fastq_read1_md5=({FASTQ_READ1_MD5})
-        fastq_read2_md5=({FASTQ_READ2_MD5})
-        readgroup_names=({READGROUP_NAMES})
-        """
-        self.harmonization_cmd = """
-        --bam_uri $bam_uri
-        --bam_md5 $bam_md5
-        """
-        self.harmonization_variable = """
-        bam_uri="{BAM_URI}"
-        bam_md5="{BAM_MD5}"
-        """
+        self.alignment_cmd = (
+            "--fastq_read1_uri ${fastq_read1_uri[*]} \\\n"
+            "--fastq_read2_uri ${fastq_read2_uri[*]} \\\n"
+            "--fastq_read1_md5 ${fastq_read1_md5[*]} \\\n"
+            "--fastq_read2_md5 ${fastq_read2_md5[*]} \\\n"
+            "--readgroup_names ${readgroup_names[*]}"
+        )
+        self.alignment_variable = (
+            "fastq_read1_uri=({FASTQ_READ1_URI})\n"
+            "fastq_read2_uri=({FASTQ_READ2_URI})\n"
+            "fastq_read1_md5=({FASTQ_READ1_MD5})\n"
+            "fastq_read2_md5=({FASTQ_READ2_MD5})\n"
+            "readgroup_names=({READGROUP_NAMES})\n"
+        )
+        self.harmonization_cmd = (
+            "--bam_uri $bam_uri \\\n"
+            "--bam_md5 $bam_md5"
+        )
+        self.harmonization_variable = (
+            "bam_uri=\"{BAM_URI}\"\n"
+            "bam_md5=\"{BAM_MD5}\"\n"
+        )
 
     def _separate_readgroup_meta(self, aliquot_id):
         '''exclude nonreadgroup metadata'''
@@ -92,7 +92,7 @@ class ScriptCreator(object):
         '''prepare harmonization variables'''
         readgroup_meta = self._separate_readgroup_meta(aliquot_id)[1]
         shell_variables = self.harmonization_variable.format(
-            BAM_URI=readgroup_meta['s3_url'],
+            BAM_URI=readgroup_meta['s3_url'][0],
             BAM_MD5=readgroup_meta['md5'][0]
         )
         return shell_variables

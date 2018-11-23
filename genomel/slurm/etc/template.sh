@@ -5,10 +5,10 @@
 #SBATCH --mem=100000
 #SBATCH --workdir="/mnt/SCRATCH/"
 
-function cleanup (){
+function cleanup (){{
     echo "cleanup tmp data";
     sudo rm -rf $basedir;
-}
+}}
 
 pipeline="{PIPELINE}"
 aliquot_id="{ALIQUOT_ID}"
@@ -17,7 +17,6 @@ project="{PROJECT}"
 download_s3_profile="{D_S3_PROFILE}"
 download_s3_endpoint="{D_S3_ENDPOINT}"
 {PIPELINE_VARIABLES}
-
 basedir=`sudo mktemp -d {PIPELINE}.XXXXXXXXXX -p /mnt/SCRATCH/`
 
 repository="git@github.com:uc-cdis/genomel_pipelines.git"

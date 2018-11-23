@@ -12,7 +12,7 @@ import git
 
 def pg_data_template():
     '''create postgres default dict'''
-    git_path = os.path.dirname(os.path.realpath('__file__'))
+    git_path = os.path.dirname(os.path.realpath(__file__))
     pg_data = {
         'job_uuid': None,
         'aliquot_id': None,
@@ -101,7 +101,7 @@ def load_template_json():
     ''' load resource JSON file '''
     template_json_file = os.path.join(\
                          os.path.dirname(\
-                         os.path.dirname(os.path.realpath('__file__'))),
+                         os.path.dirname(os.path.realpath(__file__))),
                          "etc/template.json")
     dat = {}
     with open(template_json_file, 'r') as fhandle:
@@ -112,7 +112,7 @@ def load_template_slurm():
     ''' load resource JSON file '''
     template_slurm_file = os.path.join(\
                          os.path.dirname(\
-                         os.path.dirname(os.path.realpath('__file__'))),
+                         os.path.dirname(os.path.realpath(__file__))),
                          "etc/template.sh")
     template_slurm_str = None
     with open(template_slurm_file, 'r') as fhandle:
