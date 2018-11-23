@@ -21,9 +21,8 @@ def create_scripts(args):
     else:
         raise Exception("Cannot find pipeline: {}. Make sure it is `alignment`|`harmonization`".\
                         format(args.pipeline))
-    job_uuid = str(uuid.uuid4())
     script_creator = ScriptCreator(psql_data, args)
-    script_creator.write_slurm_script(job_uuid)
+    script_creator.write_slurm_script()
 
 class ScriptCreator(object):
     '''this class describes methods prepare SLURM script files'''
@@ -115,9 +114,10 @@ class ScriptCreator(object):
             pipeline_cmd = self.harmonization_cmd
         return pipeline_cmd
 
-    def write_slurm_script(self, job_uuid):
+    def write_slurm_script(self):
         '''Writes the actual slurm script file'''
         for aliquot_id, metadata in self.psql_data.items():
+            job_uuid = str(uuid.uuid4())
             slurm = os.path.join(self.outdir, 'genomel_individual.{0}.{1}.{2}.{3}.sh'.format(
                 self.pipeline, metadata['project'], job_uuid, aliquot_id))
             # load template
