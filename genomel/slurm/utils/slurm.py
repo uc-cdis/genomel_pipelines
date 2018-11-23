@@ -1,5 +1,6 @@
 '''SLURM SBATCH script'''
 import os
+import uuid
 import utils.pipeline
 import postgres.utils
 import postgres.status
@@ -20,8 +21,9 @@ def create_scripts(args):
     else:
         raise Exception("Cannot find pipeline: {}. Make sure it is `alignment`|`harmonization`".\
                         format(args.pipeline))
+    job_uuid = str(uuid.uuid4())
     script_creator = ScriptCreator(psql_data, args)
-    script_creator.write_slurm_script()
+    script_creator.write_slurm_script(job_uuid)
 
 class ScriptCreator(object):
     '''this class describes methods prepare SLURM script files'''
@@ -113,16 +115,17 @@ class ScriptCreator(object):
             pipeline_cmd = self.harmonization_cmd
         return pipeline_cmd
 
-    def write_slurm_script(self):
+    def write_slurm_script(self, job_uuid):
         '''Writes the actual slurm script file'''
         for aliquot_id, metadata in self.psql_data.items():
-            slurm = os.path.join(self.outdir, 'genomel_individual.{0}.{1}.{2}.sh'.format(
-                self.pipeline, metadata['project'], aliquot_id))
+            slurm = os.path.join(self.outdir, 'genomel_individual.{0}.{1}.{2}.{3}.sh'.format(
+                self.pipeline, metadata['project'], job_uuid, aliquot_id))
             # load template
             template_str = utils.pipeline.load_template_slurm()
             # write
             val = template_str.format(
                 PIPELINE=self.pipeline,
+                JOB_UUID=job_uuid,
                 ALIQUOT_ID=aliquot_id,
                 INPUT_TABLE=self.input_table,
                 PROJECT=metadata['project'],

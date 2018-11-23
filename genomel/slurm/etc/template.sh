@@ -11,6 +11,7 @@ function cleanup (){{
 }}
 
 pipeline="{PIPELINE}"
+job_uuid="{JOB_UUID}"
 aliquot_id="{ALIQUOT_ID}"
 input_table="{INPUT_TABLE}"
 project="{PROJECT}"
@@ -32,6 +33,7 @@ trap cleanup EXIT
 /home/ubuntu/.virtualenvs/p2/bin/python \
 $basedir/genomel_pipelines/genomel/slurm/genomel_individual_aliquot_runner.py \
 $pipeline \
+--job_uuid $job_uuid \
 --basedir $basedir \
 --cwlwf $basedir/genomel_pipelines/genomel/cwl/genomel_individual_workflow.cwl \
 --aliquot_id $aliquot_id \
