@@ -149,7 +149,7 @@ def aws_s3_put(logger, remote_output, local_input, profile, endpoint_url, recurs
     if (remote_output != "" and (os.path.isfile(local_input) or os.path.isdir(local_input))):
         cmd = ['/home/ubuntu/.virtualenvs/p2/bin/aws', '--profile', profile,
                '--endpoint-url', endpoint_url, 's3', 'cp', local_input,
-               remote_output]
+               remote_output, '--no-verify-ssl']
         if recursive:
             cmd.append('--recursive')
         exit_code = run_command(cmd, logger)
