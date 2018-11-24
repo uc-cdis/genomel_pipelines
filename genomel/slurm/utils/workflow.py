@@ -315,11 +315,11 @@ class GenomelIndiv(object):
         bam_local_path = self._stage_local(
             cwl_output['genomel_bam']['path']
         )
-        self._stage_local(cwl_output['genomel_bam']['secondaryFiles']['path'])
+        self._stage_local(cwl_output['genomel_bam']['secondaryFiles'][0]['path'])
         gvcf_local_path = self._stage_local(
             cwl_output['genomel_gvcf']['path']
         )
-        self._stage_local(cwl_output['genomel_gvcf']['secondaryFiles']['path'])
+        self._stage_local(cwl_output['genomel_gvcf']['secondaryFiles'][0]['path'])
         self.workflow_meta['cwl_end'] = time.time()
         self.pg_data['job_uuid'] = self.workflow_meta['job_uuid']
         self.pg_data['aliquot_id'] = self.workflow_meta['aliquot_id']
