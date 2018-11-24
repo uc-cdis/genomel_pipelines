@@ -161,7 +161,7 @@ class GenomelIndiv(object):
     def _cwl_output_json(self):
         '''prepare cwl output json'''
         cwl_output_json = os.path.join(
-            self.workflow_meta['basedir'], 'genomel_individual.{0}.{1}.{2}.{3}.json'.format(
+            self.workflow_meta['basedir'], 'genomel_individual.{0}.{1}.{2}.{3}.output'.format(
                 self.workflow_meta['pipeline'],
                 self.workflow_meta['project'],
                 self.workflow_meta['job_uuid'],
