@@ -32,6 +32,8 @@ def pg_data_template():
         'gvcf_md5sum': None,
         'bam_filesize': 0,
         'gvcf_filesize': 0,
+        'alignment_cwl_walltime': 0.0,
+        'alignment_cwl_cpu_percentage': 0.0,
         'harmonization_cwl_walltime': 0.0,
         'harmonization_cwl_cpu_percentage': 0.0,
         'haplotypecaller_cwl_walltime': 0.0,
@@ -47,19 +49,20 @@ def pg_data_template():
     }
     return pg_data
 
-def run_command(cmd, logger=None, shell_var=False):
+def run_command(cmd, logger, output=None, shell_var=False):
     '''Runs a subprocess'''
     child = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=shell_var)
     stdoutdata, stderrdata = child.communicate()
     exit_code = child.returncode
-    if logger is not None:
-        logger.info(cmd)
-        stdoutdata = stdoutdata.split("\n")
-        for line in stdoutdata:
+    logger.info(cmd)
+    if output:
+        with open(output, 'wt') as ohandle:
+            ohandle.write(stdoutdata)
+    else:
+        for line in stdoutdata.split("\n"):
             logger.info(line)
-        stderrdata = stderrdata.split("\n")
-        for line in stderrdata:
-            logger.info(line)
+    for line in stderrdata.split("\n"):
+        logger.info(line)
     return exit_code
 
 def setup_logging(level, log_name, log_filename):
@@ -97,6 +100,13 @@ def get_md5(input_file):
             buf = afile.read(blocksize)
     return hasher.hexdigest()
 
+def load_json(fpath):
+    '''load json'''
+    dic = {}
+    with open(fpath, 'rt') as fhandle:
+        dic = json.load(fhandle)
+    return dic
+
 def load_template_json():
     ''' load resource JSON file '''
     template_json_file = os.path.join(\
@@ -122,5 +132,5 @@ def load_template_slurm():
 def targz_compress(logger, filename, dirname):
     '''Runs tar -cjvf'''
     cmd = ['tar', '-cjvf'] + [filename, dirname]
-    exit_code = run_command(cmd, logger=logger)
+    exit_code = run_command(cmd, logger)
     return exit_code

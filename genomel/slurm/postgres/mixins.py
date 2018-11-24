@@ -24,6 +24,8 @@ class IndMetricsTypeMixin(object):
     gvcf_md5sum = Column(String)
     bam_filesize = Column(Integer)
     gvcf_filesize = Column(Integer)
+    alignment_cwl_walltime = Column(Float)
+    alignment_cwl_cpu_percentage = Column(Float)
     harmonization_cwl_walltime = Column(Float)
     harmonization_cwl_cpu_percentage = Column(Float)
     haplotypecaller_cwl_walltime = Column(Float)

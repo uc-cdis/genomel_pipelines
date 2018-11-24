@@ -27,6 +27,8 @@ def add_metrics(engine, table, data):
         gvcf_md5sum=data['gvcf_md5sum'],
         bam_filesize=data['bam_filesize'],
         gvcf_filesize=data['gvcf_filesize'],
+        alignment_cwl_walltime=data['alignment_cwl_walltime'],
+        alignment_cwl_cpu_percentage=data['alignment_cwl_cpu_percentage'],
         harmonization_cwl_walltime=data['harmonization_cwl_walltime'],
         harmonization_cwl_cpu_percentage=data['harmonization_cwl_cpu_percentage'],
         haplotypecaller_cwl_walltime=data['haplotypecaller_cwl_walltime'],
