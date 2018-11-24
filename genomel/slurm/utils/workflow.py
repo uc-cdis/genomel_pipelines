@@ -142,7 +142,8 @@ class GenomelIndiv(object):
             self._process_cwl_fail()
         engine = postgres.utils.get_db_engine(self.psql_conf)
         postgres.metrics.add_metrics(engine, self.psql_class, self.pg_data)
-        return
+        # clean up
+        utils.pipeline.remove_dir(self.workflow_meta['basedir'])
 
     def _cwl_input_json(self):
         '''prepare cwl input json'''
