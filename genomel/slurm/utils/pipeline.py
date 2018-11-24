@@ -21,23 +21,23 @@ def pg_data_template():
         'status': None,
         'datetime_start': None,
         'datetime_end': None,
-        'download_time': 0.0,
-        'bam_upload_time': 0.0,
-        'gvcf_upload_time': 0.0,
+        'download_time': None,
+        'bam_upload_time': None,
+        'gvcf_upload_time': None,
         'bam_url': None,
         'gvcf_url': None,
         'bam_local_path': None,
         'gvcf_local_path': None,
         'bam_md5sum': None,
         'gvcf_md5sum': None,
-        'bam_filesize': 0,
-        'gvcf_filesize': 0,
-        'alignment_cwl_walltime': 0.0,
-        'alignment_cwl_cpu_percentage': 0.0,
-        'harmonization_cwl_walltime': 0.0,
-        'harmonization_cwl_cpu_percentage': 0.0,
-        'haplotypecaller_cwl_walltime': 0.0,
-        'haplotypecaller_cwl_cpu_percentage': 0.0,
+        'bam_filesize': None,
+        'gvcf_filesize': None,
+        'alignment_cwl_walltime': None,
+        'alignment_cwl_cpu_percentage': None,
+        'harmonization_cwl_walltime': None,
+        'harmonization_cwl_cpu_percentage': None,
+        'haplotypecaller_cwl_walltime': None,
+        'haplotypecaller_cwl_cpu_percentage': None,
         'whole_workflow_elapsed': 0.0,
         'hostname': socket.gethostname(),
         'cwl_version': pkg_resources.get_distribution("cwltool").version,
@@ -49,20 +49,21 @@ def pg_data_template():
     }
     return pg_data
 
-def run_command(cmd, logger, output=None, shell_var=False):
+def run_command(cmd, logger=None, output=None, shell_var=False):
     '''Runs a subprocess'''
     child = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=shell_var)
     stdoutdata, stderrdata = child.communicate()
     exit_code = child.returncode
-    logger.info(cmd)
-    if output:
-        with open(output, 'wt') as ohandle:
-            ohandle.write(stdoutdata)
-    else:
-        for line in stdoutdata.split("\n"):
+    if logger:
+        logger.info(cmd)
+        if output:
+            with open(output, 'wt') as ohandle:
+                ohandle.write(stdoutdata)
+        else:
+            for line in stdoutdata.split("\n"):
+                logger.info(line)
+        for line in stderrdata.split("\n"):
             logger.info(line)
-    for line in stderrdata.split("\n"):
-        logger.info(line)
     return exit_code
 
 def setup_logging(level, log_name, log_filename):
@@ -76,6 +77,14 @@ def setup_logging(level, log_name, log_filename):
     stream_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s: %(message)s'))
     logger.addHandler(stream_handler)
     return logger
+
+def move_file(cur_file, new_dir):
+    '''move file'''
+    if os.path.isdir(new_dir):
+        new_file = os.path.join(new_dir, os.path.basename(cur_file))
+        shutil.move(cur_file, new_file)
+    else:
+        raise Exception("Invalid directory: {}".format(new_dir))
 
 def remove_dir(dirname):
     '''Remove a directory and all it's contents'''
@@ -133,4 +142,17 @@ def targz_compress(logger, filename, dirname):
     '''Runs tar -cjvf'''
     cmd = ['tar', '-cjvf'] + [filename, dirname]
     exit_code = run_command(cmd, logger)
+    return exit_code
+
+def aws_s3_put(logger, remote_output, local_input, profile, endpoint_url, recursive=True):
+    '''Uses local aws cli to put files into s3'''
+    if (remote_output != "" and (os.path.isfile(local_input) or os.path.isdir(local_input))):
+        cmd = ['/home/ubuntu/.virtualenvs/p2/bin/aws', '--profile', profile,
+               '--endpoint-url', endpoint_url, 's3', 'cp', local_input,
+               remote_output]
+        if recursive:
+            cmd.append('--recursive')
+        exit_code = run_command(cmd, logger)
+    else:
+        raise Exception("invalid input %s or output %s" %(local_input, remote_output))
     return exit_code
