@@ -131,6 +131,7 @@ class ScriptCreator(object):
                 PROJECT=metadata['project'],
                 D_S3_PROFILE=metadata['s3_profile'],
                 D_S3_ENDPOINT=metadata['s3_endpoint'],
+                PSQL_CONF="/mnt/SCRATCH/reference/postgres_config",
                 PIPELINE_VARIABLES=self._prepare_pipeline_variables(aliquot_id),
                 PIPELINE_CMD=self._prepare_pipeline_cmd()
             )

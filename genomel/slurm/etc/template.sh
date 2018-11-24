@@ -17,6 +17,7 @@ input_table="{INPUT_TABLE}"
 project="{PROJECT}"
 download_s3_profile="{D_S3_PROFILE}"
 download_s3_endpoint="{D_S3_ENDPOINT}"
+psql_conf="{PSQL_CONF}"
 {PIPELINE_VARIABLES}
 basedir=`sudo mktemp -d {PIPELINE}.XXXXXXXXXX -p /mnt/SCRATCH/`
 
@@ -41,4 +42,5 @@ $pipeline \
 --project $project \
 --download_s3_profile $download_s3_profile \
 --download_s3_endpoint $download_s3_endpoint \
+--psql_conf $psql_conf\
 {PIPELINE_CMD}
