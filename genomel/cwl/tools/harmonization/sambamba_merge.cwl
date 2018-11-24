@@ -18,7 +18,7 @@ inputs:
     inputBinding:
       position: 1
       shellQuote: false
-      
+
   base_file_name: string
 
 outputs:
@@ -43,7 +43,7 @@ arguments:
     shellQuote: false
     valueFrom: |-
       ${
-          var time_cmd = "/usr/bin/time -f \"{\"real_time\": \"%E\", \"user_time\": %U, \"system_time\": %S, \"wall_clock\": %e, \"maximum_resident_set_size\": %M, \"average_total_mem\": %K, \"percent_of_cpu\": \"%P\"}\" -o " + inputs.job_uuid + ".SambambaMerge" + ".time.json"
+          var time_cmd = "/usr/bin/time -f \"{\\\"real_time\\\": \\\"%E\\\", \\\"user_time\\\": %U, \\\"system_time\\\": %S, \\\"wall_clock\\\": %e, \\\"maximum_resident_set_size\\\": %M, \\\"average_total_mem\\\": %K, \\\"percent_of_cpu\\\": \\\"%P\\\"}\" -o " + inputs.job_uuid + ".SambambaMerge" + ".time.json"
           if (inputs.bams.length != 1)
            return time_cmd + " /opt/sambamba-0.6.8-linux-static merge -t 32 " + inputs.base_file_name + ".aligned.duplicates_marked.unsorted.bam"
           else return time_cmd + " ls"

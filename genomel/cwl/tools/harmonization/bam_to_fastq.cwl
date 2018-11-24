@@ -21,9 +21,6 @@ inputs:
   collate:
     type: int
     default: 1
-  exclude:
-    type: string
-    default: QCFAIL,SECONDARY,SUPPLEMENTARY
   filename:
     type: File
   gz:
@@ -107,12 +104,11 @@ arguments:
   - position: 0
     shellQuote: false
     valueFrom: >-
-      /usr/bin/time -f \"{\"real_time\": \"%E\", \"user_time\": %U, \"system_time\": %S, \"wall_clock\": %e, \"maximum_resident_set_size\": %M, \"average_total_mem\": %K, \"percent_of_cpu\": \"%P\"}\"
+      /usr/bin/time -f "{\\"real_time\\": \\"%E\\", \\"user_time\\": %U, \\"system_time\\": %S, \\"wall_clock\\": %e, \\"maximum_resident_set_size\\": %M, \\"average_total_mem\\": %K, \\"percent_of_cpu\\": \\"%P\\"}"
       -o $(inputs.job_uuid + '.SamtoolsViewBam_BammToFastq' + '.time.json')
       samtools view -@ 8 -Shb $(inputs.filename.path)
       | /opt/biobambam2/2.0.87-release-20180301132713/x86_64-etch-linux-gnu/bin/bamtofastq
       collate=$(inputs.collate)
-      exclude=$(inputs.exclude)
       filename=/dev/stdin
       gz=$(inputs.gz)
       inputformat=$(inputs.inputformat)
