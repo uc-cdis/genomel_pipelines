@@ -8,40 +8,10 @@ def get_args():
     # Main parser
     parser = argparse.ArgumentParser(prog='GenoMEL-Bionimbus Protected Data Cloud SLURM runner.', \
                                      add_help=False)
-    # Required parser
-    required = parser.add_argument_group("Required input parameters")
-    required.add_argument('--job_uuid', \
-                          required=True, \
-                          help='Job UUID')
-    required.add_argument('--basedir', \
-                          required=True, \
-                          help='Base work directory')
-    required.add_argument('--cwlwf', \
-                          required=True, \
-                          help='CWL main workflow runner path')
-    required.add_argument('--aliquot_id', \
-                          required=True, \
-                          help='Aliquot ID')
-    required.add_argument('--input_table', \
-                          required=True, \
-                          help='PSQL input table')
-    required.add_argument('--project', \
-                          required=True, \
-                          help='GenoMEL data project')
-    required.add_argument('--download_s3_profile', \
-                          required=True, \
-                          help='Download s3 profile')
-    required.add_argument('--download_s3_endpoint', \
-                          required=True, \
-                          help='Download s3 endpoint url')
-    required.add_argument('--psql_conf', \
-                          required=True, \
-                          help='Local psql conf')
     # Sub parser
     subparsers = parser.add_subparsers(help='Choose the pipeline you want to run', dest='choice')
     # Alignment
-    alignment = subparsers.add_parser('alignment', help='Run alignment', \
-                                      parents=[parser])
+    alignment = subparsers.add_parser('alignment', help='Run alignment')
     alignment.add_argument('--fastq_read1_uri', \
                            required=True, \
                            nargs='+', \
@@ -62,15 +32,68 @@ def get_args():
                            required=True, \
                            nargs='+', \
                            help='Read group IDs.')
+    alignment.add_argument('--job_uuid', \
+                          required=True, \
+                          help='Job UUID')
+    alignment.add_argument('--basedir', \
+                          required=True, \
+                          help='Base work directory')
+    alignment.add_argument('--cwlwf', \
+                          required=True, \
+                          help='CWL main workflow runner path')
+    alignment.add_argument('--aliquot_id', \
+                          required=True, \
+                          help='Aliquot ID')
+    alignment.add_argument('--input_table', \
+                          required=True, \
+                          help='PSQL input table')
+    alignment.add_argument('--project', \
+                          required=True, \
+                          help='GenoMEL data project')
+    alignment.add_argument('--download_s3_profile', \
+                          required=True, \
+                          help='Download s3 profile')
+    alignment.add_argument('--download_s3_endpoint', \
+                          required=True, \
+                          help='Download s3 endpoint url')
+    alignment.add_argument('--psql_conf', \
+                          required=True, \
+                          help='Local psql conf')
     # Harmonization
-    harmonization = subparsers.add_parser('harmonization', help='Run harmonization', \
-                                          parents=[parser])
+    harmonization = subparsers.add_parser('harmonization', help='Run harmonization')
     harmonization.add_argument('--bam_uri', \
                                required=True, \
                                help='BAM URI.')
     harmonization.add_argument('--bam_md5', \
                                required=True, \
                                help='BAM MD5.')
+    harmonization.add_argument('--job_uuid', \
+                               required=True, \
+                               help='Job UUID')
+    harmonization.add_argument('--basedir', \
+                               required=True, \
+                               help='Base work directory')
+    harmonization.add_argument('--cwlwf', \
+                               required=True, \
+                               help='CWL main workflow runner path')
+    harmonization.add_argument('--aliquot_id', \
+                               required=True, \
+                               help='Aliquot ID')
+    harmonization.add_argument('--input_table', \
+                               required=True, \
+                               help='PSQL input table')
+    harmonization.add_argument('--project', \
+                               required=True, \
+                               help='GenoMEL data project')
+    harmonization.add_argument('--download_s3_profile', \
+                               required=True, \
+                               help='Download s3 profile')
+    harmonization.add_argument('--download_s3_endpoint', \
+                               required=True, \
+                               help='Download s3 endpoint url')
+    harmonization.add_argument('--psql_conf', \
+                               required=True, \
+                               help='Local psql conf')
     return parser.parse_args()
 
 if __name__ == '__main__':

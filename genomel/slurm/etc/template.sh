@@ -32,8 +32,7 @@ sudo chown ubuntu:ubuntu -R genomel_pipelines
 trap cleanup EXIT
 
 /home/ubuntu/.virtualenvs/p2/bin/python \
-$basedir/genomel_pipelines/genomel/slurm/genomel_individual_aliquot_runner.py \
-$pipeline \
+$basedir/genomel_pipelines/genomel/slurm/genomel_individual_aliquot_runner.py $pipeline \
 --job_uuid $job_uuid \
 --basedir $basedir \
 --cwlwf $basedir/genomel_pipelines/genomel/cwl/genomel_individual_workflow.cwl \
@@ -42,5 +41,5 @@ $pipeline \
 --project $project \
 --download_s3_profile $download_s3_profile \
 --download_s3_endpoint $download_s3_endpoint \
---psql_conf $psql_conf\
+--psql_conf $psql_conf \
 {PIPELINE_CMD}
