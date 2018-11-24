@@ -45,7 +45,7 @@ arguments:
   - position: 0
     shellQuote: false
     valueFrom: >-
-      /usr/bin/time -f \"{\"real_time\": \"%E\", \"user_time\": %U, \"system_time\": %S, \"wall_clock\": %e, \"maximum_resident_set_size\": %M, \"average_total_mem\": %K, \"percent_of_cpu\": \"%P\"}\"
+      /usr/bin/time -f "{\\"real_time\\": \\"%E\\", \\"user_time\\": %U, \\"system_time\\": %S, \\"wall_clock\\": %e, \\"maximum_resident_set_size\\": %M, \\"average_total_mem\\": %K, \\"percent_of_cpu\\": \\"%P\\"}"
       -o $('aws_upload.' + inputs.input.basename + '.time.json')
       aws --profile $(inputs.s3_profile) --endpoint-url $(inputs.s3_endpoint)
       --no-verify-ssl s3 cp $(inputs.input.path) $(inputs.s3uri)

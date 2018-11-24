@@ -39,7 +39,7 @@ arguments:
   - position: 0
     shellQuote: false
     valueFrom: >-
-      /usr/bin/time -f \"{\"real_time\": \"%E\", \"user_time\": %U, \"system_time\": %S, \"wall_clock\": %e, \"maximum_resident_set_size\": %M, \"average_total_mem\": %K, \"percent_of_cpu\": \"%P\"}\"
+      /usr/bin/time -f "{\\"real_time\\": \\"%E\\", \\"user_time\\": %U, \\"system_time\\": %S, \\"wall_clock\\": %e, \\"maximum_resident_set_size\\": %M, \\"average_total_mem\\": %K, \\"percent_of_cpu\\": \\"%P\\"}"
       -o $(inputs.job_uuid + '.picard_sortvcf.time.json')
       java -Xmx100G -XX:ParallelGCThreads=30 -jar /opt/picard.jar
       SortVcf CREATE_INDEX=true OUTPUT=$(inputs.job_uuid + '.' + inputs.output_prefix + '.vcf.gz')

@@ -44,7 +44,7 @@ arguments:
   - position: 0
     shellQuote: false
     valueFrom: >-
-      /usr/bin/time -f \"{\"real_time\": \"%E\", \"user_time\": %U, \"system_time\": %S, \"wall_clock\": %e, \"maximum_resident_set_size\": %M, \"average_total_mem\": %K, \"percent_of_cpu\": \"%P\"}\"
+      /usr/bin/time -f "{\\"real_time\\": \\"%E\\", \\"user_time\\": %U, \\"system_time\\": %S, \\"wall_clock\\": %e, \\"maximum_resident_set_size\\": %M, \\"average_total_mem\\": %K, \\"percent_of_cpu\\": \\"%P\\"}"
       -o $(inputs.job_uuid + '.BWA_mem_' + inputs.readgroup_name + '_SamblasterDedup' + '.time.json')
       /opt/bwa-0.7.17/bwa mem -K 100000000 -M -v 3 -t 30
       -Y $(inputs.reference.path) -R '$(inputs.readgroup_line)'

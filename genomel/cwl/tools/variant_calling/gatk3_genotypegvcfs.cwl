@@ -42,7 +42,7 @@ arguments:
   - position: 0
     shellQuote: false
     valueFrom: >-
-      /usr/bin/time -f \"{\"real_time\": \"%E\", \"user_time\": %U, \"system_time\": %S, \"wall_clock\": %e, \"maximum_resident_set_size\": %M, \"average_total_mem\": %K, \"percent_of_cpu\": \"%P\"}\"
+      /usr/bin/time -f "{\\"real_time\\": \\"%E\\", \\"user_time\\": %U, \\"system_time\\": %S, \\"wall_clock\\": %e, \\"maximum_resident_set_size\\": %M, \\"average_total_mem\\": %K, \\"percent_of_cpu\\": \\"%P\\"}"
       -o $(inputs.job_uuid + '.gatk3_genotypegvcfs.time.json')
       python /opt/gatk3_genotypegvcfs.py
       -j $(inputs.job_uuid) -r $(inputs.reference.path)

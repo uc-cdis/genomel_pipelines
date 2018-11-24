@@ -50,7 +50,7 @@ arguments:
   - position: 0
     shellQuote: false
     valueFrom: >-
-      /usr/bin/time -f \"{\"real_time\": \"%E\", \"user_time\": %U, \"system_time\": %S, \"wall_clock\": %e, \"maximum_resident_set_size\": %M, \"average_total_mem\": %K, \"percent_of_cpu\": \"%P\"}\"
+      /usr/bin/time -f "{\\"real_time\\": \\"%E\\", \\"user_time\\": %U, \\"system_time\\": %S, \\"wall_clock\\": %e, \\"maximum_resident_set_size\\": %M, \\"average_total_mem\\": %K, \\"percent_of_cpu\\": \\"%P\\"}"
       -o $(inputs.job_uuid + '.Novoalign_SamblasterDedup_' + inputs.nthreads + '_threads_each_readgroup' + '.time.json')
       python /opt/novoalign_dedup_multithreaded_by_readgroup.py
       -d $(inputs.dbname.path) -t $(inputs.nthreads)
