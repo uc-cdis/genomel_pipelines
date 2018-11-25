@@ -18,7 +18,7 @@
     "input_is_bam": [1],
     "bam_uri": "XX_BAM_URI_XX",
     "bam_md5": "XX_BAM_MD5_XX",
-    "upload_s3_bucket": "s3://genomel/individual_workflow_output/",
+    "upload_s3_bucket": "s3://genomel/individual_workflow_output",
     "upload_s3_profile": "genomel-cleversafe",
     "upload_s3_endpoint": "https://atwood-accessors.osdc.io"
   },
@@ -41,7 +41,7 @@
     "input_is_bam": [],
     "bam_uri": "",
     "bam_md5": "",
-    "upload_s3_bucket": "s3://genomel/individual_workflow_output/",
+    "upload_s3_bucket": "s3://genomel/individual_workflow_output",
     "upload_s3_profile": "genomel-cleversafe",
     "upload_s3_endpoint": "https://atwood-accessors.osdc.io"
   }
