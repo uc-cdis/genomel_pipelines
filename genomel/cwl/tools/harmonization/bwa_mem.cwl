@@ -47,7 +47,7 @@ arguments:
       /usr/bin/time -f "{\\"real_time\\": \\"%E\\", \\"user_time\\": %U, \\"system_time\\": %S, \\"wall_clock\\": %e, \\"maximum_resident_set_size\\": %M, \\"average_total_mem\\": %K, \\"percent_of_cpu\\": \\"%P\\"}"
       -o $(inputs.job_uuid + '.BWA_mem_' + inputs.readgroup_name + '_SamblasterDedup' + '.time.json')
       /opt/bwa-0.7.17/bwa mem -K 100000000 -M -v 3 -t 30
-      -Y $(inputs.reference.path) -R '$(inputs.readgroup_line)'
+      -Y $(inputs.reference.path) -R "$(inputs.readgroup_line)"
       $(inputs.input_read1_fastq_file.path) $(inputs.input_read2_fastq_file.path)
       | /opt/samblaster-v.0.1.24/samblaster -M -i /dev/stdin -o /dev/stdout
       | /opt/sambamba-0.6.8-linux-static view -t 30 -f bam -l 0 -S /dev/stdin
