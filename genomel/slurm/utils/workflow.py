@@ -349,14 +349,14 @@ class GenomelIndiv(object):
         if self.workflow_meta['pipeline'] == 'alignment':
             self.pg_data['alignment_cwl_walltime'] = self.workflow_meta['pipeline_time']
             self.pg_data['alignment_cwl_cpu_percentage'] = self.workflow_meta\
-                ['pipeline_avg_cpu_usage']
+                ['pipeline_avg_cpu_percentage']
         else:
             self.pg_data['harmonization_cwl_walltime'] = self.workflow_meta['pipeline_time']
             self.pg_data['harmonization_cwl_cpu_percentage'] = self.workflow_meta\
-                ['pipeline_avg_cpu_usage']
+                ['pipeline_avg_cpu_percentage']
         self.pg_data['haplotypecaller_cwl_walltime'] = self.workflow_meta['haplotypecaller_time']
         self.pg_data['haplotypecaller_cwl_cpu_percentage'] = self.workflow_meta\
-            ['haplotypecaller_avg_cpu_usage']
+            ['haplotypecaller_avg_cpu_percentage']
         self.pg_data['whole_workflow_elapsed'] = float(
             self.workflow_meta['cwl_end'] - self.workflow_meta['cwl_start']
         )
