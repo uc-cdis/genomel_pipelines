@@ -302,7 +302,8 @@ class GenomelIndiv(object):
                 self.workflow_meta['aliquot_id']
             )
         )
-        os.mkdir(indiv_dir)
+        if not os.path.isdir(indiv_dir):
+            os.mkdir(indiv_dir)
         utils.pipeline.move_file(indiv, indiv_dir)
         return os.path.join(indiv_dir, os.path.basename(indiv))
 
