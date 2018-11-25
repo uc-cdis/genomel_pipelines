@@ -15,6 +15,7 @@ def pg_data_template():
     git_path = os.path.dirname(os.path.realpath(__file__))
     pg_data = {
         'job_uuid': None,
+        'slurm_jobid': os.environ.get("SLURM_JOBID"),
         'aliquot_id': None,
         'input_table': None,
         'project': None,

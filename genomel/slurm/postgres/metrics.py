@@ -10,6 +10,7 @@ def add_metrics(engine, table, data):
     """ add provided metrics to database """
     met = table(
         job_uuid=data['job_uuid'],
+        slurm_jobid=data['slurm_jobid'],
         aliquot_id=data['aliquot_id'],
         input_table=data['input_table'],
         project=data['project'],

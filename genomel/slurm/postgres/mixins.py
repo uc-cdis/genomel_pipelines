@@ -7,6 +7,7 @@ class IndMetricsTypeMixin(object):
     ''' Gather timing metrics with input uuids '''
     id = Column(Integer, primary_key=True)
     job_uuid = Column(String)
+    slurm_jobid = Column(Integer)
     aliquot_id = Column(String)
     input_table = Column(String)
     project = Column(String)
