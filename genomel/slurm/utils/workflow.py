@@ -16,7 +16,7 @@ def run_alignment(args):
     input_data = utils.pipeline.load_template_json()['alignment_template']
     sample_list = [args.aliquot_id] * len(args.readgroup_names)
     pu_list = [args.job_uuid] * len(args.readgroup_names)
-    rgl_list = ['"@RG\tCN:CGR\tPL:ILLUMINA\tID:{RG}\tSM:{SM}\tPU:{PU}\tLB:Library"'\
+    rgl_list = ['@RG\tCN:CGR\tPL:ILLUMINA\tID:{RG}\tSM:{SM}\tPU:{PU}\tLB:Library'\
         .format(RG=rg, SM=sm, PU=pu) \
         for rg, sm, pu in zip(args.readgroup_names, sample_list, pu_list)]
     input_data['job_uuid'] = args.job_uuid
