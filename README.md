@@ -2,15 +2,14 @@
 
 General workflow:
 
-![alt text](https://github.com/uc-cdis/cwl/blob/feat/develop/docs/genomel_individual_workflow.png "individual")
-![alt text](https://github.com/uc-cdis/cwl/blob/feat/develop/docs/genomel_cohort_calling.png "cohort")
+<img src="https://github.com/uc-cdis/cwl/blob/feat/develop/docs/genomel_individual_workflow.png" width="460.5" height="363"> <img src="https://github.com/uc-cdis/cwl/blob/feat/develop/docs/genomel_cohort_calling.png" width="397.5" height="363">
 
 GenoMEL individual aliquot workflow:
 
-* ![alt text](https://github.com/uc-cdis/cwl/blob/feat/develop/genomel/cwl/genomel_individual_workflow.cwl "Main CWL workflow runner")
+* [Main CWL workflow runner](https://github.com/uc-cdis/cwl/blob/feat/develop/genomel/cwl/genomel_individual_workflow.cwl "Main CWL workflow runner")
 
-* ![alt text](https://github.com/uc-cdis/cwl/blob/feat/develop/genomel/slurm/etc/template.json "CWL runner input json template")
+* [CWL runner input json template](https://github.com/uc-cdis/cwl/blob/feat/develop/genomel/slurm/etc/template.json "CWL runner input json template")
 
-* ![alt text](https://github.com/uc-cdis/cwl/blob/feat/develop/genomel/slurm/genomel_individual_aliquot_runner.py "Main SLURM python runner")
+* [Main SLURM python runner](https://github.com/uc-cdis/cwl/blob/feat/develop/genomel/slurm/genomel_individual_aliquot_runner.py "Main SLURM python runner")
 
-* ![alt text](https://github.com/uc-cdis/cwl/blob/feat/develop/genomel/slurm/etc/template.sh "SLURM SBATCH job template")
+* [SLURM SBATCH job template](https://github.com/uc-cdis/cwl/blob/feat/develop/genomel/slurm/etc/template.sh "SLURM SBATCH job template")
