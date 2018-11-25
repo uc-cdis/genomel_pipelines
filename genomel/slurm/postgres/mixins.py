@@ -1,7 +1,7 @@
 '''
 Postgres mixins
 '''
-from sqlalchemy import Column, Integer, String, Float
+from sqlalchemy import Column, Integer, String, Float, BigInteger
 
 class IndMetricsTypeMixin(object):
     ''' Gather timing metrics with input uuids '''
@@ -23,8 +23,8 @@ class IndMetricsTypeMixin(object):
     gvcf_local_path = Column(String)
     bam_md5sum = Column(String)
     gvcf_md5sum = Column(String)
-    bam_filesize = Column(Integer)
-    gvcf_filesize = Column(Integer)
+    bam_filesize = Column(BigInteger)
+    gvcf_filesize = Column(BigInteger)
     alignment_cwl_walltime = Column(Float)
     alignment_cwl_cpu_percentage = Column(String)
     harmonization_cwl_walltime = Column(Float)
