@@ -37,7 +37,7 @@ def multi_commands(cmds, thread_count, shell_var=True):
     return output
 
 def get_region(intervals):
-    '''get region from intervals'''
+    '''get chromosome bed files from input bed'''
     interval_path = []
     with open(intervals, 'r') as fhandle:
         lines = fhandle.readlines()

@@ -17,3 +17,4 @@ RUN apt-get update \
 ADD GenomeAnalysisTK.jar /opt/
 ADD gatk3_genomel_variant_calling.py /opt/
 ADD gatk3_genotypegvcfs.py /opt/
+ADD genomel_pdc_freebayes.py /opt/
