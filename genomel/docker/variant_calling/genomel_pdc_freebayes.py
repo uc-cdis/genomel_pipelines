@@ -1,12 +1,11 @@
 #!/usr/bin/env python
-'''Internal multithreading for GATK3 GenotypeGVCFs'''
+'''Internal multithreading for Freebayes, GenoMEL-PDC'''
 
 import os
 import sys
 import argparse
 import subprocess
 import string
-from itertools import groupby
 from functools import partial
 from multiprocessing.dummy import Pool, Lock
 
@@ -36,92 +35,80 @@ def multi_commands(cmds, thread_count, shell_var=True):
     output = pool.map(partial(do_pool_commands, shell_var=shell_var), cmds)
     return output
 
-def get_region(intervals):
-    '''get chromosome bed files from input bed'''
-    interval_path = []
+def get_region(intervals, nthreads):
+    '''prepare N (N = nthreads) child bed files upon bed input'''
+    bed_path = []
     with open(intervals, 'r') as fhandle:
         lines = fhandle.readlines()
-        for chro, region in groupby(lines, lambda x: x.rstrip().rsplit('\t')[0]):
-            chr_bed = '{}.bed'.format(chro)
-            with open(chr_bed, 'w') as ohandle:
-                for line in region:
+        nline = len(lines)/nthreads + 1
+        child = [lines[i:i + nline] for i in xrange(0, len(lines), nline)]
+        for i, olines in enumerate(child):
+            with open('{}.bed'.format(i), 'w') as ohandle:
+                for line in olines:
                     ohandle.write('{}'.format(line))
-            interval_path.append(os.path.abspath(chr_bed))
-    return interval_path
+            bed_path.append(os.path.abspath('{}.bed'.format(i)))
+    return bed_path
 
-def genotypegvcfs_template(cmd_dict):
+def freebayes_template(cmd_dict, nthreads):
     '''cmd template'''
     cmd_list = [
-        'java', '-Xmx3G',
-        '-jar', '/opt/GenomeAnalysisTK.jar',
-        '-T', 'GenotypeGVCFs',
-        '-R', '${REF}',
-        '-L', '${INTERVAL}',
-        '-D', '${SNP}',
-        '-o', '${OUT}',
-        '-A', 'AlleleBalance',
-        '-A', 'Coverage',
-        '-A', 'HomopolymerRun',
-        '-A', 'QualByDepth'
+        '/opt/freebayes/bin/freebayes',
+        '-L', '${BAM_LIST}',
+        '-f', '${REF}',
+        '-t', '${BED}',
+        '-v', '${OUTPUT}',
+        '--use-best-n-alleles', '6'
     ]
-    for gvcf in cmd_dict['gvcf']:
-        cmd_list.extend(['-V', gvcf])
     cmd_str = ' '.join(cmd_list)
     template = string.Template(cmd_str)
-    for region in get_region(cmd_dict['interval']):
-        interval_str = os.path.basename(region).split('.')[0]
-        output = cmd_dict['job_uuid'] + '.' + interval_str + '.vcf.gz'
+    for bed_file in get_region(cmd_dict['bed_file'], nthreads):
+        bed_prefix = os.path.basename(bed_file).split('.')[0]
+        output = cmd_dict['job_uuid'] + '.' + bed_prefix + '.vcf'
         cmd = template.substitute(
             dict(
+                BAM_LIST=cmd_dict['bam_list'],
                 REF=cmd_dict['ref'],
-                INTERVAL=region,
-                SNP=cmd_dict['snp'],
-                OUT=output
+                BED=bed_file,
+                OUTPUT=output
             )
         )
         yield cmd
 
 def main():
     '''main'''
-    parser = argparse.ArgumentParser('GATK3 GenoMEL GenotypeGVCFs.')
+    parser = argparse.ArgumentParser('GenoMEL-PDC Freebayes.')
     # Required flags.
-    parser.add_argument('-v', \
-                        '--gvcf', \
+    parser.add_argument('-L', \
+                        '--bam_list', \
                         required=True, \
-                        nargs='+', \
-                        help='GVCF file.')
+                        help='Input list with bam file paths.')
     parser.add_argument('-j', \
                         '--job_uuid', \
                         required=True, \
                         help='Job uuid.')
-    parser.add_argument('-r', \
+    parser.add_argument('-f', \
                         '--reference', \
                         required=True, \
                         help='Reference path')
-    parser.add_argument('-i', \
-                        '--interval', \
+    parser.add_argument('-t', \
+                        '--bed_file', \
                         required=True, \
-                        help='Interval files')
-    parser.add_argument('-s', \
-                        '--snp', \
-                        required=True, \
-                        help='Reference SNP file path')
+                        help='BED file')
     parser.add_argument('-c', \
                         '--thread_count', \
                         required=True, \
                         type=is_nat, \
-                        default=25)
+                        default=30)
     args = parser.parse_args()
     input_dict = {
         'job_uuid': args.job_uuid,
-        'gvcf': args.gvcf,
+        'bam_list': args.bam_list,
         'ref': args.reference,
-        'interval': args.interval,
-        'snp': args.snp
+        'bed_file': args.bed_file
     }
-    threads = args.thread_count
-    cmds = list(genotypegvcfs_template(input_dict))
-    outputs = multi_commands(cmds, threads)
+    nthreads = args.thread_count
+    cmds = list(freebayes_template(input_dict, nthreads))
+    outputs = multi_commands(cmds, nthreads)
     if any(x != 0 for x in outputs):
         print 'Failed'
         sys.exit(1)
