@@ -67,5 +67,5 @@ steps:
       reference: reference
       output_prefix:
         source: [job_uuid, output_prefix]
-        valueFrom: $(self[0] + '.' + self[1])
+        valueFrom: $(self[0] + '.' + self[1] + '.freebayes')
     out: [output_vcf, time_metrics]

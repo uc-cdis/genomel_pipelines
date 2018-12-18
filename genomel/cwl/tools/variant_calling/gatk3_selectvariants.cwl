@@ -26,7 +26,7 @@ outputs:
   output_vcf:
     type: File
     outputBinding:
-      glob: $(inputs.output_prefix + '.freebayes.filtered.site_only.vcf.gz')
+      glob: $(inputs.output_prefix + '.filtered.site_only.vcf.gz')
     secondaryFiles: [.tbi]
   time_metrics:
     type: File
@@ -43,7 +43,7 @@ arguments:
       java -Xmx100G -XX:ParallelGCThreads=30 -jar /opt/GenomeAnalysisTK.jar
       -T SelectVariants --variant $(inputs.input_vcf.path)
       -R $(inputs.reference.path)
-      -o $(inputs.output_prefix + '.freebayes.filtered.site_only.vcf.gz')
+      -o $(inputs.output_prefix + '.filtered.site_only.vcf.gz')
       -select "QUAL > 20.0"
       -ef
       -env
