@@ -6,8 +6,9 @@ import sys
 import argparse
 import subprocess
 import string
-from functools import partial
-from multiprocessing.dummy import Pool, Lock
+# from functools import partial
+# from multiprocessing.dummy import Pool, Lock
+from multiprocessing.dummy import Lock
 
 def is_nat(pos):
     '''Checks that a value is a natural number.'''
@@ -29,18 +30,26 @@ def do_pool_commands(cmd, lock=Lock(), shell_var=True):
         print "command failed {}".format(cmd)
     return output.wait()
 
-def multi_commands(cmds, thread_count, shell_var=True):
-    '''run commands on number of threads'''
-    pool = Pool(int(thread_count))
-    output = pool.map(partial(do_pool_commands, shell_var=shell_var), cmds)
-    return output
+# def multi_commands(cmds, thread_count, shell_var=True):
+#     '''run commands on number of threads'''
+#     pool = Pool(int(thread_count))
+#     output = pool.map(partial(do_pool_commands, shell_var=shell_var), cmds)
+#     return output
 
-def get_region(intervals, nthreads):
-    '''prepare N (N = nthreads) child bed files upon bed input'''
+def seq_commands(cmds):
+    '''run commands sequentially'''
+    outputs = []
+    for cmd in cmds:
+        output = do_pool_commands(cmd)
+        outputs.append(output)
+    return outputs
+
+def get_region(intervals, nchunks):
+    '''prepare N (N = nchunks) child bed files upon bed input'''
     bed_path = []
     with open(intervals, 'r') as fhandle:
         lines = fhandle.readlines()
-        nline = len(lines)/nthreads + 1
+        nline = len(lines)/nchunks + 1
         child = [lines[i:i + nline] for i in xrange(0, len(lines), nline)]
         for i, olines in enumerate(child):
             with open('{}.bed'.format(i), 'w') as ohandle:
@@ -49,7 +58,7 @@ def get_region(intervals, nthreads):
             bed_path.append(os.path.abspath('{}.bed'.format(i)))
     return bed_path
 
-def freebayes_template(cmd_dict, nthreads):
+def freebayes_template(cmd_dict, nchunks):
     '''cmd template'''
     cmd_list = [
         '/opt/freebayes/bin/freebayes',
@@ -61,7 +70,7 @@ def freebayes_template(cmd_dict, nthreads):
     ]
     cmd_str = ' '.join(cmd_list)
     template = string.Template(cmd_str)
-    for bed_file in get_region(cmd_dict['bed_file'], nthreads):
+    for bed_file in get_region(cmd_dict['bed_file'], nchunks):
         bed_prefix = os.path.basename(bed_file).split('.')[0]
         output = cmd_dict['job_uuid'] + '.' + bed_prefix + '.vcf'
         cmd = template.substitute(
@@ -95,7 +104,7 @@ def main():
                         required=True, \
                         help='BED file')
     parser.add_argument('-c', \
-                        '--thread_count', \
+                        '--number_of_chunks', \
                         required=True, \
                         type=is_nat, \
                         default=30)
@@ -106,9 +115,9 @@ def main():
         'ref': args.reference,
         'bed_file': args.bed_file
     }
-    nthreads = args.thread_count
-    cmds = list(freebayes_template(input_dict, nthreads))
-    outputs = multi_commands(cmds, nthreads)
+    nchunks = args.number_of_chunks
+    cmds = list(freebayes_template(input_dict, nchunks))
+    outputs = seq_commands(cmds)
     if any(x != 0 for x in outputs):
         print 'Failed'
         sys.exit(1)
