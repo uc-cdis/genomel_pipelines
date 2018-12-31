@@ -33,6 +33,7 @@ inputs:
     secondaryFiles: [.fai, ^.dict]
   bed_file: File
   thread_count: int
+  number_of_chunks: int
 
 outputs:
   vcf_list:
@@ -55,4 +56,4 @@ arguments:
       -o $(inputs.job_uuid + '.genomel_pdc_freebayes.time.json')
       python /opt/genomel_pdc_freebayes.py
       -L fixed_bam_path.list -j $(inputs.job_uuid) -f $(inputs.reference.path)
-      -t $(inputs.bed_file.path) -c $(inputs.thread_count)
+      -t $(inputs.bed_file.path) -n $(inputs.thread_count) -c $(inputs.number_of_chunks)
