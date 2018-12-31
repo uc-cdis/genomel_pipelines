@@ -19,6 +19,7 @@ inputs:
     secondaryFiles: [.fai, ^.dict]
   bed_file: File
   thread_count: int
+  number_of_chunks: int
   output_prefix: string
 
 outputs:
@@ -44,6 +45,7 @@ steps:
       reference: reference
       bed_file: bed_file
       thread_count: thread_count
+      number_of_chunks: number_of_chunks
     out: [vcf_list, time_metrics]
 
   picard_sortvcf:

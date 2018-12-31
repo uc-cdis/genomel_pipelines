@@ -74,9 +74,7 @@ class GenomelGATK(object):
         self.ref = cmd_dict['ref']
         self.bed_file = cmd_dict['bed_file']
         self.nthreads = cmd_dict['nthreads']
-        with open(self.gvcf_list, 'r') as fhandle:
-            lines = fhandle.readlines()
-            self.nchunks = len(lines)/10
+        self.nchunks = cmd_dict['nchunks']
         self.importdb_output_dict = dict()
 
     def cohort_genotyping(self):
@@ -209,17 +207,23 @@ def main():
                         required=True, \
                         help='BED file')
     parser.add_argument('-c', \
+                        '--number_of_chunks', \
+                        required=True, \
+                        type=is_nat, \
+                        default=30)
+    parser.add_argument('-n', \
                         '--number_of_threads', \
                         required=True, \
                         type=is_nat, \
-                        default=25)
+                        default=30)
     args = parser.parse_args()
     input_dict = {
         'job_uuid': args.job_uuid,
         'gvcf_list': args.gvcf_path,
         'ref': args.reference,
         'bed_file': args.bed_file,
-        'nthreads': args.number_of_threads
+        'nthreads': args.number_of_threads,
+        'nchunks': args.number_of_chunks
     }
     genomel_gatk = GenomelGATK(input_dict)
     genomel_gatk.importdb()

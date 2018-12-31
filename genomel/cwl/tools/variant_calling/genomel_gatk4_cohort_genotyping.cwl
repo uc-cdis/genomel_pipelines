@@ -33,6 +33,7 @@ inputs:
     secondaryFiles: [.fai, ^.dict]
   bed_file: File
   thread_count: int
+  number_of_chunks: int
 
 outputs:
   vcf_list:
@@ -56,4 +57,4 @@ arguments:
       -o $(inputs.job_uuid + '.genomel_pdc_gatk4_cohort_genotyping.time.json')
       python /opt/genomel_pdc_gatk4_cohort_genotyping.py
       --gvcf_path fixed_gvcf_path.list -j $(inputs.job_uuid) -f $(inputs.reference.path)
-      -L $(inputs.bed_file.path) -c $(inputs.thread_count)
+      -L $(inputs.bed_file.path) -n $(inputs.thread_count) -c $(inputs.number_of_chunks)
