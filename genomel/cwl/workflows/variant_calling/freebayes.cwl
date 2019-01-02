@@ -8,6 +8,9 @@ requirements:
   - class: InlineJavascriptRequirement
   - class: StepInputExpressionRequirement
   - class: MultipleInputFeatureRequirement
+  - class: ResourceRequirement
+    coresMin: 30
+    coresMax: 30
 
 inputs:
   job_uuid: string
