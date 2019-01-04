@@ -115,7 +115,7 @@ class GenomelGATK(object):
             'GenomicsDBImport',
             '--sample-name-map', '${MAP}',
             '--genomicsdb-workspace-path', '${WORKSPACE}',
-            '--batch-size', '50',
+            '--batch-size', '200',
             '-L', '${REGION}',
             '--reader-threads', '${NTHREADS}'
         ]
