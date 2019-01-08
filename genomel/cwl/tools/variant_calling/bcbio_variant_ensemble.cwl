@@ -12,17 +12,16 @@ requirements:
 
 inputs:
   job_uuid: string
-  config_json: File
   reference:
     type: File
     secondaryFiles: [.fai, ^.dict]
   output_name: string
-  input_vcf:
-    type: File[]
+  gatk4_vcf:
+    type: File
     secondaryFiles: [.tbi]
-    inputBinding:
-      position: 99
-      shellQuote: false
+  freebayes_vcf:
+    type: File
+    secondaryFiles: [.tbi]
 
 outputs:
   ensemble_vcf:
@@ -42,5 +41,6 @@ arguments:
     valueFrom: >-
       /usr/bin/time -f "{\\"real_time\\": \\"%E\\", \\"user_time\\": %U, \\"system_time\\": %S, \\"wall_clock\\": %e, \\"maximum_resident_set_size\\": %M, \\"average_total_mem\\": %K, \\"percent_of_cpu\\": \\"%P\\"}"
       -o $(inputs.job_uuid + '.bcbio_variant_ensemble.time.json')
-      java -Xmx100G -XX:ParallelGCThreads=30 -jar /opt/bcbio.variation-0.2.6-standalone.jar
-      variant-ensemble $(inputs.config_json.path) $(inputs.reference.path) $(inputs.output_name)
+      /opt/bcbio.variation.recall-0.1.9/bin/bcbio-variation-recall -Xmx100G
+      ensemble -n 1 --names gatk4,freebayes -c 20 $(inputs.output_name)
+      $(inputs.reference.path) $(inputs.gatk4_vcf.path) $(inputs.freebayes_vcf.path)

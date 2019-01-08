@@ -33,9 +33,6 @@ inputs:
   freebayes_thread_count: int
   number_of_chunks_for_freebayes: int
 
-  ###Variant ensemble
-  config_json: File
-
   ###Upload
   aws_config: File
   aws_shared_credentials: File
@@ -115,8 +112,7 @@ steps:
         source: reference
         valueFrom: $(self.secondaryFiles[1])
       output_prefix:
-        source: job_uuid
-        valueFrom: $('genomel_cohort.gatk4.genomel_all.' + self)
+        valueFrom: 'genomel_cohort.gatk4.genomel_all'
     out: [sorted_vcf, time_metrics]
 
   sort_freebayes:
@@ -128,20 +124,19 @@ steps:
         source: reference
         valueFrom: $(self.secondaryFiles[1])
       output_prefix:
-        source: job_uuid
-        valueFrom: $('genomel_cohort.freebayes.genomel_all.' + self)
+        valueFrom: 'genomel_cohort.freebayes.genomel_all'
     out: [sorted_vcf, time_metrics]
 
   variant_ensemble:
     run: ./tools/variant_calling/bcbio_variant_ensemble.cwl
     in:
       job_uuid: job_uuid
-      config_json: config_json
       reference: reference
       output_name:
         source: job_uuid
-        valueFrom: $(self + 'variant_ensemble.vcf.gz')
-      input_vcf: [sort_gatk4/sorted_vcf, sort_freebayes/sorted_vcf]
+        valueFrom: $(self + '.variant_ensemble.vcf.gz')
+      gatk4_vcf: sort_gatk4/sorted_vcf
+      freebayes_vcf: sort_freebayes/sorted_vcf
     out: [ensemble_vcf, time_metrics]
 
   sort_ensemble:
@@ -155,8 +150,7 @@ steps:
         source: reference
         valueFrom: $(self.secondaryFiles[1])
       output_prefix:
-        source: job_uuid
-        valueFrom: $('genomel_cohort.variant_ensemble.genomel_all.' + self)
+        valueFrom: 'genomel_cohort.variant_ensemble.genomel_all'
     out: [sorted_vcf, time_metrics]
 
   upload_gatk4_vcf:

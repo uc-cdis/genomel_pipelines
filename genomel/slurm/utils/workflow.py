@@ -280,7 +280,7 @@ class GenomelIndiv(object):
 
     def _time(self, handle):
         '''extract time from cwl logs'''
-        logs = glob.glob('{}/{}'.format(format(self.workflow_meta['log_dir']), handle))
+        logs = glob.glob('{}/{}'.format(self.workflow_meta['log_dir'], handle))
         time_list = []
         if logs:
             for log in logs:
