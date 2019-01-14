@@ -18,6 +18,7 @@ inputs:
   reference:
     type: File
     secondaryFiles: [.fai, ^.dict]
+  cwl_engine: string
 
   ###GATK4
   gvcf_files:
@@ -59,14 +60,14 @@ outputs:
 
 steps:
   prepare_intervals:
-    run: ./tools/utils/prepare_intervals.cwl
+    run: ./cwl/tools/utils/prepare_intervals.cwl
     in:
       bed_file: bed_file
       number_of_lines_per_chunk: number_of_lines_per_chunk
     out: [bed_files]
 
   gatk4_cohort_genotyping:
-    run: ./workflows/variant_calling/gatk4_cohort_genotyping.cwl
+    run: ./cwl/workflows/variant_calling/gatk4_cohort_genotyping.cwl
     scatter: [bed_file, output_prefix]
     scatterMethod: dotproduct
     in:
@@ -79,13 +80,14 @@ steps:
       output_prefix:
         source: prepare_intervals/bed_files
         valueFrom: $(self.nameroot)
+      cwl_engine: cwl_engine
     out: [time_metrics_from_gatk4_cohort_genotyping,
           time_metrics_from_picard_sortvcf,
           time_metrics_from_selectvariants,
           gatk4_cohort_genotyping_vcf]
 
   freebayes_cohort_genotyping:
-    run: ./workflows/variant_calling/freebayes.cwl
+    run: ./cwl/workflows/variant_calling/freebayes.cwl
     scatter: [bed_file, output_prefix]
     scatterMethod: dotproduct
     in:
@@ -98,13 +100,14 @@ steps:
       output_prefix:
         source: prepare_intervals/bed_files
         valueFrom: $(self.nameroot)
+      cwl_engine: cwl_engine
     out: [time_metrics_from_freebayes,
           time_metrics_from_picard_sortvcf,
           time_metrics_from_selectvariants,
           freebayes_vcf]
 
   sort_gatk4:
-    run: ./tools/variant_calling/picard_sortvcf.cwl
+    run: ./cwl/tools/variant_calling/picard_sortvcf.cwl
     in:
       job_uuid: job_uuid
       vcf: gatk4_cohort_genotyping/gatk4_cohort_genotyping_vcf
@@ -116,7 +119,7 @@ steps:
     out: [sorted_vcf, time_metrics]
 
   sort_freebayes:
-    run: ./tools/variant_calling/picard_sortvcf.cwl
+    run: ./cwl/tools/variant_calling/picard_sortvcf.cwl
     in:
       job_uuid: job_uuid
       vcf: freebayes_cohort_genotyping/freebayes_vcf
@@ -128,7 +131,7 @@ steps:
     out: [sorted_vcf, time_metrics]
 
   variant_ensemble:
-    run: ./tools/variant_calling/bcbio_variant_ensemble.cwl
+    run: ./cwl/tools/variant_calling/bcbio_variant_ensemble.cwl
     in:
       job_uuid: job_uuid
       reference: reference
@@ -140,7 +143,7 @@ steps:
     out: [ensemble_vcf, time_metrics]
 
   sort_ensemble:
-    run: ./tools/variant_calling/picard_sortvcf.cwl
+    run: ./cwl/tools/variant_calling/picard_sortvcf.cwl
     in:
       job_uuid: job_uuid
       vcf:
@@ -154,7 +157,7 @@ steps:
     out: [sorted_vcf, time_metrics]
 
   upload_gatk4_vcf:
-    run: ./tools/utils/awscli_upload.cwl
+    run: ./cwl/tools/utils/awscli_upload.cwl
     in:
       aws_config: aws_config
       aws_shared_credentials: aws_shared_credentials
@@ -167,7 +170,7 @@ steps:
     out: [output, time_metrics]
 
   upload_gatk4_vcf_index:
-    run: ./tools/utils/awscli_upload.cwl
+    run: ./cwl/tools/utils/awscli_upload.cwl
     in:
       aws_config: aws_config
       aws_shared_credentials: aws_shared_credentials
@@ -182,7 +185,7 @@ steps:
     out: [output, time_metrics]
 
   upload_freebayes_vcf:
-    run: ./tools/utils/awscli_upload.cwl
+    run: ./cwl/tools/utils/awscli_upload.cwl
     in:
       aws_config: aws_config
       aws_shared_credentials: aws_shared_credentials
@@ -195,7 +198,7 @@ steps:
     out: [output, time_metrics]
 
   upload_freebayes_vcf_index:
-    run: ./tools/utils/awscli_upload.cwl
+    run: ./cwl/tools/utils/awscli_upload.cwl
     in:
       aws_config: aws_config
       aws_shared_credentials: aws_shared_credentials
@@ -210,7 +213,7 @@ steps:
     out: [output, time_metrics]
 
   upload_ensemble_vcf:
-    run: ./tools/utils/awscli_upload.cwl
+    run: ./cwl/tools/utils/awscli_upload.cwl
     in:
       aws_config: aws_config
       aws_shared_credentials: aws_shared_credentials
@@ -223,7 +226,7 @@ steps:
     out: [output, time_metrics]
 
   upload_ensemble_vcf_index:
-    run: ./tools/utils/awscli_upload.cwl
+    run: ./cwl/tools/utils/awscli_upload.cwl
     in:
       aws_config: aws_config
       aws_shared_credentials: aws_shared_credentials
@@ -238,7 +241,7 @@ steps:
     out: [output, time_metrics]
 
   extract_time_log:
-    run: ./tools/utils/extract_outputs.cwl
+    run: ./cwl/tools/utils/extract_outputs.cwl
     in:
       file_array:
         source: [gatk4_cohort_genotyping/time_metrics_from_gatk4_cohort_genotyping,

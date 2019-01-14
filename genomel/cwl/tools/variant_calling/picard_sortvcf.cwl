@@ -19,6 +19,8 @@ inputs:
       inputBinding:
         prefix: I=
         separate: false
+    inputBinding:
+      position: 99
   reference_dict: File
   output_prefix: string
 
@@ -26,8 +28,9 @@ outputs:
   sorted_vcf:
     type: File
     outputBinding:
-      glob: '*.vcf.gz'
+      glob: $(inputs.job_uuid + '.' + inputs.output_prefix + '.vcf.gz')
     secondaryFiles: [.tbi]
+
   time_metrics:
     type: File
     outputBinding:

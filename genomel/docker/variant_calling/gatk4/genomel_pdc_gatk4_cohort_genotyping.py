@@ -8,7 +8,37 @@ import subprocess
 import string
 from functools import partial
 from multiprocessing.dummy import Pool, Lock
+import fnmatch
 import vcf
+
+def search_files(file_search_str, root_dir=os.getcwd(), abs_path=True, recurse=True):
+    '''search files'''
+    matches = []
+    if recurse:
+        for root, dirnames, filenames in os.walk(root_dir):
+            for filename in fnmatch.filter(filenames, file_search_str):
+                if abs_path:
+                    matches.append(os.path.join(root, filename))
+                else:
+                    matches.append(filename)
+    else:
+        matches = fnmatch.filter(os.listdir(), file_search_str)
+    if len(matches) == 1:
+        return matches[0]
+    return sorted(matches)
+
+def docker_path_list(file_basename_list, search_dir):
+    '''create docker path list'''
+    docker_path = []
+    with open(file_basename_list, 'r') as fhandle:
+        basename = fhandle.readlines()
+        for i in basename:
+            ipath = search_files(i.rstrip(), root_dir=search_dir)
+            docker_path.append(ipath)
+    with open('docker_path.list', 'w') as ohandle:
+        for path in docker_path:
+            ohandle.write('{}\n'.format(path))
+    return os.path.abspath('docker_path.list')
 
 def is_nat(pos):
     '''Checks that a value is a natural number.'''
@@ -76,6 +106,7 @@ class GenomelGATK(object):
         self.nthreads = cmd_dict['nthreads']
         self.nchunks = cmd_dict['nchunks']
         self.importdb_output_dict = dict()
+        self.search_dir = cmd_dict[cmd_dict['cwl_engine']]
 
     def cohort_genotyping(self):
         '''GATK4 GenotypeGVCFs executor'''
@@ -137,7 +168,8 @@ class GenomelGATK(object):
         '''prepare sample-path map'''
         sample_map = dict()
         gvcf_path_list = []
-        with open(self.gvcf_list, 'r') as fhandle:
+        gvcf_docker_path = docker_path_list(self.gvcf_list, self.search_dir)
+        with open(gvcf_docker_path, 'r') as fhandle:
             lines = fhandle.readlines()
             for path in lines:
                 gvcf_path_list.append(path.rstrip())
@@ -216,6 +248,12 @@ def main():
                         required=True, \
                         type=is_nat, \
                         default=30)
+    parser.add_argument('-e', \
+                        '--cwl_engine', \
+                        required=True, \
+                        choices=['cwltool', 'cromwell'], \
+                        help='Choose CWL engine')
+
     args = parser.parse_args()
     input_dict = {
         'job_uuid': args.job_uuid,
@@ -223,7 +261,10 @@ def main():
         'ref': args.reference,
         'bed_file': args.bed_file,
         'nthreads': args.number_of_threads,
-        'nchunks': args.number_of_chunks
+        'nchunks': args.number_of_chunks,
+        'cwl_engine': args.cwl_engine,
+        'cwltool': '/var/',
+        'cromwell': '/cromwell-executions/'
     }
     genomel_gatk = GenomelGATK(input_dict)
     genomel_gatk.importdb()

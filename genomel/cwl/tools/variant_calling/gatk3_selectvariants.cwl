@@ -28,6 +28,7 @@ outputs:
     outputBinding:
       glob: $(inputs.output_prefix + '.filtered.site_only.vcf.gz')
     secondaryFiles: [.tbi]
+
   time_metrics:
     type: File
     outputBinding:

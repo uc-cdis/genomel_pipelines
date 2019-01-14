@@ -17,7 +17,7 @@ requirements:
             var paths = [];
             for (var i = 0; i < inputs.bam_files.length; i++){
               if (inputs.bam_files[i]["nameext"] == ".bam"){
-                paths.push(inputs.bam_files[i]["path"])
+                paths.push(inputs.bam_files[i]["basename"])
                 }
               }
             return paths.join("\n")
@@ -34,12 +34,14 @@ inputs:
   bed_file: File
   thread_count: int
   number_of_chunks: int
+  cwl_engine: string
 
 outputs:
   vcf_list:
     type: File[]
     outputBinding:
       glob: '*.vcf'
+      
   time_metrics:
     type: File
     outputBinding:
@@ -56,4 +58,4 @@ arguments:
       -o $(inputs.job_uuid + '.genomel_pdc_freebayes.time.json')
       python /opt/genomel_pdc_freebayes.py
       -L fixed_bam_path.list -j $(inputs.job_uuid) -f $(inputs.reference.path)
-      -t $(inputs.bed_file.path) -n $(inputs.thread_count) -c $(inputs.number_of_chunks)
+      -t $(inputs.bed_file.path) -n $(inputs.thread_count) -c $(inputs.number_of_chunks) -e $(inputs.cwl_engine)

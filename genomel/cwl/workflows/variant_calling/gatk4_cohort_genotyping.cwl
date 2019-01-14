@@ -10,7 +10,6 @@ requirements:
   - class: MultipleInputFeatureRequirement
   - class: ResourceRequirement
     coresMin: 30
-    coresMax: 30
 
 inputs:
   job_uuid: string
@@ -24,6 +23,7 @@ inputs:
   thread_count: int
   number_of_chunks: int
   output_prefix: string
+  cwl_engine: string
 
 outputs:
   time_metrics_from_gatk4_cohort_genotyping:
@@ -49,6 +49,7 @@ steps:
       bed_file: bed_file
       thread_count: thread_count
       number_of_chunks: number_of_chunks
+      cwl_engine: cwl_engine
     out: [vcf_list, time_metrics]
 
   picard_sortvcf:

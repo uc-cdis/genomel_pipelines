@@ -17,7 +17,7 @@ requirements:
             var paths = [];
             for (var i = 0; i < inputs.gvcf_files.length; i++){
               if (inputs.gvcf_files[i]["nameext"] == ".gz"){
-                paths.push(inputs.gvcf_files[i]["path"])
+                paths.push(inputs.gvcf_files[i]["basename"])
                 }
               }
             return paths.join("\n")
@@ -34,13 +34,14 @@ inputs:
   bed_file: File
   thread_count: int
   number_of_chunks: int
+  cwl_engine: string
 
 outputs:
   vcf_list:
     type: File[]
     outputBinding:
       glob: '*.vcf.gz'
-    secondaryFiles: [.tbi]
+
   time_metrics:
     type: File
     outputBinding:
@@ -57,4 +58,4 @@ arguments:
       -o $(inputs.job_uuid + '.genomel_pdc_gatk4_cohort_genotyping.time.json')
       python /opt/genomel_pdc_gatk4_cohort_genotyping.py
       --gvcf_path fixed_gvcf_path.list -j $(inputs.job_uuid) -f $(inputs.reference.path)
-      -L $(inputs.bed_file.path) -n $(inputs.thread_count) -c $(inputs.number_of_chunks)
+      -L $(inputs.bed_file.path) -n $(inputs.thread_count) -c $(inputs.number_of_chunks) -e $(inputs.cwl_engine)

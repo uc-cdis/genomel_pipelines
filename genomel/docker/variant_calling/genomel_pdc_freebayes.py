@@ -8,6 +8,36 @@ import subprocess
 import string
 from functools import partial
 from multiprocessing.dummy import Pool, Lock
+import fnmatch
+
+def search_files(file_search_str, root_dir=os.getcwd(), abs_path=True, recurse=True):
+    '''search files'''
+    matches = []
+    if recurse:
+        for root, dirnames, filenames in os.walk(root_dir):
+            for filename in fnmatch.filter(filenames, file_search_str):
+                if abs_path:
+                    matches.append(os.path.join(root, filename))
+                else:
+                    matches.append(filename)
+    else:
+        matches = fnmatch.filter(os.listdir(), file_search_str)
+    if len(matches) == 1:
+        return matches[0]
+    return sorted(matches)
+
+def docker_path_list(file_basename_list, search_dir):
+    '''create docker path list'''
+    docker_path = []
+    with open(file_basename_list, 'r') as fhandle:
+        basename = fhandle.readlines()
+        for i in basename:
+            ipath = search_files(i.rstrip(), root_dir=search_dir)
+            docker_path.append(ipath)
+    with open('docker_path.list', 'w') as ohandle:
+        for path in docker_path:
+            ohandle.write('{}\n'.format(path))
+    return os.path.abspath('docker_path.list')
 
 def is_nat(pos):
     '''Checks that a value is a natural number.'''
@@ -61,11 +91,12 @@ def freebayes_template(cmd_dict, nchunks):
     ]
     cmd_str = ' '.join(cmd_list)
     template = string.Template(cmd_str)
+    search_dir = cmd_dict[cmd_dict['cwl_engine']]
     for i, bed_file in enumerate(get_region(cmd_dict['bed_file'], nchunks)):
         output = cmd_dict['job_uuid'] + '.' + str(i) + '.vcf'
         cmd = template.substitute(
             dict(
-                BAM_LIST=cmd_dict['bam_list'],
+                BAM_LIST=docker_path_list(cmd_dict['bam_list'], search_dir),
                 REF=cmd_dict['ref'],
                 BED=bed_file,
                 OUTPUT=output
@@ -103,12 +134,21 @@ def main():
                         required=True, \
                         type=is_nat, \
                         default=30)
+    parser.add_argument('-e', \
+                        '--cwl_engine', \
+                        required=True, \
+                        choices=['cwltool', 'cromwell'], \
+                        help='Choose CWL engine')
+
     args = parser.parse_args()
     input_dict = {
         'job_uuid': args.job_uuid,
         'bam_list': args.bam_list,
         'ref': args.reference,
-        'bed_file': args.bed_file
+        'bed_file': args.bed_file,
+        'cwl_engine': args.cwl_engine,
+        'cwltool': '/var/',
+        'cromwell': '/cromwell-executions/'
     }
     nchunks = args.number_of_chunks
     nthreads = args.number_of_threads

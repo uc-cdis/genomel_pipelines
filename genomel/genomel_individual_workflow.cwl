@@ -60,7 +60,7 @@ outputs:
 
 steps:
   download_fastq_reads:
-    run: ./workflows/utils/download_fastq.cwl
+    run: ./cwl/workflows/utils/download_fastq.cwl
     scatter: [input_is_fastq]
     in:
       input_is_fastq: input_is_fastq
@@ -78,7 +78,7 @@ steps:
           time_metrics_from_download_f2]
 
   download_bam_file:
-    run: ./workflows/utils/download_check.cwl
+    run: ./cwl/workflows/utils/download_check.cwl
     scatter: [input_is_bam]
     in:
       input_is_bam: input_is_bam
@@ -91,7 +91,7 @@ steps:
     out: [verified_file, time_metrics_from_download]
 
   fastq_input_alignment_with_bwa:
-    run: ./workflows/harmonization/alignment_bwa_mem_prod.cwl
+    run: ./cwl/workflows/harmonization/alignment_bwa_mem_prod.cwl
     scatter: input_is_fastq
     in:
       input_is_fastq: input_is_fastq
@@ -113,7 +113,7 @@ steps:
           time_metrics_from_mrkdup]
 
   bam_input_harmonization_with_bwa:
-    run: ./workflows/harmonization/harmonization_bwa_mem_prod.cwl
+    run: ./cwl/workflows/harmonization/harmonization_bwa_mem_prod.cwl
     scatter: input_is_bam
     in:
       input_is_bam: input_is_bam
@@ -131,7 +131,7 @@ steps:
           time_metrics_from_mrkdup]
 
   extract_bam:
-    run: ./tools/utils/extract_outputs.cwl
+    run: ./cwl/tools/utils/extract_outputs.cwl
     in:
       file_array:
         source: [fastq_input_alignment_with_bwa/sorted_bam,
@@ -140,7 +140,7 @@ steps:
     out: [output]
 
   extract_genomel_bam:
-    run: ./tools/utils/extract_genomel_bam.cwl
+    run: ./cwl/tools/utils/extract_genomel_bam.cwl
     in:
       harmonized_bam:
         source: extract_bam/output
@@ -148,7 +148,7 @@ steps:
     out: [genomel_bam]
 
   gatk3_haplotypecaller:
-    run: ./workflows/variant_calling/haplotypecaller.cwl
+    run: ./cwl/workflows/variant_calling/haplotypecaller.cwl
     in:
       job_uuid: job_uuid
       bam_file: extract_genomel_bam/genomel_bam
@@ -160,7 +160,7 @@ steps:
           time_metrics_from_picard_sortvcf]
 
   upload_results:
-    run: ./workflows/utils/upload_results.cwl
+    run: ./cwl/workflows/utils/upload_results.cwl
     in:
       aws_config: aws_config
       aws_shared_credentials: aws_shared_credentials
@@ -192,7 +192,7 @@ steps:
           time_metrics_from_upload_gvcf_index]
 
   extract_time_log:
-    run: ./tools/utils/extract_outputs.cwl
+    run: ./cwl/tools/utils/extract_outputs.cwl
     in:
       file_array:
         source: [download_fastq_reads/time_metrics_from_download_f1,
