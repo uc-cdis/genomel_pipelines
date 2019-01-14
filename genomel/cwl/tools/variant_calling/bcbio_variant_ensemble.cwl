@@ -27,7 +27,7 @@ outputs:
   ensemble_vcf:
     type: File
     outputBinding:
-      glob: '*.vcf.gz'
+      glob: $(inputs.output_name)
     secondaryFiles: [.tbi]
   time_metrics:
     type: File
