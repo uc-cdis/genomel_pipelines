@@ -280,7 +280,7 @@ class GenomelIndiv(object):
 
     def _time(self, handle):
         '''extract time from cwl logs'''
-        logs = glob.glob('{}/{}'.format(format(self.workflow_meta['log_dir']), handle))
+        logs = glob.glob('{}/{}'.format(self.workflow_meta['log_dir'], handle))
         time_list = []
         if logs:
             for log in logs:
@@ -375,12 +375,15 @@ class GenomelIndiv(object):
         if self.workflow_meta['cwl_failure']:
             cwl_output = utils.pipeline.load_json(self.workflow_meta['cwl_output_json'])
             if cwl_output:
-                if cwl_output['genomel_gvcf']:
-                    status = "FAILED_WHEN_UPLOAD"
-                elif cwl_output['genomel_bam']:
-                    status = "FAILED_IN_VARIANT_CALLING"
-                else:
-                    status = "FAILED_IN_EARLY_STAGE"
+                try:
+                    if cwl_output['genomel_gvcf']:
+                        status = "FAILED_WHEN_UPLOAD"
+                    elif cwl_output['genomel_bam']:
+                        status = "FAILED_IN_VARIANT_CALLING"
+                    else:
+                        status = "FAILED_IN_EARLY_STAGE"
+                except ValueError:
+                    status = "FAILED"
             else: status = "FAILED_IN_CWL"
         else: status = "FAILED_IN_PYTHON_RUNNER"
         self.workflow_meta['cwl_end'] = time.time()

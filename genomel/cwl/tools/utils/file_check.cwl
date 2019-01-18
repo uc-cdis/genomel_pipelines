@@ -8,7 +8,7 @@ requirements:
   - class: InlineJavascriptRequirement
   - class: ShellCommandRequirement
   - class: DockerRequirement
-    dockerPull: alpine
+    dockerPull: registry.gitlab.com/uc-cdis/genomel-tools/alpine:1.0
 
 inputs:
   file: File

@@ -35,7 +35,7 @@ trap cleanup EXIT
 $basedir/genomel_pipelines/genomel/slurm/genomel_individual_aliquot_runner.py $pipeline \
 --job_uuid $job_uuid \
 --basedir $basedir \
---cwlwf $basedir/genomel_pipelines/genomel/cwl/genomel_individual_workflow.cwl \
+--cwlwf $basedir/genomel_pipelines/genomel/genomel_individual_workflow.cwl \
 --aliquot_id $aliquot_id \
 --input_table $input_table \
 --project $project \

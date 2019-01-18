@@ -13,9 +13,9 @@ requirements:
 
 inputs:
   job_uuid: string
-  bam_files:
+  gvcf_files:
     type: File[]
-    secondaryFiles: [^.bai]
+    secondaryFiles: [.tbi]
   reference:
     type: File
     secondaryFiles: [.fai, ^.dict]
@@ -26,25 +26,25 @@ inputs:
   cwl_engine: string
 
 outputs:
-  time_metrics_from_freebayes:
+  time_metrics_from_gatk4_cohort_genotyping:
     type: File
-    outputSource: genomel_pdc_freebayes/time_metrics
+    outputSource: genomel_pdc_gatk4_cohort_genotyping/time_metrics
   time_metrics_from_picard_sortvcf:
     type: File
     outputSource: picard_sortvcf/time_metrics
   time_metrics_from_selectvariants:
     type: File
     outputSource: gatk3_selectvariants/time_metrics
-  freebayes_vcf:
+  gatk4_cohort_genotyping_vcf:
     type: File
     outputSource: gatk3_selectvariants/output_vcf
 
 steps:
-  genomel_pdc_freebayes:
-    run: ../../tools/variant_calling/genomel_pdc_freebayes.cwl
+  genomel_pdc_gatk4_cohort_genotyping:
+    run: ../../tools/variant_calling/genomel_gatk4_cohort_genotyping.cwl
     in:
       job_uuid: job_uuid
-      bam_files: bam_files
+      gvcf_files: gvcf_files
       reference: reference
       bed_file: bed_file
       thread_count: thread_count
@@ -56,7 +56,7 @@ steps:
     run: ../../tools/variant_calling/picard_sortvcf.cwl
     in:
       job_uuid: job_uuid
-      vcf: genomel_pdc_freebayes/vcf_list
+      vcf: genomel_pdc_gatk4_cohort_genotyping/vcf_list
       reference_dict:
         source: reference
         valueFrom: $(self.secondaryFiles[1])
@@ -73,5 +73,5 @@ steps:
       reference: reference
       output_prefix:
         source: [job_uuid, output_prefix]
-        valueFrom: $(self[0] + '.' + self[1] + '.freebayes')
+        valueFrom: $(self[0] + '.' + self[1] + '.gatk4')
     out: [output_vcf, time_metrics]

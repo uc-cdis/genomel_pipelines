@@ -6,7 +6,7 @@ class: CommandLineTool
 
 requirements:
   - class: DockerRequirement
-    dockerPull: alpine
+    dockerPull: registry.gitlab.com/uc-cdis/genomel-tools/alpine:1.0
   - class: InlineJavascriptRequirement
   - class: ShellCommandRequirement
 
