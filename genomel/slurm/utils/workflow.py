@@ -24,6 +24,16 @@ def get_cwl_steps(cwlwf):
     cwl_steps = cwl['steps'].keys()
     return cwl_steps
 
+def dict_to_string(list_of_dict):
+    '''convert list of dict to list of strings'''
+    list_of_string = []
+    if list_of_dict:
+        for i in list_of_dict:
+            list_of_string.append(str(i))
+    else:
+        return None
+    return list_of_string
+
 def run_alignment(args):
     '''run alignment'''
     input_data = utils.pipeline.load_template_json()['alignment_template']
@@ -622,7 +632,9 @@ class GenomelCohort(object):
             self.workflow_meta['runner_failure'] = 'no_cromwell_metadata_output'
         else:
             metadata_json = utils.pipeline.load_json(self._cromwell_metadata_output())
-            self.workflow_meta['cromwell_failures'] = metadata_json.get('failures')
+            self.workflow_meta['cromwell_failures'] = dict_to_string(
+                metadata_json.get('failures')
+            )
             self.workflow_meta['cromwell_start'] = metadata_json['start']
             self.workflow_meta['cromwell_end'] = metadata_json['end']
             self.workflow_meta['cromwell_status'] = metadata_json['status']
