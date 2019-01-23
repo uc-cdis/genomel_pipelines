@@ -538,7 +538,7 @@ class GenomelCohort(object):
         os.environ['PATH'] = "/home/ubuntu/.virtualenvs/p2/bin/:$PATH"
         # cromwell cmd
         cmd = [
-            'sudo', '-E', 'java',
+            '/usr/bin/java',
             '-Dconfig.file={}'.format(self.workflow_meta['cromwell_config']),
             '-jar', self.workflow_meta['cromwell_jar_path'],
             'run', self.workflow_meta['cwlwf'],
@@ -546,6 +546,7 @@ class GenomelCohort(object):
             '--imports', self.workflow_meta['cwl_pack'],
             '--metadata-output', self.workflow_meta['cromwell_metadata_output']
         ]
+        logger.info('%s', cmd)
         try:
             # run cromwell
             utils.pipeline.run_command(cmd, logger)
@@ -561,8 +562,9 @@ class GenomelCohort(object):
                     self.workflow_meta['runner_failure'] = 'upload_logs_fails'
                 else:
                     self._process_job_success()
-        except BaseException:
-            self.workflow_meta['runner_failure'] = 'python_runner_fails'
+        except BaseException, error:
+            logger.error('Failed: %s', error)
+            self.workflow_meta['runner_failure'] = '{}'.format(error)
         if self.workflow_meta['cromwell_failures'] or self.workflow_meta['runner_failure']:
             self._process_job_fail()
         engine = postgres.utils.get_db_engine(self.psql_conf)

@@ -93,10 +93,10 @@ def create_cwl_array_input(manifest):
             path_list.append(path)
     return path_list
 
-def run_command(cmd, logger=None, output=None, shell_var=False, env_var=None):
+def run_command(cmd, logger=None, output=None, shell_var=False):
     '''Runs a subprocess'''
     child = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, \
-                             shell=shell_var, env=env_var)
+                             shell=shell_var)
     stdoutdata, stderrdata = child.communicate()
     exit_code = child.returncode
     if logger:
