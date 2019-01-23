@@ -22,6 +22,8 @@ requirements:
               }
             return paths.join("\n")
             }
+  - class: ResourceRequirement
+    coresMin: 30
 
 inputs:
   gvcf_files:

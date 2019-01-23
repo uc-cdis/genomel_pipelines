@@ -22,6 +22,8 @@ requirements:
               }
             return paths.join("\n")
             }
+  - class: ResourceRequirement
+    coresMin: 30
 
 inputs:
   bam_files:
@@ -41,7 +43,7 @@ outputs:
     type: File[]
     outputBinding:
       glob: '*.vcf'
-      
+
   time_metrics:
     type: File
     outputBinding:

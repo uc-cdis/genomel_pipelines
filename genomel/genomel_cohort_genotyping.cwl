@@ -13,8 +13,7 @@ requirements:
 
 inputs:
   job_uuid: string
-  bed_file: File
-  number_of_lines_per_chunk: int
+  bed_files: File[]
   reference:
     type: File
     secondaryFiles: [.fai, ^.dict]
@@ -59,13 +58,6 @@ outputs:
     outputSource: extract_time_log/output
 
 steps:
-  prepare_intervals:
-    run: ./cwl/tools/utils/prepare_intervals.cwl
-    in:
-      bed_file: bed_file
-      number_of_lines_per_chunk: number_of_lines_per_chunk
-    out: [bed_files]
-
   gatk4_cohort_genotyping:
     run: ./cwl/workflows/variant_calling/gatk4_cohort_genotyping.cwl
     scatter: [bed_file, output_prefix]
@@ -74,11 +66,11 @@ steps:
       job_uuid: job_uuid
       gvcf_files: gvcf_files
       reference: reference
-      bed_file: prepare_intervals/bed_files
+      bed_file: bed_files
       thread_count: gatk4_genotyping_thread_count
       number_of_chunks: number_of_chunks_for_gatk
       output_prefix:
-        source: prepare_intervals/bed_files
+        source: bed_files
         valueFrom: $(self.nameroot)
       cwl_engine: cwl_engine
     out: [time_metrics_from_gatk4_cohort_genotyping,
@@ -94,11 +86,11 @@ steps:
       job_uuid: job_uuid
       bam_files: bam_files
       reference: reference
-      bed_file: prepare_intervals/bed_files
+      bed_file: bed_files
       thread_count: freebayes_thread_count
       number_of_chunks: number_of_chunks_for_freebayes
       output_prefix:
-        source: prepare_intervals/bed_files
+        source: bed_files
         valueFrom: $(self.nameroot)
       cwl_engine: cwl_engine
     out: [time_metrics_from_freebayes,
@@ -163,8 +155,8 @@ steps:
       aws_shared_credentials: aws_shared_credentials
       input: sort_gatk4/sorted_vcf
       s3uri:
-        source: [upload_s3_bucket, job_uuid, sort_gatk4/sorted_vcf]
-        valueFrom: $(self[0])/$(self[1])/$(self[2].basename)
+        source: [upload_s3_bucket, sort_gatk4/sorted_vcf]
+        valueFrom: $(self[0])/$(self[1].basename)
       s3_profile: upload_s3_profile
       s3_endpoint: upload_s3_endpoint
     out: [output, time_metrics]
@@ -178,8 +170,8 @@ steps:
         source: sort_gatk4/sorted_vcf
         valueFrom: $(self.secondaryFiles[0])
       s3uri:
-        source: [upload_s3_bucket, job_uuid, sort_gatk4/sorted_vcf]
-        valueFrom: $(self[0])/$(self[1])/$(self[2].secondaryFiles[0].basename)
+        source: [upload_s3_bucket, sort_gatk4/sorted_vcf]
+        valueFrom: $(self[0])/$(self[1].secondaryFiles[0].basename)
       s3_profile: upload_s3_profile
       s3_endpoint: upload_s3_endpoint
     out: [output, time_metrics]
@@ -191,8 +183,8 @@ steps:
       aws_shared_credentials: aws_shared_credentials
       input: sort_freebayes/sorted_vcf
       s3uri:
-        source: [upload_s3_bucket, job_uuid, sort_freebayes/sorted_vcf]
-        valueFrom: $(self[0])/$(self[1])/$(self[2].basename)
+        source: [upload_s3_bucket, sort_freebayes/sorted_vcf]
+        valueFrom: $(self[0])/$(self[1].basename)
       s3_profile: upload_s3_profile
       s3_endpoint: upload_s3_endpoint
     out: [output, time_metrics]
@@ -206,8 +198,8 @@ steps:
         source: sort_freebayes/sorted_vcf
         valueFrom: $(self.secondaryFiles[0])
       s3uri:
-        source: [upload_s3_bucket, job_uuid, sort_freebayes/sorted_vcf]
-        valueFrom: $(self[0])/$(self[1])/$(self[2].secondaryFiles[0].basename)
+        source: [upload_s3_bucket, sort_freebayes/sorted_vcf]
+        valueFrom: $(self[0])/$(self[1].secondaryFiles[0].basename)
       s3_profile: upload_s3_profile
       s3_endpoint: upload_s3_endpoint
     out: [output, time_metrics]
@@ -219,8 +211,8 @@ steps:
       aws_shared_credentials: aws_shared_credentials
       input: sort_ensemble/sorted_vcf
       s3uri:
-        source: [upload_s3_bucket, job_uuid, sort_ensemble/sorted_vcf]
-        valueFrom: $(self[0])/$(self[1])/$(self[2].basename)
+        source: [upload_s3_bucket, sort_ensemble/sorted_vcf]
+        valueFrom: $(self[0])/$(self[1].basename)
       s3_profile: upload_s3_profile
       s3_endpoint: upload_s3_endpoint
     out: [output, time_metrics]
@@ -234,8 +226,8 @@ steps:
         source: sort_ensemble/sorted_vcf
         valueFrom: $(self.secondaryFiles[0])
       s3uri:
-        source: [upload_s3_bucket, job_uuid, sort_ensemble/sorted_vcf]
-        valueFrom: $(self[0])/$(self[1])/$(self[2].secondaryFiles[0].basename)
+        source: [upload_s3_bucket, sort_ensemble/sorted_vcf]
+        valueFrom: $(self[0])/$(self[1].secondaryFiles[0].basename)
       s3_profile: upload_s3_profile
       s3_endpoint: upload_s3_endpoint
     out: [output, time_metrics]
