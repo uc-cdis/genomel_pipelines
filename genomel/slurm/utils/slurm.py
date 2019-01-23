@@ -121,7 +121,11 @@ class ScriptCreator(object):
             slurm = os.path.join(self.outdir, 'genomel_individual.{0}.{1}.{2}.{3}.sh'.format(
                 self.pipeline, metadata['project'], job_uuid, aliquot_id))
             # load template
-            template_str = utils.pipeline.load_template_slurm()
+            template_json_file = os.path.join(\
+                                 os.path.dirname(\
+                                 os.path.dirname(os.path.realpath(__file__))),
+                                 "etc/template.sh")
+            template_str = utils.pipeline.load_template_slurm(template_json_file)
             # write
             val = template_str.format(
                 PIPELINE=self.pipeline,

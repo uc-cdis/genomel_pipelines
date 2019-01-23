@@ -50,9 +50,53 @@ def pg_data_template():
     }
     return pg_data
 
-def run_command(cmd, logger=None, output=None, shell_var=False):
+def cohort_data_template():
+    '''create postgres default dict'''
+    git_path = os.path.dirname(os.path.realpath(__file__))
+    cohort_data = {
+        'job_uuid': None,
+        'slurm_jobid': os.environ.get("SLURM_JOBID"),
+        'batch_id': None,
+        'input_table': None,
+        'project': None,
+        'runner_failures': None,
+        'cromwell_status': None,
+        'cromwell_failures': None,
+        'cromwell_finished_steps': None,
+        'cromwell_todo_steps': None,
+        'datetime_start': None,
+        'datetime_end': None,
+        'vcf_url': None,
+        'vcf_local_path': None,
+        'vcf_md5sum': None,
+        'vcf_filesize': None,
+        'cwl_walltime': None,
+        'cwl_cpu_percentage': None,
+        'hostname': socket.gethostname(),
+        'cwl_version': pkg_resources.get_distribution("cwltool").version,
+        'cromwell_version': None,
+        'docker_version': 'Docker version 18.09.0, build 4d60db4',
+        'cwl_input_json': None,
+        'time_metrics_json': None,
+        'git_hash': git.Repo(git_path, search_parent_directories=True).head.object.hexsha,
+        'debug_path': None
+    }
+    return cohort_data
+
+def create_cwl_array_input(manifest):
+    '''create cwl array type input json'''
+    path_list = []
+    with open(manifest, 'r') as fhandle:
+        files = fhandle.readlines()
+        for fpath in files:
+            path = {"class": "File", "path": fpath.rstrip()}
+            path_list.append(path)
+    return path_list
+
+def run_command(cmd, logger=None, output=None, shell_var=False, env_var=None):
     '''Runs a subprocess'''
-    child = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=shell_var)
+    child = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, \
+                             shell=shell_var, env=env_var)
     stdoutdata, stderrdata = child.communicate()
     exit_code = child.returncode
     if logger:
@@ -128,12 +172,8 @@ def load_template_json():
         dat = json.load(fhandle)
     return dat
 
-def load_template_slurm():
-    ''' load resource JSON file '''
-    template_slurm_file = os.path.join(\
-                         os.path.dirname(\
-                         os.path.dirname(os.path.realpath(__file__))),
-                         "etc/template.sh")
+def load_template_slurm(template_slurm_file):
+    ''' load slurm template file '''
     template_slurm_str = None
     with open(template_slurm_file, 'r') as fhandle:
         template_slurm_str = fhandle.read()

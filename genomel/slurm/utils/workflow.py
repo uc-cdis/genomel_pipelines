@@ -7,9 +7,22 @@ import glob
 import logging
 import tempfile
 import datetime
+import yaml
 import utils.pipeline
 import postgres.metrics
 import postgres.utils
+
+def filter_list(alist, blist):
+    '''remove blist from alist'''
+    return list(set(alist)-set(blist))
+
+def get_cwl_steps(cwlwf):
+    '''get cwl steps names'''
+    cwl = dict()
+    with open(cwlwf, 'r') as fhandle:
+        cwl = yaml.load(fhandle)
+    cwl_steps = cwl['steps'].keys()
+    return cwl_steps
 
 def run_alignment(args):
     '''run alignment'''
@@ -38,7 +51,8 @@ def run_alignment(args):
     genomel = GenomelIndiv(
         workflow_meta=workflow_meta,
         input_data=input_data,
-        psql_conf=args.psql_conf)
+        psql_conf=args.psql_conf
+    )
     genomel.run()
 
 def run_harmonization(args):
@@ -59,7 +73,73 @@ def run_harmonization(args):
     genomel = GenomelIndiv(
         workflow_meta=workflow_meta,
         input_data=input_data,
-        psql_conf=args.psql_conf)
+        psql_conf=args.psql_conf
+    )
+    genomel.run()
+
+def run_cohort_genotyping(args):
+    '''run cohort genotyping'''
+    cohort_template_json = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.realpath(__file__))),
+        "etc/cohort_genotyping_test.json"
+    )
+    input_data = utils.pipeline.load_json(cohort_template_json)
+    input_data['job_uuid'] = args.job_uuid
+    input_data['gvcf_files'] = utils.pipeline.create_cwl_array_input(args.gvcf_files_manifest)
+    input_data['gatk4_genotyping_thread_count'] = args.gatk4_genotyping_thread_count
+    input_data['number_of_chunks_for_gatk'] = args.number_of_chunks_for_gatk
+    input_data['bam_files'] = utils.pipeline.create_cwl_array_input(args.bam_files_manifest)
+    input_data['freebayes_thread_count'] = args.freebayes_thread_count
+    input_data['number_of_chunks_for_freebayes'] = args.number_of_chunks_for_freebayes
+    input_data['upload_s3_bucket'] = os.path.join(
+        args.upload_s3_bucket,
+        args.project,
+        args.batch_id,
+        args.job_uuid
+    )
+    workflow_meta = {
+        'basedir': args.basedir,
+        'project': args.project,
+        'batch_id': args.batch_id,
+        'job_uuid': args.job_uuid,
+        'input_table': args.input_table,
+        'cromwell_config': os.path.join(
+            os.path.dirname(
+                os.path.dirname(
+                    os.path.dirname(
+                        os.path.realpath(__file__)
+                    )
+                )
+            ),
+            "cromwell/cromwell.conf"
+        ),
+        'cromwell_jar_path': args.cromwell_jar_path,
+        'cwlwf': os.path.join(
+            os.path.dirname(
+                os.path.dirname(
+                    os.path.dirname(
+                        os.path.realpath(__file__)
+                    )
+                )
+            ),
+            "genomel_cohort_genotyping.cwl"
+        ),
+        'cwl_pack': os.path.join(
+            os.path.dirname(
+                os.path.dirname(
+                    os.path.dirname(
+                        os.path.realpath(__file__)
+                    )
+                )
+            ),
+            "cwl.zip"
+        )
+    }
+    genomel = GenomelCohort(
+        workflow_meta=workflow_meta,
+        input_data=input_data,
+        psql_conf=args.psql_conf
+    )
     genomel.run()
 
 class GenomelIndiv(object):
@@ -400,5 +480,272 @@ class GenomelIndiv(object):
         self.pg_data['cwl_input_json'] = os.path.join(
             self.workflow_meta['base_s3_loc'],
             os.path.basename(self.workflow_meta['cwl_input_json'])
+        )
+        self.pg_data['debug_path'] = self.workflow_meta['log_file']
+
+class GenomelCohort(object):
+    '''this class describes GenoMEL-Bionimbus Protected Data Cloud cohort genotyping pipeline'''
+    def __init__(self, workflow_meta, input_data, psql_conf):
+        '''
+        workflow_meta.keys() = [
+            'basedir',
+            'project',
+            'batch_id',
+            'job_uuid',
+            'input_table',
+            'cromwell_config',
+            'cromwell_jar_path',
+            'cwlwf',
+            'cwl_pack'
+        ]
+        '''
+        self.input_data = input_data
+        self.pg_data = utils.pipeline.cohort_data_template()
+        self.psql_conf = psql_conf
+        self.psql_class = postgres.metrics.GenomelCohortGenotypingMetrics
+        # setup workflow metadata
+        self.workflow_meta = workflow_meta
+        self.workflow_meta['base_s3_loc'] = self.input_data['upload_s3_bucket']
+        self.workflow_meta['log_file'] = None
+        self.workflow_meta['cwl_input_json'] = self._cwl_input_json()
+        self.workflow_meta['cromwell_metadata_output'] = self._cromwell_metadata_output()
+        self.workflow_meta['log_dir'] = None
+        self.workflow_meta['cwl_log_tar'] = None
+        self.workflow_meta['cromwell_start'] = None
+        self.workflow_meta['cromwell_end'] = None
+        self.workflow_meta['cromwell_status'] = None
+        self.workflow_meta['cromwell_failures'] = None
+        self.workflow_meta['cromwell_cwl_outputs'] = None
+        self.workflow_meta['cromwell_cwl_logs'] = None
+        self.workflow_meta['cromwell_finished_steps'] = None
+        self.workflow_meta['cromwell_todo_steps'] = None
+        self.workflow_meta['runner_failure'] = None
+        self.workflow_meta['output_vcf'] = None
+        self.workflow_meta['output_vcf_url'] = None
+        self.workflow_meta['output_vcf_local'] = None
+        self.workflow_meta['output_vcf_md5sum'] = None
+        self.workflow_meta['output_vcf_filesize'] = None
+        self.workflow_meta['pipeline_time'] = 0.0
+        self.workflow_meta['pipeline_avg_cpu_percentage'] = 0
+        self.cwl_steps = get_cwl_steps(self.workflow_meta['cwlwf'])
+
+    def run(self):
+        '''main pipeline'''
+        # setup work env
+        os.chdir(self.workflow_meta['basedir'])
+        logger = self._log()
+        # make sure cwltool in the path
+        os.environ['PATH'] = "/home/ubuntu/.virtualenvs/p2/bin/:$PATH"
+        # cromwell cmd
+        cmd = [
+            'sudo', '-E', 'java',
+            '-Dconfig.file={}'.format(self.workflow_meta['cromwell_config']),
+            '-jar', self.workflow_meta['cromwell_jar_path'],
+            'run', self.workflow_meta['cwlwf'],
+            '-i', self.workflow_meta['cwl_input_json'],
+            '--imports', self.workflow_meta['cwl_pack'],
+            '--metadata-output', self.workflow_meta['cromwell_metadata_output']
+        ]
+        try:
+            # run cromwell
+            utils.pipeline.run_command(cmd, logger)
+            # cromwell status
+            self._extract_cromwell_output_metadata()
+            if not self.workflow_meta['cromwell_failures'] \
+                and not self.workflow_meta['runner_failure']:
+                # calculate cpu percentage
+                self._calculate_cwl_metadata()
+                # upload log files
+                upload_exit = self._upload_log_files(logger)
+                if upload_exit:
+                    self.workflow_meta['runner_failure'] = 'upload_logs_fails'
+                else:
+                    self._process_job_success()
+        except BaseException:
+            self.workflow_meta['runner_failure'] = 'python_runner_fails'
+        if self.workflow_meta['cromwell_failures'] or self.workflow_meta['runner_failure']:
+            self._process_job_fail()
+        engine = postgres.utils.get_db_engine(self.psql_conf)
+        postgres.metrics.add_cohort_metrics(engine, self.psql_class, self.pg_data)
+
+    def create_tmp_dir(self, prefix):
+        '''create cwl tmp directory'''
+        tmpdir = tempfile.mkdtemp(prefix="{}".format(prefix), dir=self.workflow_meta['basedir'])
+        return tmpdir
+
+    def _cwl_input_json(self):
+        '''prepare cwl input json'''
+        cwl_input_json = os.path.join(
+            self.workflow_meta['basedir'], 'genomel_cohort_genotyping.{0}.{1}.{2}.json'.format(
+                self.workflow_meta['project'],
+                self.workflow_meta['batch_id'],
+                self.workflow_meta['job_uuid']
+            )
+        )
+        with open(cwl_input_json, 'wt') as ohandle:
+            json.dump(self.input_data, ohandle, indent=4)
+        return cwl_input_json
+
+    def _cromwell_metadata_output(self):
+        '''prepare cromwell metadata output'''
+        output_json = os.path.join(
+            self.workflow_meta['basedir'], 'genomel_cohort_genotyping.{0}.{1}.{2}.output'.format(
+                self.workflow_meta['project'],
+                self.workflow_meta['batch_id'],
+                self.workflow_meta['job_uuid']
+            )
+        )
+        return output_json
+
+    def _log(self):
+        '''setup log file'''
+        log_file = os.path.join(
+            self.workflow_meta['basedir'], 'genomel_cohort_genotyping.{0}.{1}.{2}.log'.format(
+                self.workflow_meta['project'],
+                self.workflow_meta['batch_id'],
+                self.workflow_meta['job_uuid']
+            )
+        )
+        self.workflow_meta['log_file'] = log_file
+        logger = utils.pipeline.setup_logging(
+            logging.INFO,
+            self.workflow_meta['job_uuid'],
+            log_file
+        )
+        return logger
+
+    def _extract_cromwell_output_metadata(self):
+        '''extract metadata from cromwell output'''
+        if not os.path.isfile(self._cromwell_metadata_output()):
+            self.workflow_meta['runner_failure'] = 'no_cromwell_metadata_output'
+        else:
+            metadata_json = utils.pipeline.load_json(self._cromwell_metadata_output())
+            self.workflow_meta['cromwell_failures'] = metadata_json.get('failures')
+            self.workflow_meta['cromwell_start'] = metadata_json['start']
+            self.workflow_meta['cromwell_end'] = metadata_json['end']
+            self.workflow_meta['cromwell_status'] = metadata_json['status']
+            self.workflow_meta['cromwell_cwl_outputs'] = metadata_json['outputs']
+            self.workflow_meta['cromwell_finished_steps'] = metadata_json['calls'].keys()
+            self.workflow_meta['cromwell_todo_steps'] = filter_list(
+                self.cwl_steps, self.workflow_meta['cromwell_finished_steps']
+            )
+
+    def _calculate_cwl_metadata(self):
+        '''gather and calculate cwl metadata'''
+        self.workflow_meta['cromwell_cwl_logs'] = []
+        for key, value in self.workflow_meta['cromwell_cwl_outputs'].items():
+            if key.endswith('time_logs'):
+                for log in value:
+                    self.workflow_meta['cromwell_cwl_logs'].append(log['location'])
+        pipeline_cpu_usage = []
+        pipeline_cpu_time = []
+        for log in self.workflow_meta['cromwell_cwl_logs']:
+            dic = utils.pipeline.load_json(log)
+            cpu_percent = float(dic['percent_of_cpu'][:-1])
+            step_weight = float(dic['wall_clock'])
+            pipeline_cpu_usage.append(cpu_percent * step_weight)
+            pipeline_cpu_time.append(step_weight)
+        pipeline_time = sum(pipeline_cpu_time)
+        pipeline_avg_cpu_usage = str(int(sum(pipeline_cpu_usage)/sum(pipeline_cpu_time))) + '%'
+        self.workflow_meta['pipeline_time'] = pipeline_time
+        self.workflow_meta['pipeline_avg_cpu_percentage'] = pipeline_avg_cpu_usage
+
+    def _tar_log(self, logger):
+        '''make tar for all cwl time logs'''
+        self.workflow_meta['log_dir'] = self.create_tmp_dir('cwl_logs_')
+        for log in self.workflow_meta['cromwell_cwl_logs']:
+            utils.pipeline.move_file(log, self.workflow_meta['log_dir'])
+        self.workflow_meta['cwl_log_tar'] = os.path.join(
+            self.workflow_meta['basedir'], \
+            'genomel_cohort_genotyping.{0}.{1}.{2}.cwl_logs.tar.bz2'.format(
+                self.workflow_meta['project'],
+                self.workflow_meta['batch_id'],
+                self.workflow_meta['job_uuid']
+            )
+        )
+        exit_code = utils.pipeline.targz_compress(
+            logger,
+            self.workflow_meta['cwl_log_tar'],
+            self.workflow_meta['log_dir']
+        )
+        return exit_code
+
+    def _upload_log_files(self, logger):
+        '''upload tar file of all cwl logs'''
+        to_upload_dir = self.create_tmp_dir('to_upload_')
+        utils.pipeline.move_file(self.workflow_meta['cwl_input_json'], to_upload_dir)
+        utils.pipeline.move_file(self.workflow_meta['cwl_log_tar'], to_upload_dir)
+        exit_code = utils.pipeline.aws_s3_put(
+            logger=logger,
+            remote_output=self.workflow_meta['base_s3_loc'],
+            local_input=to_upload_dir,
+            profile=self.input_data['upload_s3_profile'],
+            endpoint_url=self.input_data['upload_s3_endpoint'],
+            recursive=True
+        )
+        return exit_code
+
+    def _get_output_meta(self):
+        '''get output vcf'''
+        for key, value in self.workflow_meta['cromwell_cwl_outputs'].items():
+            if key.endswith('variant_ensemble_vcf'):
+                self.workflow_meta['output_vcf_local'] = value['location']
+                self.workflow_meta['output_vcf_filesize'] = value['size']
+        self.workflow_meta['output_vcf'] = os.path.basename(self.workflow_meta['output_vcf_local'])
+        self.workflow_meta['output_vcf_md5sum'] = utils.pipeline.get_md5(
+            self.workflow_meta['output_vcf_local']
+        )
+        self.workflow_meta['output_vcf_url'] = os.path.join(
+            self.workflow_meta['base_s3_loc'],
+            self.workflow_meta['output_vcf']
+        )
+
+    def _process_job_success(self):
+        '''process when job successes'''
+        self.pg_data['job_uuid'] = self.workflow_meta['job_uuid']
+        self.pg_data['batch_id'] = self.workflow_meta['batch_id']
+        self.pg_data['input_table'] = self.workflow_meta['input_table']
+        self.pg_data['project'] = self.workflow_meta['project']
+        self.pg_data['cromwell_status'] = self.workflow_meta['cromwell_status']
+        self.pg_data['cromwell_failures'] = self.workflow_meta['cromwell_failures']
+        self.pg_data['cromwell_finished_steps'] = self.workflow_meta['cromwell_finished_steps']
+        self.pg_data['cromwell_todo_steps'] = self.workflow_meta['cromwell_todo_steps']
+        self.pg_data['datetime_start'] = self.workflow_meta['cromwell_start']
+        self.pg_data['datetime_end'] = self.workflow_meta['cromwell_end']
+        self._get_output_meta()
+        self.pg_data['vcf_url'] = self.workflow_meta['output_vcf_url']
+        self.pg_data['vcf_local_path'] = self.workflow_meta['output_vcf_local']
+        self.pg_data['vcf_md5sum'] = self.workflow_meta['output_vcf_md5sum']
+        self.pg_data['vcf_filesize'] = self.workflow_meta['output_vcf_filesize']
+        self.pg_data['cwl_walltime'] = self.workflow_meta['pipeline_time']
+        self.pg_data['cwl_cpu_percentage'] = self.workflow_meta['pipeline_avg_cpu_percentage']
+        self.pg_data['cwl_input_json'] = os.path.join(
+            self.workflow_meta['base_s3_loc'],
+            os.path.basename(self.workflow_meta['cwl_input_json'])
+        )
+        self.pg_data['time_metrics_json'] = os.path.join(
+            self.workflow_meta['base_s3_loc'],
+            os.path.basename(self.workflow_meta['cwl_log_tar'])
+        )
+        self.pg_data['cromwell_version'] = os.path.basename(
+            self.workflow_meta['cromwell_jar_path']
+        )
+        self.pg_data['debug_path'] = self.workflow_meta['log_file']
+
+    def _process_job_fail(self):
+        '''process when job fails'''
+        self.pg_data['job_uuid'] = self.workflow_meta['job_uuid']
+        self.pg_data['batch_id'] = self.workflow_meta['batch_id']
+        self.pg_data['input_table'] = self.workflow_meta['input_table']
+        self.pg_data['project'] = self.workflow_meta['project']
+        self.pg_data['runner_failures'] = self.workflow_meta['runner_failure']
+        self.pg_data['cromwell_status'] = self.workflow_meta['cromwell_status']
+        self.pg_data['cromwell_failures'] = self.workflow_meta['cromwell_failures']
+        self.pg_data['cromwell_finished_steps'] = self.workflow_meta['cromwell_finished_steps']
+        self.pg_data['cromwell_todo_steps'] = self.workflow_meta['cromwell_todo_steps']
+        self.pg_data['datetime_start'] = self.workflow_meta['cromwell_start']
+        self.pg_data['datetime_end'] = self.workflow_meta['cromwell_end']
+        self.pg_data['cromwell_version'] = os.path.basename(
+            self.workflow_meta['cromwell_jar_path']
         )
         self.pg_data['debug_path'] = self.workflow_meta['log_file']

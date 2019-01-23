@@ -2,6 +2,7 @@
 Postgres mixins
 '''
 from sqlalchemy import Column, Integer, String, Float, BigInteger
+from sqlalchemy.dialects.postgresql import ARRAY
 
 class IndMetricsTypeMixin(object):
     ''' Gather timing metrics with input uuids '''
@@ -43,4 +44,38 @@ class IndMetricsTypeMixin(object):
     def __repr__(self):
         return "<IndMetricsTypeMixin(job_uuid={}, whole_workflow_elapsed={}, status={})>".format(
             self.job_uuid, self.whole_workflow_elapsed, self.status
+        )
+
+class CohMetricsTypeMixin(object):
+    ''' Gather timing metrics with input uuids '''
+    id = Column(Integer, primary_key=True)
+    job_uuid = Column(String)
+    slurm_jobid = Column(Integer)
+    batch_id = Column(String)
+    input_table = Column(String)
+    project = Column(String)
+    runner_failures = Column(String)
+    cromwell_status = Column(String)
+    cromwell_failures = Column(String)
+    cromwell_finished_steps = Column(ARRAY(String))
+    cromwell_todo_steps = Column(ARRAY(String))
+    datetime_start = Column(String)
+    datetime_end = Column(String)
+    vcf_url = Column(String)
+    vcf_local_path = Column(String)
+    vcf_md5sum = Column(String)
+    vcf_filesize = Column(BigInteger)
+    cwl_walltime = Column(Float)
+    cwl_cpu_percentage = Column(String)
+    hostname = Column(String)
+    cwl_version = Column(String)
+    cromwell_version = Column(String)
+    docker_version = Column(String)
+    cwl_input_json = Column(String)
+    time_metrics_json = Column(String)
+    git_hash = Column(String)
+    debug_path = Column(String)
+    def __repr__(self):
+        return "<CohMetricsTypeMixin(job_uuid={}, cwl_walltime={}, status={})>".format(
+            self.job_uuid, self.cwl_walltime, self.status
         )
