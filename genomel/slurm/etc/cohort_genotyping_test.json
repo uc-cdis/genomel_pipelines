@@ -1,6 +1,6 @@
 {
   "job_uuid": "XX_JOB_ID_XX",
-  "bed_file": [{"class": "File", "path": "/mnt/glusterfs/reference/test_chr21.00.bed"},
+  "bed_files": [{"class": "File", "path": "/mnt/glusterfs/reference/test_chr21.00.bed"},
                {"class": "File", "path": "/mnt/glusterfs/reference/test_chr21.01.bed"},
                {"class": "File", "path": "/mnt/glusterfs/reference/test_chr21.02.bed"},
                {"class": "File", "path": "/mnt/glusterfs/reference/test_chr21.03.bed"},
