@@ -3,6 +3,12 @@
 import argparse
 import utils.workflow
 
+def is_nat(pos):
+    '''Checks that a value is a natural number.'''
+    if int(pos) > 0:
+        return int(pos)
+    raise argparse.ArgumentTypeError('{} must be positive, non-zero'.format(pos))
+
 def get_args():
     '''Loads the parser'''
     # Main parser
@@ -33,25 +39,29 @@ def get_args():
                           help='Manifest of all gvcf files')
     required.add_argument('--gatk4_genotyping_thread_count', \
                           required=True, \
+                          type=is_nat, \
                           help='Threads used for GATK4 genotyping')
     required.add_argument('--number_of_chunks_for_gatk', \
                           required=True, \
+                          type=is_nat, \
                           help='Number of chunks for GATK4 on each node')
     required.add_argument('--bam_files_manifest', \
                           required=True, \
                           help='Manifest of all bam files')
     required.add_argument('--freebayes_thread_count', \
                           required=True, \
+                          type=is_nat, \
                           help='Threads used for Freebayes')
     required.add_argument('--number_of_chunks_for_freebayes', \
                           required=True, \
+                          type=is_nat, \
                           help='Number of chunks for Freebayes on each node')
     required.add_argument('--upload_s3_bucket', \
                           required=True, \
                           help='S3 bucket for uploads')
     required.add_argument('--cromwell_jar_path', \
                           required=True, \
-                          help='Cromwell jar path')                          
+                          help='Cromwell jar path')
     return parser.parse_args()
 
 if __name__ == '__main__':
