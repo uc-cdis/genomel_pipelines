@@ -8,7 +8,7 @@ requirements:
   - class: InlineJavascriptRequirement
   - class: ShellCommandRequirement
   - class: DockerRequirement
-    dockerPull: registry.gitlab.com/uc-cdis/genomel-exome-variant-detection/gatk4_0_11:1.0
+    dockerPull: registry.gitlab.com/uc-cdis/genomel-exome-variant-detection/gatk4_0_11:2.0
   - class: InitialWorkDirRequirement
     listing:
       - entryname: "gvcf_path.list"
@@ -17,11 +17,13 @@ requirements:
             var paths = [];
             for (var i = 0; i < inputs.gvcf_files.length; i++){
               if (inputs.gvcf_files[i]["nameext"] == ".gz"){
-                paths.push(inputs.gvcf_files[i]["basename"])
+                paths.push(inputs.gvcf_files[i]["path"])
                 }
               }
             return paths.join("\n")
             }
+  - class: ResourceRequirement
+    coresMin: 30
 
 inputs:
   gvcf_files:
@@ -34,7 +36,12 @@ inputs:
   bed_file: File
   thread_count: int
   number_of_chunks: int
-  cwl_engine: string
+  cromwell_engine:
+    type: boolean
+    default: false
+    inputBinding:
+      position: 99
+      prefix: -e
 
 outputs:
   vcf_list:
@@ -58,4 +65,4 @@ arguments:
       -o $(inputs.job_uuid + '.genomel_pdc_gatk4_cohort_genotyping.time.json')
       python /opt/genomel_pdc_gatk4_cohort_genotyping.py
       --gvcf_path fixed_gvcf_path.list -j $(inputs.job_uuid) -f $(inputs.reference.path)
-      -L $(inputs.bed_file.path) -n $(inputs.thread_count) -c $(inputs.number_of_chunks) -e $(inputs.cwl_engine)
+      -L $(inputs.bed_file.path) -n $(inputs.thread_count) -c $(inputs.number_of_chunks)

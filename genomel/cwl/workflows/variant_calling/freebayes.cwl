@@ -8,8 +8,6 @@ requirements:
   - class: InlineJavascriptRequirement
   - class: StepInputExpressionRequirement
   - class: MultipleInputFeatureRequirement
-  - class: ResourceRequirement
-    coresMin: 30
 
 inputs:
   job_uuid: string
@@ -23,7 +21,7 @@ inputs:
   thread_count: int
   number_of_chunks: int
   output_prefix: string
-  cwl_engine: string
+  cromwell_engine: boolean
 
 outputs:
   time_metrics_from_freebayes:
@@ -49,7 +47,7 @@ steps:
       bed_file: bed_file
       thread_count: thread_count
       number_of_chunks: number_of_chunks
-      cwl_engine: cwl_engine
+      cromwell_engine: cromwell_engine
     out: [vcf_list, time_metrics]
 
   picard_sortvcf:

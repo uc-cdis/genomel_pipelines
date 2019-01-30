@@ -44,3 +44,38 @@ def add_metrics(engine, table, data):
         debug_path=data['debug_path'])
     postgres.utils.create_table(engine, met)
     postgres.utils.add_metrics(engine, met)
+
+class GenomelCohortGenotypingMetrics(postgres.mixins.CohMetricsTypeMixin, postgres.utils.Base):
+    __tablename__ = 'genomel_cohort_genotyping_metrics'
+
+def add_cohort_metrics(engine, table, data):
+    """ add provided metrics to database """
+    met = table(
+        job_uuid=data['job_uuid'],
+        slurm_jobid=data['slurm_jobid'],
+        batch_id=data['batch_id'],
+        input_table=data['input_table'],
+        project=data['project'],
+        runner_failures=data['runner_failures'],
+        cromwell_status=data['cromwell_status'],
+        cromwell_failures=data['cromwell_failures'],
+        cromwell_finished_steps=data['cromwell_finished_steps'],
+        cromwell_todo_steps=data['cromwell_todo_steps'],
+        datetime_start=data['datetime_start'],
+        datetime_end=data['datetime_end'],
+        vcf_url=data['vcf_url'],
+        vcf_local_path=data['vcf_local_path'],
+        vcf_md5sum=data['vcf_md5sum'],
+        vcf_filesize=data['vcf_filesize'],
+        cwl_walltime=data['cwl_walltime'],
+        cwl_cpu_percentage=data['cwl_cpu_percentage'],
+        hostname=data['hostname'],
+        cwl_version=data['cwl_version'],
+        cromwell_version=data['cromwell_version'],
+        docker_version=data['docker_version'],
+        cwl_input_json=data['cwl_input_json'],
+        time_metrics_json=data['time_metrics_json'],
+        git_hash=data['git_hash'],
+        debug_path=data['debug_path'])
+    postgres.utils.create_table(engine, met)
+    postgres.utils.add_metrics(engine, met)
