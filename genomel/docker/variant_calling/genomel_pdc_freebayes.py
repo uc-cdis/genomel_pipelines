@@ -32,12 +32,23 @@ def docker_path_list(file_basename_list, search_dir):
     with open(file_basename_list, 'r') as fhandle:
         basename = fhandle.readlines()
         for i in basename:
-            ipath = search_files(i.rstrip(), root_dir=search_dir)
+            ipath = search_files(
+                os.path.basename(i.rstrip()),
+                root_dir=search_dir
+            )
             docker_path.append(ipath)
     with open('docker_path.list', 'w') as ohandle:
         for path in docker_path:
             ohandle.write('{}\n'.format(path))
     return os.path.abspath('docker_path.list')
+
+def get_bam_path_list(bam_list, cromwell=False):
+    '''get bam files path'''
+    if not cromwell:
+        return bam_list
+    search_dir = '/cromwell-executions/'
+    new_bam_list = docker_path_list(bam_list, search_dir)
+    return new_bam_list
 
 def is_nat(pos):
     '''Checks that a value is a natural number.'''
@@ -91,12 +102,11 @@ def freebayes_template(cmd_dict, nchunks):
     ]
     cmd_str = ' '.join(cmd_list)
     template = string.Template(cmd_str)
-    search_dir = cmd_dict[cmd_dict['cwl_engine']]
     for i, bed_file in enumerate(get_region(cmd_dict['bed_file'], nchunks)):
         output = cmd_dict['job_uuid'] + '.' + str(i) + '.vcf'
         cmd = template.substitute(
             dict(
-                BAM_LIST=docker_path_list(cmd_dict['bam_list'], search_dir),
+                BAM_LIST=get_bam_path_list(cmd_dict['bam_list'], cromwell=cmd_dict['cromwell']),
                 REF=cmd_dict['ref'],
                 BED=bed_file,
                 OUTPUT=output
@@ -135,10 +145,9 @@ def main():
                         type=is_nat, \
                         default=30)
     parser.add_argument('-e', \
-                        '--cwl_engine', \
-                        required=True, \
-                        choices=['cwltool', 'cromwell'], \
-                        help='Choose CWL engine')
+                        '--cromwell_engine', \
+                        action="store_true", \
+                        help='If specified, it will search files in docker env.')
 
     args = parser.parse_args()
     input_dict = {
@@ -146,9 +155,7 @@ def main():
         'bam_list': args.bam_list,
         'ref': args.reference,
         'bed_file': args.bed_file,
-        'cwl_engine': args.cwl_engine,
-        'cwltool': '/var/',
-        'cromwell': '/cromwell-executions/'
+        'cromwell': args.cromwell_engine
     }
     nchunks = args.number_of_chunks
     nthreads = args.number_of_threads

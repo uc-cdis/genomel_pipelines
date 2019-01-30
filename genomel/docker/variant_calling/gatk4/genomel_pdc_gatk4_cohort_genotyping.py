@@ -33,12 +33,23 @@ def docker_path_list(file_basename_list, search_dir):
     with open(file_basename_list, 'r') as fhandle:
         basename = fhandle.readlines()
         for i in basename:
-            ipath = search_files(i.rstrip(), root_dir=search_dir)
+            ipath = search_files(
+                os.path.basename(i.rstrip()),
+                root_dir=search_dir
+            )
             docker_path.append(ipath)
     with open('docker_path.list', 'w') as ohandle:
         for path in docker_path:
             ohandle.write('{}\n'.format(path))
     return os.path.abspath('docker_path.list')
+
+def get_bam_path_list(bam_list, cromwell=False):
+    '''get bam files path'''
+    if not cromwell:
+        return bam_list
+    search_dir = '/cromwell-executions/'
+    new_bam_list = docker_path_list(bam_list, search_dir)
+    return new_bam_list
 
 def is_nat(pos):
     '''Checks that a value is a natural number.'''
@@ -106,7 +117,7 @@ class GenomelGATK(object):
         self.nthreads = cmd_dict['nthreads']
         self.nchunks = cmd_dict['nchunks']
         self.importdb_output_dict = dict()
-        self.search_dir = cmd_dict[cmd_dict['cwl_engine']]
+        self.cromwell = cmd_dict['cromwell']
 
     def cohort_genotyping(self):
         '''GATK4 GenotypeGVCFs executor'''
@@ -168,7 +179,7 @@ class GenomelGATK(object):
         '''prepare sample-path map'''
         sample_map = dict()
         gvcf_path_list = []
-        gvcf_docker_path = docker_path_list(self.gvcf_list, self.search_dir)
+        gvcf_docker_path = get_bam_path_list(self.gvcf_list, cromwell=self.cromwell)
         with open(gvcf_docker_path, 'r') as fhandle:
             lines = fhandle.readlines()
             for path in lines:
@@ -249,10 +260,9 @@ def main():
                         type=is_nat, \
                         default=30)
     parser.add_argument('-e', \
-                        '--cwl_engine', \
-                        required=True, \
-                        choices=['cwltool', 'cromwell'], \
-                        help='Choose CWL engine')
+                        '--cromwell_engine', \
+                        action="store_true", \
+                        help='If specified, it will search files in docker env.')
 
     args = parser.parse_args()
     input_dict = {
@@ -262,9 +272,7 @@ def main():
         'bed_file': args.bed_file,
         'nthreads': args.number_of_threads,
         'nchunks': args.number_of_chunks,
-        'cwl_engine': args.cwl_engine,
-        'cwltool': '/var/',
-        'cromwell': '/cromwell-executions/'
+        'cromwell': args.cromwell_engine
     }
     genomel_gatk = GenomelGATK(input_dict)
     genomel_gatk.importdb()

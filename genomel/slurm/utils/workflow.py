@@ -91,7 +91,7 @@ def run_cohort_genotyping(args):
     '''run cohort genotyping'''
     cohort_template_json = os.path.join(
         os.path.dirname(os.path.dirname(os.path.realpath(__file__))),
-        "etc/cohort_genotyping_test.json"
+        "etc/cohort_genotyping.json"
     )
     input_data = utils.pipeline.load_json(cohort_template_json)
     input_data['job_uuid'] = args.job_uuid
@@ -545,7 +545,7 @@ class GenomelCohort(object):
         os.chdir(self.workflow_meta['basedir'])
         logger = self._log()
         # make sure cwltool in the path
-        os.environ['PATH'] = "/home/ubuntu/.virtualenvs/p2/bin/:$PATH"
+        # os.environ['PATH'] = "/home/ubuntu/.virtualenvs/p2/bin/:$PATH"
         # cromwell cmd
         cmd = [
             '/usr/bin/java',

@@ -17,7 +17,7 @@ inputs:
   reference:
     type: File
     secondaryFiles: [.fai, ^.dict]
-  cwl_engine: string
+  cromwell_engine: boolean
 
   ###GATK4
   gvcf_files:
@@ -72,7 +72,7 @@ steps:
       output_prefix:
         source: bed_files
         valueFrom: $(self.nameroot)
-      cwl_engine: cwl_engine
+      cromwell_engine: cromwell_engine
     out: [time_metrics_from_gatk4_cohort_genotyping,
           time_metrics_from_picard_sortvcf,
           time_metrics_from_selectvariants,
@@ -92,7 +92,7 @@ steps:
       output_prefix:
         source: bed_files
         valueFrom: $(self.nameroot)
-      cwl_engine: cwl_engine
+      cromwell_engine: cromwell_engine
     out: [time_metrics_from_freebayes,
           time_metrics_from_picard_sortvcf,
           time_metrics_from_selectvariants,

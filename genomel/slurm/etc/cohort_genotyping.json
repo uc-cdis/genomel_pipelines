@@ -32,5 +32,5 @@
   "upload_s3_profile": "genomel-cleversafe",
   "upload_s3_endpoint": "https://atwood-accessors.osdc.io",
   "upload_s3_bucket": "XX_BUCKET_XX",
-  "cwl_engine": "cromwell"
+  "cromwell_engine": true
 }
