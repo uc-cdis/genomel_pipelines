@@ -46,8 +46,8 @@ arguments:
       --leftAlignAndTrim
       --genomeFA "$(inputs.reference.path)"
       --runEnsembleMerger
-      --singleCallerVcfNames "hc,fb"
-      --singleCallerPriority "hc,fb"
+      --singleCallerVcfNames "gatk4,freebayes"
+      --singleCallerPriority "gatk4,freebayes"
       --convertToStandardVcf
       "$(inputs.gatk4_vcf.path);$(inputs.freebayes_vcf.path)"
       "$(inputs.output_name)"
