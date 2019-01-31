@@ -123,7 +123,7 @@ steps:
     out: [sorted_vcf, time_metrics]
 
   variant_ensemble:
-    run: ./cwl/tools/variant_calling/bcbio_variant_ensemble.cwl
+    run: ./cwl/tools/variant_calling/vArmyKnife_variant_ensemble.cwl
     in:
       job_uuid: job_uuid
       reference: reference
