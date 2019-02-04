@@ -6,7 +6,7 @@ General workflow:
 
 GenoMEL individual aliquot workflow:
 
-* [Individual CWL workflow runner](https://github.com/uc-cdis/cwl/blob/master/genomel/cwl/genomel_individual_workflow.cwl "Individual CWL workflow runner")
+* [Individual CWL workflow runner](https://github.com/uc-cdis/cwl/blob/master/genomel/genomel_individual_workflow.cwl "Individual CWL workflow runner")
 
 * [Individual CWL runner input json template](https://github.com/uc-cdis/cwl/blob/master/genomel/slurm/etc/template.json "Individual CWL runner input json template")
 
@@ -16,7 +16,7 @@ GenoMEL individual aliquot workflow:
 
 GenoMEL cohort genotyping workflow
 
-* [Cohort level CWL workflow runner](https://github.com/uc-cdis/cwl/blob/master/genomel/cwl/genomel_cohort_genotyping.cwl "Cohort level CWL workflow runner")
+* [Cohort level CWL workflow runner](https://github.com/uc-cdis/cwl/blob/master/genomel/genomel_cohort_genotyping.cwl "Cohort level CWL workflow runner")
 
 * [Cohort level CWL runner input json template](https://github.com/uc-cdis/cwl/blob/master/genomel/slurm/etc/cohort_genotyping.json "Cohort level CWL runner input json template")
 
