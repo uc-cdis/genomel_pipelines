@@ -13,4 +13,6 @@ RUN apt-get update \
     && tar xf htslib-1.9.tar.bz2 && rm /opt/htslib-1.9.tar.bz2 && cd /opt/htslib-1.9/ && make && make install \
     && cd /opt/ && wget https://github.com/samtools/bcftools/releases/download/1.9/bcftools-1.9.tar.bz2 \
     && tar xf bcftools-1.9.tar.bz2 && rm /opt/bcftools-1.9.tar.bz2 && cd /opt/bcftools-1.9/ && make && make install \
+    && cd /opt/ && wget https://github.com/hartleys/vArmyKnife/raw/master/vArmyKnife.2.2.87.tar.gz \
+    && tar xf vArmyKnife.2.2.87.tar.gz && rm /opt/vArmyKnife.2.2.87.tar.gz \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
