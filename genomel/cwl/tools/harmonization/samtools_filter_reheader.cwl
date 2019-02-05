@@ -14,6 +14,7 @@ requirements:
 inputs:
   job_uuid: string
   new_header: File
+  interval_bed: File
   bam: File
 
 stdout: $(inputs.job_uuid + '.reheadered.bam')
@@ -26,12 +27,13 @@ outputs:
   time_metrics:
     type: File
     outputBinding:
-      glob: $(inputs.job_uuid + '.SamtoolsReheader' + '.time.json')
+      glob: $(inputs.job_uuid + '.SamtoolsFilter_Reheader' + '.time.json')
 
 baseCommand: []
 arguments:
   - shellQuote: False
     valueFrom: >-
       /usr/bin/time -f "{\\"real_time\\": \\"%E\\", \\"user_time\\": %U, \\"system_time\\": %S, \\"wall_clock\\": %e, \\"maximum_resident_set_size\\": %M, \\"average_total_mem\\": %K, \\"percent_of_cpu\\": \\"%P\\"}"
-      -o $(inputs.job_uuid + '.SamtoolsReheader' + '.time.json')
-      samtools reheader $(inputs.new_header.path) $(inputs.bam.path)
+      -o $(inputs.job_uuid + '.SamtoolsFilter_Reheader' + '.time.json')
+      samtools view -@ 32 -Shb -f 3 -L $(inputs.interval_bed.path) $(inputs.bam.path) -o $(inputs.bam.nameroot).filtered.bam
+      && samtools reheader $(inputs.new_header.path) $(inputs.bam.nameroot).filtered.bam && rm $(inputs.bam.nameroot).filtered.bam

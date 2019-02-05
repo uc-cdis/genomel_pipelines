@@ -69,7 +69,7 @@ steps:
     out: [bam_new_header]
 
   bam_reheader:
-    run: ../../tools/harmonization/samtools_reheader.cwl
+    run: ../../tools/harmonization/samtools_filter_reheader.cwl
     in:
       job_uuid: job_uuid
       new_header: get_bam_new_header/bam_new_header
