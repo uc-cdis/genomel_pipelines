@@ -3,7 +3,7 @@ import re
 import os
 import argparse
 
-def create_new_header(old_header, problem_rg, new_rg):
+def create_new_header(old_header, aliquot_id):
     '''create new header'''
     with open(old_header, 'r') as fhandle:
         old_header = fhandle.readlines()
@@ -12,10 +12,18 @@ def create_new_header(old_header, problem_rg, new_rg):
                 with open('new_header', 'a') as ohandle:
                     ohandle.write(line)
             else:
-                for o_rg, n_rg in zip(problem_rg, new_rg):
-                    new_line = re.sub(r"\b{}\t\b".format(o_rg), "{}\t".format(n_rg), line)
-                    with open('new_header', 'a') as ohandle:
-                        ohandle.write(new_line)
+                old_line = line.rstrip().split('\t')
+                for tab in old_line:
+                    if tab.startswith('ID:'):
+                        old_rg = tab.replace('ID:', '')
+                        new_rg = aliquot_id + '_' + old_rg
+                        new_line = re.sub(
+                            r"\b{}\t\b".format(old_rg),
+                            "{}\t".format(new_rg),
+                            line
+                        )
+                        with open('new_header', 'a') as ohandle:
+                            ohandle.write(new_line)
     return os.path.abspath('new_header')
 
 def get_args():
@@ -28,18 +36,13 @@ def get_args():
     required.add_argument('--old_header', \
                           required=True, \
                           help='Old header')
-    required.add_argument('--problem_rg', \
+    required.add_argument('--aliquot_id', \
                            required=True, \
-                           nargs='+', \
-                           help='Problematic read group ids.')
-    required.add_argument('--new_rg', \
-                           required=True, \
-                           nargs='+', \
-                           help='New read group ids.')
+                           help='Aliquot id of the bam.')
     return parser.parse_args()
 
 if __name__ == '__main__':
     # Get args
     args = get_args()
     # Run pipeline
-    create_new_header(args.old_header, args.problem_rg, args.new_rg)
+    create_new_header(args.old_header, args.aliquot_id)

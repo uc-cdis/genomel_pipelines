@@ -14,19 +14,7 @@ requirements:
 inputs:
   old_header:
     type: File
-  readgroups_to_replace:
-    type: string[]
-    inputBinding:
-      prefix: --problem_rg
-      position: 98
-      shellQuote: false
-  new_readgroups:
-    type: string[]
-    inputBinding:
-      prefix: --new_rg
-      position: 99
-      shellQuote: false
-
+  aliquot_id: string
 outputs:
   bam_new_header:
     type: File
@@ -36,5 +24,5 @@ outputs:
 baseCommand: []
 arguments:
   - valueFrom: >-
-      python /opt/rg_fix.py --old_header $(inputs.old_header.path)
+      python /opt/rg_fix.py --old_header $(inputs.old_header.path) --aliquot_id $(inputs.aliquot_id)
     shellQuote: False
