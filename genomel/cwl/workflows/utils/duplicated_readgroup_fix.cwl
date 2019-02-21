@@ -17,8 +17,7 @@ inputs:
   s3_endpoint: string
   bam_url: string
   bam_md5: string
-  readgroups_to_replace: string[]
-  new_readgroups: string[]
+  aliquot_id: string
   job_uuid: string
   upload_bam_url: string
 
@@ -52,8 +51,7 @@ steps:
     run: ../../tools/harmonization/readgroup_replace.cwl
     in:
       old_header: get_bam_header/bam_header
-      readgroups_to_replace: readgroups_to_replace
-      new_readgroups: new_readgroups
+      aliquot_id: aliquot_id
     out: [bam_new_header]
 
   samtools_reheader:
