@@ -27,7 +27,7 @@ outputs:
     outputSource: samtools_index/bam_with_index
   time_metrics:
     type: File
-    outputSource: samtools_reheader/time_metrics
+    outputSource: replace_readgroup/time_metrics
 
 steps:
   download_bam:
@@ -47,25 +47,19 @@ steps:
       bam: download_bam/verified_file
     out: [bam_header]
 
-  create_new_header:
+  replace_readgroup:
     run: ../../tools/harmonization/readgroup_replace.cwl
     in:
       old_header: get_bam_header/bam_header
       aliquot_id: aliquot_id
-    out: [bam_new_header]
-
-  samtools_reheader:
-    run: ../../tools/harmonization/samtools_reheader.cwl
-    in:
+      input_bam: download_bam/verified_file
       job_uuid: job_uuid
-      new_header: create_new_header/bam_new_header
-      bam: download_bam/verified_file
-    out: [reheadered_bam, time_metrics]
+    out: [rg_fixed_bam, time_metrics]
 
   samtools_index:
     run: ../../tools/harmonization/samtools_index.cwl
     in:
-      input_bam_path: samtools_reheader/reheadered_bam
+      input_bam_path: replace_readgroup/rg_fixed_bam
     out: [bam_with_index]
 
   upload_reheadered_bam:
@@ -73,7 +67,7 @@ steps:
     in:
       aws_config: aws_config
       aws_shared_credentials: aws_shared_credentials
-      input: samtools_reheader/reheadered_bam
+      input: replace_readgroup/rg_fixed_bam
       s3uri: upload_bam_url
       s3_profile: s3_profile
       s3_endpoint: s3_endpoint
