@@ -13,6 +13,10 @@ requirements:
     listing:
       - entry: $(inputs.input_bam)
         entryname: $(inputs.input_bam.basename)
+  - class: ResourceRequirement
+    coresMin: 1
+    coresMax: 1
+    ramMin: 100MB
 
 inputs:
   input_bam:

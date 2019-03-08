@@ -9,6 +9,10 @@ requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement
     dockerPull: alpine
+  - class: ResourceRequirement
+    coresMin: 1
+    coresMax: 1
+    ramMin: 100MB
 
 inputs:
   file: File
