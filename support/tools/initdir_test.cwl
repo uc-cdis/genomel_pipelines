@@ -8,7 +8,7 @@ requirements:
   - class: InlineJavascriptRequirement
   - class: ShellCommandRequirement
   - class: DockerRequirement
-    dockerPull: quay.io/cdis/samtools@sha256:8e70e8ace2b94cf6741602feaddee24fefc914675c58f539cade6c390b2fab4d
+    dockerPull: quay.io/cdis/samtools:dev_cloud_support
   - class: InitialWorkDirRequirement
     listing:
       - entry: $(inputs.input_bam)
