@@ -1,6 +1,6 @@
 {
   "job_uuid": "XX_JOB_ID_XX",
-  "bed_files": [{"class": "File", "path": "/mnt/cephfs/reference/test.chrM.bed"}],
+  "bed_files": [{"class": "File", "path": "/mnt/cephfs/reference/test.bed"}],
   "reference": {"class": "File", "path": "/mnt/cephfs/reference/hg19_canonical_correct_chr_order.fa"},
   "gvcf_files": ["XX_GVCF_FILES_XX"],
   "gatk4_genotyping_thread_count": "XX_GG_THREADS_XX",
