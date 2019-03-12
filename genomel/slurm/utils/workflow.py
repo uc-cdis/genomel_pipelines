@@ -91,7 +91,7 @@ def run_cohort_genotyping(args):
     '''run cohort genotyping'''
     cohort_template_json = os.path.join(
         os.path.dirname(os.path.dirname(os.path.realpath(__file__))),
-        "etc/cohort_genotyping.json"
+        "etc/cohort_genotyping_test.json"
     )
     input_data = utils.pipeline.load_json(cohort_template_json)
     input_data['job_uuid'] = args.job_uuid
