@@ -566,6 +566,9 @@ class GenomelCohort(object):
                 and not self.workflow_meta['runner_failure']:
                 # calculate cpu percentage
                 self._calculate_cwl_metadata()
+                tar_exit = self._tar_log(logger)
+                if tar_exit:
+                    self.workflow_meta['runner_failure'] = 'tar_logs_fails'
                 # upload log files
                 upload_exit = self._upload_log_files(logger)
                 if upload_exit:
