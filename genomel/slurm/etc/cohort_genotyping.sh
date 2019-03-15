@@ -21,7 +21,7 @@ repository="git@github.com:uc-cdis/genomel_pipelines.git"
 
 cd $basedir
 
-sudo git clone -b feat/prod $repository genomel_pipelines
+sudo git clone $repository genomel_pipelines
 sudo chown ubuntu:ubuntu -R genomel_pipelines
 
 /home/ubuntu/.virtualenvs/p2/bin/python \
