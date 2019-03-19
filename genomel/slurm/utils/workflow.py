@@ -152,6 +152,69 @@ def run_cohort_genotyping(args):
     )
     genomel.run()
 
+def run_cohort_gatk(args):
+    '''run cohort gatk4'''
+    cohort_template_json = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.realpath(__file__))),
+        "etc/cohort_gatk.dev.json"
+    )
+    input_data = utils.pipeline.load_json(cohort_template_json)
+    input_data['job_uuid'] = args.job_uuid
+    input_data['gvcf_files'] = utils.pipeline.create_cwl_array_input(args.gvcf_files_manifest)
+    input_data['gatk4_genotyping_thread_count'] = args.gatk4_genotyping_thread_count
+    input_data['number_of_chunks_for_gatk'] = args.number_of_chunks_for_gatk
+    input_data['upload_s3_bucket'] = os.path.join(
+        args.upload_s3_bucket,
+        args.project,
+        args.batch_id,
+        args.job_uuid
+    )
+    workflow_meta = {
+        'basedir': args.basedir,
+        'project': args.project,
+        'batch_id': args.batch_id,
+        'job_uuid': args.job_uuid,
+        'input_table': args.input_table,
+        'cromwell_config': os.path.join(
+            os.path.dirname(
+                os.path.dirname(
+                    os.path.dirname(
+                        os.path.realpath(__file__)
+                    )
+                )
+            ),
+            "cromwell/cromwell.dev.conf"
+        ),
+        'cromwell_jar_path': args.cromwell_jar_path,
+        'cwlwf': os.path.join(
+            os.path.dirname(
+                os.path.dirname(
+                    os.path.dirname(
+                        os.path.realpath(__file__)
+                    )
+                )
+            ),
+            "genomel_cohort_gatk4.cwl"
+        ),
+        'cwl_pack': os.path.join(
+            os.path.dirname(
+                os.path.dirname(
+                    os.path.dirname(
+                        os.path.realpath(__file__)
+                    )
+                )
+            ),
+            "cwl.zip"
+        )
+    }
+    genomel = GenomelCohort(
+        workflow_meta=workflow_meta,
+        input_data=input_data,
+        psql_conf=args.psql_conf
+    )
+    genomel.run()
+
+
 class GenomelIndiv(object):
     '''this class describes GenoMEL-Bionimbus Protected Data Cloud pipelines'''
     def __init__(self, workflow_meta, input_data, psql_conf):
@@ -530,11 +593,11 @@ class GenomelCohort(object):
         self.workflow_meta['cromwell_finished_steps'] = None
         self.workflow_meta['cromwell_todo_steps'] = None
         self.workflow_meta['runner_failure'] = None
-        self.workflow_meta['output_vcf'] = None
-        self.workflow_meta['output_vcf_url'] = None
-        self.workflow_meta['output_vcf_local'] = None
-        self.workflow_meta['output_vcf_md5sum'] = None
-        self.workflow_meta['output_vcf_filesize'] = None
+        self.workflow_meta['output_vcf'] = list()
+        self.workflow_meta['output_vcf_url'] = list()
+        self.workflow_meta['output_vcf_local'] = list()
+        self.workflow_meta['output_vcf_md5sum'] = list()
+        self.workflow_meta['output_vcf_filesize'] = list()
         self.workflow_meta['pipeline_time'] = 0.0
         self.workflow_meta['pipeline_avg_cpu_percentage'] = 0
         self.cwl_steps = get_cwl_steps(self.workflow_meta['cwlwf'])
@@ -705,17 +768,21 @@ class GenomelCohort(object):
     def _get_output_meta(self):
         '''get output vcf'''
         for key, value in self.workflow_meta['cromwell_cwl_outputs'].items():
-            if key.endswith('variant_ensemble_vcf'):
-                self.workflow_meta['output_vcf_local'] = value['location']
-                self.workflow_meta['output_vcf_filesize'] = value['size']
-        self.workflow_meta['output_vcf'] = os.path.basename(self.workflow_meta['output_vcf_local'])
-        self.workflow_meta['output_vcf_md5sum'] = utils.pipeline.get_md5(
-            self.workflow_meta['output_vcf_local']
-        )
-        self.workflow_meta['output_vcf_url'] = os.path.join(
-            self.workflow_meta['base_s3_loc'],
-            self.workflow_meta['output_vcf']
-        )
+            if key.endswith('vcf'):
+                self.workflow_meta['output_vcf_local'].append(value['location'])
+                self.workflow_meta['output_vcf_filesize'].append(value['size'])
+                self.workflow_meta['output_vcf'].append(
+                    os.path.basename(value['location'])
+                )
+                self.workflow_meta['output_vcf_md5sum'].append(
+                    utils.pipeline.get_md5(value['location'])
+                )
+                self.workflow_meta['output_vcf_url'].append(
+                    os.path.join(
+                        self.workflow_meta['base_s3_loc'],
+                        os.path.basename(value['location'])
+                    )
+                )
 
     def _process_job_success(self):
         '''process when job successes'''
