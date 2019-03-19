@@ -156,7 +156,7 @@ def run_cohort_gatk(args):
     '''run cohort gatk4'''
     cohort_template_json = os.path.join(
         os.path.dirname(os.path.dirname(os.path.realpath(__file__))),
-        "etc/cohort_gatk.dev.json"
+        "etc/cohort_gatk.prod.json"
     )
     input_data = utils.pipeline.load_json(cohort_template_json)
     input_data['job_uuid'] = args.job_uuid
@@ -183,7 +183,7 @@ def run_cohort_gatk(args):
                     )
                 )
             ),
-            "cromwell/cromwell.dev.conf"
+            "cromwell/cromwell.conf"
         ),
         'cromwell_jar_path': args.cromwell_jar_path,
         'cwlwf': os.path.join(
