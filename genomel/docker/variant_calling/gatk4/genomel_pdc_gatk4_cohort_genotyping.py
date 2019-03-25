@@ -276,8 +276,16 @@ def main():
         'cromwell': args.cromwell_engine
     }
     genomel_gatk = GenomelGATK(input_dict)
-    genomel_gatk.importdb()
+    genomel_gatk.importdb() # until this step, my results are expected.
     genomel_gatk.cohort_genotyping()
+    '''
+    cohort_genotyping() should have identical regions to importdb().
+    it should run the same amount of subprocesses comparing to importdb().
+    however, in real prod, some of the regions (randomly) are processed twice,
+    when they are complete (exit-code 0) at first try.
+    i'm not sure if it's a log issue, or real processing issue, since i'm only
+    able to detect the errors after the whole task.
+    '''
 
 if __name__ == '__main__':
     main()
