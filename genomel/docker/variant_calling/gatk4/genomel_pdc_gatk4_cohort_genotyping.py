@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 '''Internal multithreading for GATK4.0.11 Cohort Genotyping, GenoMEL-PDC'''
-# need review
 
 import os
 import sys
@@ -153,7 +152,7 @@ class GenomelGATK(object):
     def _prepare_importdb_cmd(self):
         '''prepare importdb cmd'''
         cmd_list = [
-            '/opt/gatk-4.0.11.0/gatk',
+            '/opt/gatk-4.1.0.0/gatk',
             '--java-options "-Xmx100g -Xms4g"',
             'GenomicsDBImport',
             '--sample-name-map', '${MAP}',
@@ -207,7 +206,7 @@ class GenomelGATK(object):
     def _prepare_genoytping_cmd(self):
         '''prepare cohort genotyping cmd'''
         cmd_list = [
-            '/opt/gatk-4.0.11.0/gatk',
+            '/opt/gatk-4.1.0.0/gatk',
             '--java-options "-Xmx4g -Xms4g"',
             'GenotypeGVCFs',
             '-L', '${REGION}',
@@ -233,7 +232,7 @@ class GenomelGATK(object):
 
 def main():
     '''main'''
-    parser = argparse.ArgumentParser('GenoMEL-PDC GATK4-0-11 Cohort Genotyping.')
+    parser = argparse.ArgumentParser('GenoMEL-PDC GATK4-1-0 Cohort Genotyping.')
     # Required flags.
     parser.add_argument('--gvcf_path', \
                         required=True, \
@@ -276,16 +275,8 @@ def main():
         'cromwell': args.cromwell_engine
     }
     genomel_gatk = GenomelGATK(input_dict)
-    genomel_gatk.importdb() # until this step, my results are expected.
+    genomel_gatk.importdb()
     genomel_gatk.cohort_genotyping()
-    '''
-    cohort_genotyping() should have identical regions to importdb().
-    it should run the same amount of subprocesses comparing to importdb().
-    however, in real prod, some of the regions (randomly) are processed twice,
-    when they are complete (exit-code 0) at first try.
-    i'm not sure if it's a log issue, or real processing issue, since i'm only
-    able to detect the errors after the whole task.
-    '''
 
 if __name__ == '__main__':
     main()
