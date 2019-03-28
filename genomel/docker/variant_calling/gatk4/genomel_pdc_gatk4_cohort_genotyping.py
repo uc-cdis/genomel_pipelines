@@ -152,7 +152,7 @@ class GenomelGATK(object):
     def _prepare_importdb_cmd(self):
         '''prepare importdb cmd'''
         cmd_list = [
-            '/opt/gatk-4.0.11.0/gatk',
+            '/opt/gatk-4.1.0.0/gatk',
             '--java-options "-Xmx100g -Xms4g"',
             'GenomicsDBImport',
             '--sample-name-map', '${MAP}',
@@ -206,7 +206,7 @@ class GenomelGATK(object):
     def _prepare_genoytping_cmd(self):
         '''prepare cohort genotyping cmd'''
         cmd_list = [
-            '/opt/gatk-4.0.11.0/gatk',
+            '/opt/gatk-4.1.0.0/gatk',
             '--java-options "-Xmx4g -Xms4g"',
             'GenotypeGVCFs',
             '-L', '${REGION}',
@@ -232,7 +232,7 @@ class GenomelGATK(object):
 
 def main():
     '''main'''
-    parser = argparse.ArgumentParser('GenoMEL-PDC GATK4-0-11 Cohort Genotyping.')
+    parser = argparse.ArgumentParser('GenoMEL-PDC GATK4-1-0 Cohort Genotyping.')
     # Required flags.
     parser.add_argument('--gvcf_path', \
                         required=True, \

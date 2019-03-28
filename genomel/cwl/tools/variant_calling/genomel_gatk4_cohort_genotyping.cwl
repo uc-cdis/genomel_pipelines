@@ -8,7 +8,7 @@ requirements:
   - class: InlineJavascriptRequirement
   - class: ShellCommandRequirement
   - class: DockerRequirement
-    dockerPull: registry.gitlab.com/uc-cdis/genomel-exome-variant-detection/gatk4_0_11:2.0
+    dockerPull: registry.gitlab.com/uc-cdis/genomel-exome-variant-detection/gatk4_1_0:1.0
   - class: InitialWorkDirRequirement
     listing:
       - entryname: "gvcf_path.list"

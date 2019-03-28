@@ -1,0 +1,14 @@
+{
+  "job_uuid": "XX_JOB_ID_XX",
+  "bed_files": [{"class": "File", "path": "/mnt/glusterfs/genomel-cohort-cwl/test.bed"}],
+  "reference": {"class": "File", "path": "/mnt/glusterfs/genomel-cohort-cwl/hg19_canonical_correct_chr_order.fa"},
+  "gvcf_files": ["XX_GVCF_FILES_XX"],
+  "gatk4_genotyping_thread_count": "XX_GG_THREADS_XX",
+  "number_of_chunks_for_gatk": "XX_GG_CHUNKS_XX",
+  "aws_config": {"class": "File", "path": "/home/ubuntu/.aws/config"},
+  "aws_shared_credentials": {"class": "File", "path": "/home/ubuntu/.aws/credentials"},
+  "upload_s3_profile": "genomel-cleversafe",
+  "upload_s3_endpoint": "https://atwood-accessors.osdc.io",
+  "upload_s3_bucket": "XX_BUCKET_XX",
+  "cromwell_engine": true
+}
