@@ -218,7 +218,7 @@ def run_cohort_freebayes(args):
     '''run cohort genotyping'''
     cohort_template_json = os.path.join(
         os.path.dirname(os.path.dirname(os.path.realpath(__file__))),
-        "etc/cohort_freebayes.prod.json"
+        "etc/cohort_freebayes.json"
     )
     input_data = utils.pipeline.load_json(cohort_template_json)
     input_data['job_uuid'] = args.job_uuid
