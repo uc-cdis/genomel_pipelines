@@ -1,0 +1,15 @@
+{
+    "job_uuid": "XX_JOB_ID_XX",
+    "bed_files": [{"class": "File", "path": "/data/reference/UCSC_NV3_250padded_corrected.V3exome.bed"}],
+    "reference": {"class": "File", "path": "/data/reference/hg19_canonical_correct_chr_order.fa"},
+    "bam": {"class": "File", "path": "/data2/genomel_merge/genomel.merge.bam"},
+    "freebayes_thread_count": "XX_FB_THREADS_XX",
+    "number_of_chunks_for_freebayes": "XX_FB_CHUNKS_XX",
+    "aws_config": {"class": "File", "path": "/home/ubuntu/.aws/config"},
+    "aws_shared_credentials": {"class": "File", "path": "/home/ubuntu/.aws/credentials"},
+    "upload_s3_profile": "genomel-cleversafe",
+    "upload_s3_endpoint": "https://bionimbus-objstore-cs.opensciencedatacloud.org/",
+    "upload_s3_bucket": "XX_BUCKET_XX",
+    "cromwell_engine": true
+  }
+  

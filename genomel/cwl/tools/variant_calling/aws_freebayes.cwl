@@ -9,30 +9,36 @@ requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement
     dockerPull: registry.gitlab.com/uc-cdis/genomel-exome-variant-detection/genomel_variant_calling:5.0
+  - class: ResourceRequirement
+    coresMin: 30
 
 inputs:
-  job_uuid: string
-  input_vcf:
+  bam:
     type: File
-    secondaryFiles: [.tbi]
-
+    secondaryFiles: [^.bai]
+  job_uuid: string
   reference:
     type: File
     secondaryFiles: [.fai, ^.dict]
-
-  output_prefix: string
+  bed_file: File
+  thread_count: int
+  number_of_chunks: int
 
 outputs:
-  output_vcf:
+  vcf_list:
+    type: File[]
+    outputBinding:
+      glob: '*.vcf'
+
+  log_file:
     type: File
     outputBinding:
-      glob: $(inputs.output_prefix + '.filtered.site_only.vcf.gz')
-    secondaryFiles: [.tbi]
+      glob: '*.log'
 
   time_metrics:
     type: File
     outputBinding:
-      glob: $(inputs.job_uuid + '.gatk3_selectvariants.time.json')
+      glob: $(inputs.job_uuid + '.aws_freebayes.time.json')
 
 baseCommand: []
 arguments:
@@ -40,11 +46,7 @@ arguments:
     shellQuote: false
     valueFrom: >-
       /usr/bin/time -f "{\\"real_time\\": \\"%E\\", \\"user_time\\": %U, \\"system_time\\": %S, \\"wall_clock\\": %e, \\"maximum_resident_set_size\\": %M, \\"average_total_mem\\": %K, \\"percent_of_cpu\\": \\"%P\\"}"
-      -o $(inputs.job_uuid + '.gatk3_selectvariants.time.json')
-      java -Xmx100G -XX:ParallelGCThreads=30 -jar /opt/GenomeAnalysisTK.jar
-      -T SelectVariants --variant $(inputs.input_vcf.path)
-      -R $(inputs.reference.path)
-      -o $(inputs.output_prefix + '.filtered.site_only.vcf.gz')
-      -select "QUAL > 20.0"
-      -ef
-      -env
+      -o $(inputs.job_uuid + '.aws_freebayes.time.json')
+      python /opt/aws_freebayes.py
+      -b $(inputs.bam.path) -j $(inputs.job_uuid) -f $(inputs.reference.path)
+      -t $(inputs.bed_file.path) -n $(inputs.thread_count) -c $(inputs.number_of_chunks)
