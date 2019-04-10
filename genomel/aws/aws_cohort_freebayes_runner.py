@@ -28,9 +28,6 @@ def get_args():
     required.add_argument('--job_uuid', \
                           required=True, \
                           help='Job uuid')
-    required.add_argument('--bam_files_manifest', \
-                          required=True, \
-                          help='Manifest of all bam files')
     required.add_argument('--freebayes_thread_count', \
                           required=True, \
                           type=is_nat, \
