@@ -11,8 +11,8 @@ requirements:
 
 inputs:
   job_uuid: string
-  bam_files:
-    type: File[]
+  bam:
+    type: File
     secondaryFiles: [^.bai]
   reference:
     type: File
@@ -21,7 +21,6 @@ inputs:
   thread_count: int
   number_of_chunks: int
   output_prefix: string
-  cromwell_engine: boolean
 
 outputs:
   time_metrics_from_freebayes:
@@ -45,12 +44,11 @@ steps:
     run: ../../tools/variant_calling/aws_freebayes.cwl
     in:
       job_uuid: job_uuid
-      bam_files: bam_files
+      bam: bam
       reference: reference
       bed_file: bed_file
       thread_count: thread_count
       number_of_chunks: number_of_chunks
-      cromwell_engine: cromwell_engine
     out: [vcf_list, log_file, time_metrics]
 
   picard_sortvcf:

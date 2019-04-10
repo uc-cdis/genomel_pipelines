@@ -23,46 +23,6 @@ def setup_logging(level, log_name, log_filename):
     logger.addHandler(stream_handler)
     return logger
 
-def search_files(file_search_str, root_dir=os.getcwd(), abs_path=True, recurse=True):
-    '''search files'''
-    matches = []
-    if recurse:
-        for root, dirnames, filenames in os.walk(root_dir):
-            for filename in fnmatch.filter(filenames, file_search_str):
-                if abs_path:
-                    matches.append(os.path.join(root, filename))
-                else:
-                    matches.append(filename)
-    else:
-        matches = fnmatch.filter(os.listdir(), file_search_str)
-    if len(matches) == 1:
-        return matches[0]
-    return sorted(matches)
-
-def docker_path_list(file_basename_list, search_dir):
-    '''create docker path list'''
-    docker_path = []
-    with open(file_basename_list, 'r') as fhandle:
-        basename = fhandle.readlines()
-        for i in basename:
-            ipath = search_files(
-                os.path.basename(i.rstrip()),
-                root_dir=search_dir
-            )
-            docker_path.append(ipath)
-    with open('docker_path.list', 'w') as ohandle:
-        for path in docker_path:
-            ohandle.write('{}\n'.format(path))
-    return os.path.abspath('docker_path.list')
-
-def get_bam_path_list(bam_list, cromwell=False):
-    '''get bam files path'''
-    if not cromwell:
-        return bam_list
-    search_dir = '/cromwell-executions/'
-    new_bam_list = docker_path_list(bam_list, search_dir)
-    return new_bam_list
-
 def is_nat(pos):
     '''Checks that a value is a natural number.'''
     if int(pos) > 0:
@@ -105,11 +65,11 @@ def freebayes_template(cmd_dict, nchunks):
     '''cmd template'''
     cmd_list = [
         '/opt/freebayes/bin/freebayes',
-        '-L', '${BAM_LIST}',
+        '-b', '${BAM}',
         '-f', '${REF}',
         '-t', '${BED}',
         '-v', '${OUTPUT}',
-        '--use-best-n-alleles', '6'
+        '--use-best-n-alleles', '4'
     ]
     cmd_str = ' '.join(cmd_list)
     template = string.Template(cmd_str)
@@ -117,7 +77,7 @@ def freebayes_template(cmd_dict, nchunks):
         output = cmd_dict['job_uuid'] + '.' + str(i) + '.vcf'
         cmd = template.substitute(
             dict(
-                BAM_LIST=get_bam_path_list(cmd_dict['bam_list'], cromwell=cmd_dict['cromwell']),
+                BAM=cmd_dict['bam'],
                 REF=cmd_dict['ref'],
                 BED=bed_file,
                 OUTPUT=output
@@ -129,10 +89,10 @@ def main():
     '''main'''
     parser = argparse.ArgumentParser('GenoMEL-PDC Freebayes.')
     # Required flags.
-    parser.add_argument('-L', \
-                        '--bam_list', \
+    parser.add_argument('-b', \
+                        '--bam', \
                         required=True, \
-                        help='Input list with bam file paths.')
+                        help='Input merged bam file path.')
     parser.add_argument('-j', \
                         '--job_uuid', \
                         required=True, \
@@ -155,18 +115,13 @@ def main():
                         required=True, \
                         type=is_nat, \
                         default=30)
-    parser.add_argument('-e', \
-                        '--cromwell_engine', \
-                        action="store_true", \
-                        help='If specified, it will search files in docker env.')
 
     args = parser.parse_args()
     input_dict = {
         'job_uuid': args.job_uuid,
-        'bam_list': args.bam_list,
+        'bam': args.bam,
         'ref': args.reference,
-        'bed_file': args.bed_file,
-        'cromwell': args.cromwell_engine
+        'bed_file': args.bed_file
     }
     nchunks = args.number_of_chunks
     nthreads = args.number_of_threads

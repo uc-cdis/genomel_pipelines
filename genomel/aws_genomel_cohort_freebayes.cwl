@@ -17,11 +17,9 @@ inputs:
   reference:
     type: File
     secondaryFiles: [.fai, ^.dict]
-  cromwell_engine: boolean
-
   ###Freebayes
-  bam_files:
-    type: File[]
+  bam:
+    type: File
     secondaryFiles: [^.bai]
   freebayes_thread_count: int
   number_of_chunks_for_freebayes: int
@@ -51,7 +49,7 @@ steps:
     scatterMethod: dotproduct
     in:
       job_uuid: job_uuid
-      bam_files: bam_files
+      bam: bam
       reference: reference
       bed_file: bed_files
       thread_count: freebayes_thread_count
@@ -59,7 +57,6 @@ steps:
       output_prefix:
         source: bed_files
         valueFrom: $(self.nameroot)
-      cromwell_engine: cromwell_engine
     out: [time_metrics_from_freebayes,
           time_metrics_from_picard_sortvcf,
           time_metrics_from_selectvariants,
