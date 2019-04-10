@@ -214,6 +214,68 @@ def run_cohort_gatk(args):
     )
     genomel.run()
 
+def run_cohort_freebayes(args):
+    '''run cohort genotyping'''
+    cohort_template_json = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.realpath(__file__))),
+        "etc/cohort_freebayes.json"
+    )
+    input_data = utils.pipeline.load_json(cohort_template_json)
+    input_data['job_uuid'] = args.job_uuid
+    input_data['bed_files'] = utils.pipeline.create_cwl_array_input(args.bed_files_manifest)
+    input_data['bam_files'] = utils.pipeline.create_cwl_array_input(args.bam_files_manifest)
+    input_data['freebayes_thread_count'] = args.freebayes_thread_count
+    input_data['number_of_chunks_for_freebayes'] = args.number_of_chunks_for_freebayes
+    input_data['upload_s3_bucket'] = os.path.join(
+        args.upload_s3_bucket,
+        args.project,
+        args.batch_id,
+        args.job_uuid
+    )
+    workflow_meta = {
+        'basedir': args.basedir,
+        'project': args.project,
+        'batch_id': args.batch_id,
+        'job_uuid': args.job_uuid,
+        'input_table': args.input_table,
+        'cromwell_config': os.path.join(
+            os.path.dirname(
+                os.path.dirname(
+                    os.path.dirname(
+                        os.path.realpath(__file__)
+                    )
+                )
+            ),
+            "cromwell/cromwell.conf"
+        ),
+        'cromwell_jar_path': args.cromwell_jar_path,
+        'cwlwf': os.path.join(
+            os.path.dirname(
+                os.path.dirname(
+                    os.path.dirname(
+                        os.path.realpath(__file__)
+                    )
+                )
+            ),
+            "genomel_cohort_freebayes.cwl"
+        ),
+        'cwl_pack': os.path.join(
+            os.path.dirname(
+                os.path.dirname(
+                    os.path.dirname(
+                        os.path.realpath(__file__)
+                    )
+                )
+            ),
+            "cwl.zip"
+        )
+    }
+    genomel = GenomelCohort(
+        workflow_meta=workflow_meta,
+        input_data=input_data,
+        psql_conf=args.psql_conf
+    )
+    genomel.run()
 
 class GenomelIndiv(object):
     '''this class describes GenoMEL-Bionimbus Protected Data Cloud pipelines'''
