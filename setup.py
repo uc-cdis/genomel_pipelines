@@ -7,7 +7,7 @@ setup(
     version="1.0",
     install_requires=[
         "GitPython==2.1.11",
-        "PyYAML==3.12"
+        "PyYAML==4.2b1"
     ],
     packages=find_packages(),
 )
