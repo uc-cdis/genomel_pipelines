@@ -20,8 +20,8 @@ inputs:
   cromwell_engine: boolean
 
   ###Freebayes
-  bam_files:
-    type: File[]
+  bam:
+    type: File
     secondaryFiles: [^.bai]
   freebayes_thread_count: int
   number_of_chunks_for_freebayes: int
@@ -44,23 +44,23 @@ outputs:
 
 steps:
   freebayes_cohort_genotyping:
-    run: ./cwl/workflows/variant_calling/freebayes.cwl
+    run: ./cwl/workflows/variant_calling/aws_freebayes.cwl
     scatter: [bed_file, output_prefix]
     scatterMethod: dotproduct
     in:
       job_uuid: job_uuid
-      bam_files: bam_files
+      bam: bam
       reference: reference
       bed_file: bed_files
       thread_count: freebayes_thread_count
       number_of_chunks: number_of_chunks_for_freebayes
       output_prefix:
         source: bed_files
-        valueFrom: $(self.nameroot)
-      cromwell_engine: cromwell_engine
+        valueFrom: $(self.nameroot.split(".")[-1])
     out: [time_metrics_from_freebayes,
           time_metrics_from_picard_sortvcf,
           time_metrics_from_selectvariants,
+          log_file,
           freebayes_vcf]
 
   sort_freebayes:

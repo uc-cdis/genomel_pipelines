@@ -37,9 +37,6 @@ def get_args():
     required.add_argument('--bed_files_manifest', \
                           required=True, \
                           help='Manifest of all bed files')
-    required.add_argument('--bam_files_manifest', \
-                          required=True, \
-                          help='Manifest of all bam files')
     required.add_argument('--freebayes_thread_count', \
                           required=True, \
                           type=is_nat, \
