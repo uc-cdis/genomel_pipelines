@@ -10,15 +10,15 @@ job_uuid="{JOB_UUID}"
 input_table="{INPUT_TABLE}"
 psql_conf="/mnt/nfs/reference/postgres_config"
 bed_files_manifest="/mnt/nfs/cromwell_workdir/bed_files.list"
-freebayes_thread_count="15"
-number_of_chunks_for_freebayes="160"
+freebayes_thread_count="30"
+number_of_chunks_for_freebayes="450"
 upload_s3_bucket="s3://genomel/cohort_genotyping_output/"
 cromwell_jar_path="/mnt/nfs/cromwell_workdir/cromwell-36.jar"
 repository="git@github.com:uc-cdis/genomel_pipelines.git"
 
 cd $basedir
 
-sudo git clone -b chore/setup $repository genomel_pipelines
+sudo git clone -b $repository genomel_pipelines
 sudo chown ubuntu:ubuntu -R genomel_pipelines
 
 /home/ubuntu/.virtualenvs/p2/bin/python \
