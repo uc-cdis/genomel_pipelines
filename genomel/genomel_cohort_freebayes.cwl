@@ -56,7 +56,7 @@ steps:
       number_of_chunks: number_of_chunks_for_freebayes
       output_prefix:
         source: bed_files
-        valueFrom: $(self.nameroot.split(".")[-1])
+        valueFrom: $(self.nameroot)
     out: [time_metrics_from_freebayes,
           time_metrics_from_picard_sortvcf,
           time_metrics_from_selectvariants,
