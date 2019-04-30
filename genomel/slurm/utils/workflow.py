@@ -223,7 +223,6 @@ def run_cohort_freebayes(args):
     input_data = utils.pipeline.load_json(cohort_template_json)
     input_data['job_uuid'] = args.job_uuid
     input_data['bed_files'] = utils.pipeline.create_cwl_array_input(args.bed_files_manifest)
-    input_data['bam_files'] = utils.pipeline.create_cwl_array_input(args.bam_files_manifest)
     input_data['freebayes_thread_count'] = args.freebayes_thread_count
     input_data['number_of_chunks_for_freebayes'] = args.number_of_chunks_for_freebayes
     input_data['upload_s3_bucket'] = os.path.join(
