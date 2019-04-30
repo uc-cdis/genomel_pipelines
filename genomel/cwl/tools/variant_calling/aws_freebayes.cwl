@@ -8,9 +8,9 @@ requirements:
   - class: InlineJavascriptRequirement
   - class: ShellCommandRequirement
   - class: DockerRequirement
-    dockerPull: registry.gitlab.com/uc-cdis/genomel-exome-variant-detection/genomel_variant_calling:5.0
+    dockerPull: registry.gitlab.com/uc-cdis/genomel-exome-variant-detection/genomel_variant_calling:6.0
   - class: ResourceRequirement
-    coresMin: 30
+    coresMin: 21
 
 inputs:
   bam:
@@ -28,7 +28,12 @@ outputs:
   vcf_list:
     type: File[]
     outputBinding:
-      glob: '*.vcf'
+      glob: 'pass/*.vcf'
+
+  bed_list:
+    type: File[]
+    outputBinding:
+      glob: 'pass/*.bed'
 
   log_file:
     type: File

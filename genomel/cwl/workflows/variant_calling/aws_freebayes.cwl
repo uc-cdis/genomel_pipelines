@@ -38,6 +38,9 @@ outputs:
   freebayes_vcf:
     type: File
     outputSource: gatk3_selectvariants/output_vcf
+  passed_bed:
+    type: File
+    outputSource: merge_pass_bed/output
 
 steps:
   aws_freebayes:
@@ -49,7 +52,16 @@ steps:
       bed_file: bed_file
       thread_count: thread_count
       number_of_chunks: number_of_chunks
-    out: [vcf_list, log_file, time_metrics]
+    out: [vcf_list, bed_list, log_file, time_metrics]
+
+  merge_pass_bed:
+    run: ../../tools/utils/merge_files.cwl
+    in:
+      input_files: aws_freebayes/bed_list
+      output_file:
+        source: output_prefix
+        valueFrom: $('passed_from_' + self + '.bed')
+    out: [ output ]
 
   picard_sortvcf:
     run: ../../tools/variant_calling/picard_sortvcf.cwl
