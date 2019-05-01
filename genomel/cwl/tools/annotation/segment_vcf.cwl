@@ -31,6 +31,11 @@ outputs:
             glob: $(inputs.outdir + "/*.vcf.gz")
         secondaryFiles: [.tbi]
 
+    time_metrics:
+        type: File
+        outputBinding:
+            glob: $(inputs.job_uuid + ".divide.time.json")
+
 baseCommand: []
 arguments:
     - position: 0
