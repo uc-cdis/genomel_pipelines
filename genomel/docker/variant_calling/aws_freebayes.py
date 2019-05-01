@@ -78,6 +78,12 @@ def parse_bed_from_cmd(cmd):
 def parse_stderr(s, cdct):
     """Parse timing information from GNU time.
     """
+    user_time = float()
+    system_time = float()
+    percent_of_cpu = int()
+    wall_clock = float()
+    maximum_resident_set_size = int()
+    exit_status = int()
     for line in s.decode().format().split('\n'):
         line = line.strip()
         if line.startswith('User time (seconds):'):
@@ -104,12 +110,12 @@ def parse_stderr(s, cdct):
             maximum_resident_set_size = int(line.split(':')[1].strip())
         if line.startswith('Exit status:'):
             exit_status = int(line.split(':')[1].strip())
-        cdct['user_time'] = user_time
-        cdct['system_time'] = system_time
-        cdct['percent_of_cpu'] = percent_of_cpu
-        cdct['wall_clock'] = wall_clock
-        cdct['maximum_resident_set_size'] = maximum_resident_set_size
-        cdct['exit_status'] = exit_status
+    cdct['user_time'] = user_time
+    cdct['system_time'] = system_time
+    cdct['percent_of_cpu'] = percent_of_cpu
+    cdct['wall_clock'] = wall_clock
+    cdct['maximum_resident_set_size'] = maximum_resident_set_size
+    cdct['exit_status'] = exit_status
     return cdct
 
 def do_pool_commands(cmd, logger, dct, lock = Lock()):
@@ -129,6 +135,7 @@ def do_pool_commands(cmd, logger, dct, lock = Lock()):
             logger.info('percent_of_cpu: %s', child_dict['percent_of_cpu'])
             logger.info('maximum_resident_set_size: %s', child_dict['maximum_resident_set_size'])
             logger.info('exit_status: %s', child_dict['exit_status'])
+            logger.info('exitcode: %s', output.wait())
             if child_dict['exit_status'] == 0:
                 os.rename(bed, os.path.join('pass', os.path.basename(bed)))
                 os.rename(child_dict['vcf'], os.path.join('pass', os.path.basename(child_dict['vcf'])))
@@ -137,7 +144,7 @@ def do_pool_commands(cmd, logger, dct, lock = Lock()):
 
 def multi_commands(cmds, thread_count, dct, logger):
     pool = Pool(int(thread_count))
-    pool.map(partial(do_pool_commands, dct, logger=logger), cmds)
+    pool.map(partial(do_pool_commands, dct=dct, logger=logger), cmds)
 
 def main():
     '''main'''
