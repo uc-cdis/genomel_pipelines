@@ -8,9 +8,13 @@ requirements:
   - class: InlineJavascriptRequirement
   - class: ShellCommandRequirement
   - class: DockerRequirement
-    dockerPull: registry.gitlab.com/uc-cdis/genomel-exome-variant-detection/genomel_variant_calling:6.0
+    dockerPull: registry.gitlab.com/uc-cdis/genomel-exome-variant-detection/genomel_variant_calling:5.0
   - class: ResourceRequirement
-    coresMin: 21
+    coresMin: 25
+
+successCodes:
+  - 0
+  - 1
 
 inputs:
   bam:
