@@ -5,6 +5,7 @@ RUN apt-get update \
     && apt-get install -y time \
        python-dev \
        tabix \
+       pkg-config \
        openjdk-8-jre-headless \
        wget git g++ gcc make zlib1g-dev libbz2-dev liblzma-dev \
     && apt-get clean \
@@ -13,6 +14,12 @@ RUN apt-get update \
     && wget https://github.com/vcftools/vcftools/releases/download/v0.1.16/vcftools-0.1.16.tar.gz \
     && mv vcftools-0.1.16.tar.gz /opt/ \
     && cd /opt/ && tar xvf vcftools-0.1.16.tar.gz \
+    && cd vcftools-0.1.16 \
+    && ./configure \
+    && make \
+    && make install \
+    && cd - \
+    && rm -rf vcftools-0.1.16.tar.gz \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 ###GATK 3.7-0-gcfedb67

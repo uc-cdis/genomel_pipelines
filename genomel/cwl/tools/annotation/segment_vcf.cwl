@@ -45,5 +45,5 @@ arguments:
         -o $(inputs.job_uuid + '.divide.time.json')
         zcat $(inputs.input_vcf.path)| awk '\$1!~/^#/ {print}' > content.vcf &&
         zcat $(inputs.input_vcf.path)| awk '\$1~/^#/ {print}' > head.vcf &&
-        split -a 4 -l $(inputs.chunk) content.vcf $(inputs.outdir)/$(inputs.input_vcf.nameroot). &&
-        for f in $(inputs.outdir)/$(inputs.input_vcf.nameroot).????;do cat head.vcf $f >> $f.vcf && bgzip -c $f.vcf > $f.vcf.gz && tabix -p vcf $f.vcf.gz && rm $f $f.vcf; done
+        split -a 4 -l $(inputs.chunk) content.vcf $(inputs.outdir)/$(inputs.input_vcf.nameroot.replace(".vcf","")). &&
+        for f in $(inputs.outdir)/$(inputs.input_vcf.nameroot.replace(".vcf","")).????;do cat head.vcf $f >> $f.vcf && bgzip -c $f.vcf > $f.vcf.gz && tabix -p vcf $f.vcf.gz && rm $f $f.vcf; done
