@@ -15,7 +15,7 @@ inputs:
     vcf_file: File
     reference:
         type: File
-        secondaryFiles: [.fai, .amb, .ann, .bwt, .pac, .sa, ^.dict]
+        secondaryFiles: [^.dict]
     chain: File
 
 outputs:
