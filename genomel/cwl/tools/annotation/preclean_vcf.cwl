@@ -42,5 +42,6 @@ arguments:
         --recode-INFO ABHom
         --recode-INFO set
         --out $(inputs.vcf_file.nameroot.replace("vcf",""))
-      && awk '{if ($1~/^#/) {if ($1~/##INFO/) {if (($1~/ABHet/) || ($1~/ABHom/) || ($1~/set/)) print;} else print;} else print;}' $(inputs.vcf_file.nameroot.replace("vcf","")).recode.vcf > $(inputs.vcf_file)
-      && rm $(inputs.vcf_file.nameroot.replace("vcf","")).recode.vcf
+      && awk '{if ($1~/^#/) {if ($1~/##INFO/) {if (($1~/ABHet/) || ($1~/ABHom/) || ($1~/set/)) print;} else print;} else print;}' $(inputs.vcf_file.nameroot.replace("vcf","")).recode.vcf > $(inputs.vcf_file.nameroot)
+      && bgzip -c $(inputs.vcf_file.nameroot) > $(inputs.vcf_file)
+      && tabix -p vcf $(inputs.vcf_file)
