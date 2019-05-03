@@ -8,9 +8,9 @@ requirements:
   - class: InlineJavascriptRequirement
   - class: ShellCommandRequirement
   - class: DockerRequirement
-    dockerPull: registry.gitlab.com/uc-cdis/genomel-exome-variant-detection/genomel_variant_calling:5.0
+    dockerPull: registry.gitlab.com/uc-cdis/genomel-exome-variant-detection/genomel_variant_calling:6.0
   - class: ResourceRequirement
-    coresMin: 25
+    coresMin: 21
 
 successCodes:
   - 0
@@ -32,17 +32,17 @@ outputs:
   vcf_list:
     type: File[]
     outputBinding:
-      glob: 'pass/*.vcf'
+      glob: '*.vcf'
 
   bed_list:
     type: File[]
     outputBinding:
-      glob: 'pass/*.bed'
+      glob: '*.bed'
 
   log_file:
     type: File
     outputBinding:
-      glob: '*.log'
+      glob: '*.pdc_freebayes_docker.log'
 
   time_metrics:
     type: File

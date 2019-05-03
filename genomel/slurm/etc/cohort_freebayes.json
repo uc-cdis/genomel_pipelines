@@ -1,8 +1,8 @@
 {
     "job_uuid": "XX_JOB_ID_XX",
     "bed_files": ["XX_BED_FILES_XX"],
-    "reference": {"class": "File", "path": "/mnt/cephfs/reference/hg19_canonical_correct_chr_order.fa"},
-    "bam": {"class": "File", "path": "/mnt/cephfs/genomel_merge/genomel.merge.bam"},
+    "reference": {"class": "File", "path": "/mnt/nfs/reference/hg19_canonical_correct_chr_order.fa"},
+    "bam": {"class": "File", "path": "/mnt/nfs/genomel_merge/genomel.merge.bam"},
     "freebayes_thread_count": "XX_FB_THREADS_XX",
     "number_of_chunks_for_freebayes": "XX_FB_CHUNKS_XX",
     "aws_config": {"class": "File", "path": "/home/ubuntu/.aws/config"},
