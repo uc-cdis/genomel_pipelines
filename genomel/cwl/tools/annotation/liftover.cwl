@@ -22,7 +22,7 @@ outputs:
     vcf_liftover:
         type: File
         outputBinding:
-            glob: "*.liftover.vcf"
+            glob: "*.v37.vcf"
     vcf_reject:
         type: File
         outputBinding:
@@ -41,7 +41,7 @@ arguments:
         -o $(inputs.job_uuid + '.liftover.time.json')
         java -jar picard.jar LiftoverVcf \
         I=$(inputs.vcf_file.path) \
-        O=$(inputs.vcf_file.basename.replace(".vcf","")).liftover.vcf
+        O=$(inputs.vcf_file.basename.replace(".vcf","")).v37.vcf
         CHAIN=$(inputs.chain.path) \
         REJECT=$(inputs.vcf_file.basename.replace(".vcf","")).reject.vcf
         R=$(inputs.reference.path)
