@@ -34,11 +34,14 @@ prod_time, \
                             )
 prod_time_in_hr = prod_time
 prod_time_in_d = [x/24.0 for x in prod_time]
-pass_persent = [round(x*100/173405.0, 2) for x in nchunk_passed]
-left_persent = [round((173405-x)*100/173405.0, 2) for x in nchunk_passed]
+pass_percent = [round(x*100/173405.0, 2) for x in nchunk_passed]
+left_percent = [round((173405 - x)*100/173405.0, 2) for x in nchunk_total]
 pass_p1d = get_poly1d(prod_time, nchunk_passed)
-expect_pass_hr = (173405 - pass_p1d[0])/float(pass_p1d[1])
 expect_fails = 173405 * nchunk_failed[-1] / nchunk_total[-1]
+expect_f_percent = round(expect_fails * 100 / 173405.0, 2)
+expect_passes = 173405 - expect_fails
+expect_p_percent = round(expect_passes * 100 / 173405.0, 2)
+expect_pass_hr = (expect_passes - pass_p1d[0])/float(pass_p1d[1])
 fail_avg_time = np.mean(indiv_fail_time)
 fail_avg_mem = np.mean(indiv_fail_mem)
 total_fail = expect_fails * fail_avg_time/16/int(120/fail_avg_mem)
@@ -86,14 +89,14 @@ plt.subplots_adjust(hspace=1)
 
 #2nd plot
 axis2 = fig.add_subplot(512)
-passed2 = axis2.scatter(prod_time_in_d, pass_persent, color='g', s=4, marker='D')
-poly2 = get_poly1d(prod_time_in_d, pass_persent)
-x = (100 - poly2[0])/float(poly2[1])
+passed2 = axis2.scatter(prod_time_in_d, pass_percent, color='g', s=4, marker='D')
+poly2 = get_poly1d(prod_time_in_d, pass_percent)
+x = (expect_p_percent - poly2[0])/float(poly2[1])
 dots2 =[0, x]
 plt.plot(dots2, poly2(dots2), 'g--', markersize=1)
-left2 = axis2.scatter(prod_time_in_d, left_persent, color='b', s=4, marker='D')
-poly3 = get_poly1d(prod_time_in_d, left_persent)
-y = (0 - poly3[0])/float(poly3[1])
+left2 = axis2.scatter(prod_time_in_d, left_percent, color='b', s=4, marker='D')
+poly3 = get_poly1d(prod_time_in_d, left_percent)
+y = (expect_f_percent - poly3[0])/float(poly3[1])
 dots3 = [0, y]
 plt.plot(dots3, poly3(dots3), 'b--', markersize=1)
 
