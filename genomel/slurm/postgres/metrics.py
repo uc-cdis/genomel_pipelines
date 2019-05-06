@@ -79,3 +79,21 @@ def add_cohort_metrics(engine, table, data):
         debug_path=data['debug_path'])
     postgres.utils.create_table(engine, met)
     postgres.utils.add_metrics(engine, met)
+
+class ProdMetrics(postgres.mixins.ProdMetricsTypeMixin, postgres.utils.Base):
+    __tablename__ = 'pdc_freebayes_prod_metrics'
+
+def add_pfp_metrics(engine, table, data):
+    met = table(
+        prod_time = data['prod_time'],
+        nchunk_total = data['nchunk_total'],
+        nchunk_passed = data['nchunk_passed'],
+        nchunk_failed = data['nchunk_failed'],
+        indiv_pass_time = data['indiv_pass_time'],
+        indiv_fail_time = data['indiv_fail_time'],
+        indiv_pass_mem = data['indiv_pass_mem'],
+        indiv_fail_mem = data['indiv_fail_mem']
+    )
+    postgres.utils.create_table(engine, met)
+    postgres.utils.add_metrics(engine, met)
+

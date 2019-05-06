@@ -79,3 +79,18 @@ class CohMetricsTypeMixin(object):
         return "<CohMetricsTypeMixin(job_uuid={}, cwl_walltime={}, status={})>".format(
             self.job_uuid, self.cwl_walltime, self.status
         )
+
+class ProdMetricsTypeMixin(object):
+    id = Column(Integer, primary_key=True)
+    prod_time = Column(Float)
+    nchunk_total = Column(Integer)
+    nchunk_passed = Column(Integer)
+    nchunk_failed = Column(Integer)
+    indiv_pass_time = Column(ARRAY(Float))
+    indiv_fail_time = Column(ARRAY(Float))
+    indiv_pass_mem = Column(ARRAY(Float))
+    indiv_fail_mem = Column(ARRAY(Float))
+    def __repr__(self):
+        return "<ProdMetricsTypeMixin(prod_time={}, nchunk_total={}, nchunk_passed={}, nchunk_failed={})>".format(
+            self.prod_time, self.nchunk_total, self.nchunk_passed, self.nchunk_failed
+        )
