@@ -19,9 +19,10 @@ RUN apt-get update \
     && make \
     && make install \
     && cd - \
-    && rm -rf vcftools-0.1.16.tar.gz \
+    && rm -rf vcftools-0.1.16.tar.gz vcftools-0.1.16\
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 ###GATK 3.7-0-gcfedb67
-ADD GenomeAnalysisTK.jar /opt/
+ADD GenomeAnalysisTK.jar /opt/ &&
+ADD snpEff.jar /opt/
 
