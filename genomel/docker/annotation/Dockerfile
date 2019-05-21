@@ -25,4 +25,5 @@ RUN apt-get update \
 ###GATK 3.7-0-gcfedb67
 ADD GenomeAnalysisTK.jar /opt/ &&
 ADD snpEff.jar /opt/
+ADD SnpSift.jar /opt/
 
