@@ -7,7 +7,7 @@ import postgres.metrics
 def get_prod_time():
     jobs = pyslurm.job()
     jdct = jobs.get()
-    h = jdct[16549]['run_time']/float(3600) + 905.54
+    h = jdct[16569]['run_time']/float(3600) + 1369.33
     return h
 
 def get_meta(fb_log):
@@ -52,7 +52,8 @@ def main():
     psql_class = postgres.metrics.ProdMetrics
     log_1 = glob.glob('/mnt/nfs/cromwell_workdir/cromwell-executions/cwl_temp_file_2a169746-51ab-42bc-b7f0-458c8da66399.cwl/2a169746-51ab-42bc-b7f0-458c8da66399/call-freebayes_cohort_genotyping/shard-*/aws_freebayes.cwl/*/call-aws_freebayes/execution/675fda51-0918-4d3b-93ec-88192aa438ad.pdc_freebayes_docker.log')
     log_2 = glob.glob('/mnt/nfs/cromwell_workdir/cromwell-executions/cwl_temp_file_ed062ffc-2780-44a7-91b6-7efac8e39d5a.cwl/ed062ffc-2780-44a7-91b6-7efac8e39d5a/call-freebayes_cohort_genotyping/shard-*/aws_freebayes.cwl/*/call-aws_freebayes/execution/664fde8c-6d4e-428d-966a-9b5a9698ccbc.pdc_freebayes_docker.log')
-    logs = log_1 + log_2
+    log_3 = glob.glob('/mnt/nfs/cromwell_workdir/cromwell-executions/cwl_temp_file_4a0adc5a-f55f-49f2-bcb4-c354dc0b7621.cwl/4a0adc5a-f55f-49f2-bcb4-c354dc0b7621/call-freebayes_cohort_genotyping/shard-*/aws_freebayes.cwl/*/call-aws_freebayes/execution/80e2ab48-c2b4-48f0-9473-5d7dab1cef06.pdc_freebayes_docker.log')
+    logs = log_1 + log_2 + log_3
     wt_p = list()
     wt_f = list()
     mrss_p = list()
