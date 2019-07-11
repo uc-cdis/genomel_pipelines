@@ -52,12 +52,15 @@ def main():
     #                     help='Freebayes log file')
     # args = parser.parse_args()
     # log_files = glob.glob('/mnt/nfs/cromwell_workdir/cromwell-executions/cwl_temp_file_2a169746-51ab-42bc-b7f0-458c8da66399.cwl/2a169746-51ab-42bc-b7f0-458c8da66399/call-freebayes_cohort_genotyping/shard-*/aws_freebayes.cwl/*/call-aws_freebayes/execution/675fda51-0918-4d3b-93ec-88192aa438ad.pdc_freebayes_docker.log')
-    log_files = glob.glob('/mnt/nfs/cromwell_workdir/cromwell-executions/cwl_temp_file_ed062ffc-2780-44a7-91b6-7efac8e39d5a.cwl/ed062ffc-2780-44a7-91b6-7efac8e39d5a/call-freebayes_cohort_genotyping/shard-*/aws_freebayes.cwl/*/call-aws_freebayes/execution/664fde8c-6d4e-428d-966a-9b5a9698ccbc.pdc_freebayes_docker.log')
+    # log_files = glob.glob('/mnt/nfs/cromwell_workdir/cromwell-executions/cwl_temp_file_ed062ffc-2780-44a7-91b6-7efac8e39d5a.cwl/ed062ffc-2780-44a7-91b6-7efac8e39d5a/call-freebayes_cohort_genotyping/shard-*/aws_freebayes.cwl/*/call-aws_freebayes/execution/664fde8c-6d4e-428d-966a-9b5a9698ccbc.pdc_freebayes_docker.log')
+    log_files = glob.glob('/mnt/nfs/cromwell_workdir/cromwell-executions/cwl_temp_file_4a0adc5a-f55f-49f2-bcb4-c354dc0b7621.cwl/4a0adc5a-f55f-49f2-bcb4-c354dc0b7621/call-freebayes_cohort_genotyping/shard-*/aws_freebayes.cwl/*/call-aws_freebayes/execution/80e2ab48-c2b4-48f0-9473-5d7dab1cef06.pdc_freebayes_docker.log')
     # all_beds = glob.glob('/mnt/nfs/cromwell_workdir/cromwell-executions/cwl_temp_file_2a169746-51ab-42bc-b7f0-458c8da66399.cwl/2a169746-51ab-42bc-b7f0-458c8da66399/call-freebayes_cohort_genotyping/shard-*/aws_freebayes.cwl/*/call-aws_freebayes/execution/*bed')
-    all_beds = glob.glob('/mnt/nfs/cromwell_workdir/cromwell-executions/cwl_temp_file_ed062ffc-2780-44a7-91b6-7efac8e39d5a.cwl/ed062ffc-2780-44a7-91b6-7efac8e39d5a/call-freebayes_cohort_genotyping/shard-*/aws_freebayes.cwl/*/call-aws_freebayes/execution/*bed')
+    # all_beds = glob.glob('/mnt/nfs/cromwell_workdir/cromwell-executions/cwl_temp_file_ed062ffc-2780-44a7-91b6-7efac8e39d5a.cwl/ed062ffc-2780-44a7-91b6-7efac8e39d5a/call-freebayes_cohort_genotyping/shard-*/aws_freebayes.cwl/*/call-aws_freebayes/execution/*bed')
+    all_beds = glob.glob('/mnt/nfs/cromwell_workdir/cromwell-executions/cwl_temp_file_4a0adc5a-f55f-49f2-bcb4-c354dc0b7621.cwl/4a0adc5a-f55f-49f2-bcb4-c354dc0b7621/call-freebayes_cohort_genotyping/shard-*/aws_freebayes.cwl/*/call-aws_freebayes/execution/*bed')
     pbed = list()
     # pmap = '/mnt/nfs/cromwell_workdir/pass_bed_vcf.map'
-    pmap = '/mnt/nfs/cromwell_workdir/pass_bed_vcf.2.map'
+    # pmap = '/mnt/nfs/cromwell_workdir/pass_bed_vcf.2.map'
+    pmap = '/mnt/nfs/cromwell_workdir/pass_bed_vcf.3.map'
     with open(pmap, 'w+') as of:
         for log in log_files:
             mdlist = get_meta(log)
@@ -69,7 +72,8 @@ def main():
                     of.writelines('{}\t{}\n'.format(bed, vcf))
     iclist = list(set(all_beds) - set(pbed))
     # icmap = '/mnt/nfs/cromwell_workdir/incomplete_bed.map'
-    icmap = '/mnt/nfs/cromwell_workdir/incomplete_bed.2.map'
+    # icmap = '/mnt/nfs/cromwell_workdir/incomplete_bed.2.map'
+    icmap = '/mnt/nfs/cromwell_workdir/incomplete_bed.3.map'
     with open(icmap, 'w+') as of:
         for i in iclist:
             of.writelines('{}\n'.format(i))
