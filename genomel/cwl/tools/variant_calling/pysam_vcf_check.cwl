@@ -12,17 +12,23 @@ requirements:
 
 inputs:
   vcf: File
-  output_name: string
 
+stdout: count
 outputs:
   vcf_count:
-    type: File
+    type: string
     outputBinding:
-      glob: $(inputs.output_name)
+      glob: count
+      loadContents: true
+      outputEval: |
+       ${
+          var count = self[0].contents.trim()
+          return count
+       }
 
 baseCommand: []
 arguments:
   - position: 0
     shellQuote: false
     valueFrom: >-
-      python /opt/pysam_vcf_check.py $(inputs.vcf.path) > $(inputs.output_name)
+      python /opt/pysam_vcf_check.py $(inputs.vcf.path)

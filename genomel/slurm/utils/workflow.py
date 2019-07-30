@@ -276,6 +276,24 @@ def run_cohort_freebayes(args):
     )
     genomel.run()
 
+def run_fbc(args):
+    '''run post-qc on freebayes chunks'''
+    input_data = utils.pipeline.load_template_json()['post_freebayes_template']
+    input_data['job_uuid'] = args.job_uuid
+    input_data['vcf']['path'] = args.vcf
+    workflow_meta = {
+        'basedir': args.basedir,
+        'job_uuid': args.job_uuid,
+        'bed': args.bed,
+        'cwlwf': args.cwlwf
+    }
+    genomel = PostFreebayes(
+        workflow_meta=workflow_meta,
+        input_data=input_data,
+        psql_conf=args.psql_conf
+    )
+    genomel.run()
+
 class GenomelIndiv(object):
     '''this class describes GenoMEL-Bionimbus Protected Data Cloud pipelines'''
     def __init__(self, workflow_meta, input_data, psql_conf):
@@ -894,3 +912,165 @@ class GenomelCohort(object):
             self.workflow_meta['cromwell_jar_path']
         )
         self.pg_data['debug_path'] = self.workflow_meta['log_file']
+
+class PostFreebayes(object):
+    '''this class describes GenoMEL-Bionimbus Protected Data Cloud pipelines'''
+    def __init__(self, workflow_meta, input_data, psql_conf):
+        '''
+        workflow_meta.keys() = [
+            'basedir',
+            'job_uuid',
+            'bed',
+            'cwlwf'
+        ]
+        '''
+        self.input_data = input_data
+        self.pg_data = utils.pipeline.pfc_data_template()
+        self.psql_conf = psql_conf
+        self.psql_class = postgres.metrics.PFCMetrics
+        # setup workflow metadata
+        self.workflow_meta = workflow_meta
+        self.workflow_meta['cwl_start'] = None
+        self.workflow_meta['cwl_end'] = None
+        self.workflow_meta['cwl_failure'] = False
+        self.workflow_meta['chrom'], self.workflow_meta['chrom_start'], self.workflow_meta['chrom_end'] = self._read_bed()
+        self.workflow_meta['cwl_input_json'] = self._cwl_input_json()
+        self.workflow_meta['cwl_output_json'] = self._cwl_output_json()
+
+    def run(self):
+        '''main pipeline'''
+        # setup start-time
+        self.workflow_meta['cwl_start'] = time.time()
+        # setup bed info
+        # setup work env
+        os.chdir(self.workflow_meta['basedir'])
+        tmpdir = self.create_tmp_dir('tmpdir_')
+        logger = self._log()
+        # cwl cmd
+        cmd = [
+            '/home/ubuntu/.virtualenvs/p2/bin/cwltool',
+            '--debug',
+            '--relax-path-checks',
+            '--outdir', self.workflow_meta['basedir'],
+            '--tmpdir-prefix', tmpdir,
+            '--tmp-outdir-prefix', tmpdir,
+            self.workflow_meta['cwlwf'],
+            self.workflow_meta['cwl_input_json']
+        ]
+        # run cwl
+        cwl_exit = utils.pipeline.run_command(cmd, logger, self.workflow_meta['cwl_output_json'])
+        # cwl status
+        if cwl_exit:
+            self.workflow_meta['cwl_failure'] = True
+        # update psql
+        if not self.workflow_meta['cwl_failure']:
+            self._process_cwl_success()
+        else:
+            self._process_cwl_fail()
+        engine = postgres.utils.get_db_engine(self.psql_conf)
+        postgres.metrics.add_fbc_metrics(engine, self.psql_class, self.pg_data)
+        #clean up
+        utils.pipeline.remove_dir(self.workflow_meta['basedir'])
+
+    def _read_bed(self):
+        '''read bed file to collect metadata'''
+        bed = self.workflow_meta['bed']
+        with open(bed, 'r') as f:
+            chrom, start, end = f.readline().rstrip().split('\t')
+        return chrom, start, end
+
+    def _cwl_input_json(self):
+        '''prepare cwl input json'''
+        cwl_input_json = os.path.join(
+            self.workflow_meta['basedir'], 'post_freebayes_qc.{0}.{1}.{2}.json'.format(
+                self.workflow_meta['chrom'],
+                self.workflow_meta['chrom_start'],
+                self.workflow_meta['chrom_end']
+            )
+        )
+        self.input_data['output_prefix'] = '{}_{}_{}'.format(
+            self.workflow_meta['chrom'],
+            self.workflow_meta['chrom_start'],
+            self.workflow_meta['chrom_end']
+        )
+        with open(cwl_input_json, 'wt') as ohandle:
+            json.dump(self.input_data, ohandle, indent=4)
+        return cwl_input_json
+
+    def _cwl_output_json(self):
+        '''prepare cwl output json'''
+        cwl_output_json = os.path.join(
+            self.workflow_meta['basedir'], 'post_freebayes_qc.{0}.{1}.{2}.output'.format(
+                self.workflow_meta['chrom'],
+                self.workflow_meta['chrom_start'],
+                self.workflow_meta['chrom_end']
+            )
+        )
+        return cwl_output_json
+
+    def create_tmp_dir(self, prefix):
+        '''create cwl tmp directory'''
+        tmpdir = tempfile.mkdtemp(prefix="{}".format(prefix), dir=self.workflow_meta['basedir'])
+        return tmpdir
+
+    def _log(self):
+        '''setup log file'''
+        log_file = os.path.join(
+            os.path.dirname(self.workflow_meta['basedir']),
+            'post_freebayes_qc.{0}.{1}.{2}.log'.format(
+                self.workflow_meta['chrom'],
+                self.workflow_meta['chrom_start'],
+                self.workflow_meta['chrom_end']
+            )
+        )
+        self.workflow_meta['log_file'] = log_file
+        logger = utils.pipeline.setup_logging(
+            logging.INFO,
+            self.workflow_meta['job_uuid'],
+            log_file
+        )
+        return logger
+
+    def _stage_local(self, chrom, indiv):
+        '''stage cwl output to local gluster'''
+        chrom_dir = os.path.join('/mnt/nfs/post_freebayes_qc', chrom)
+        if not os.path.isdir(chrom_dir):
+            os.mkdir(chrom_dir)
+        utils.pipeline.move_file(indiv, chrom_dir)
+        return os.path.join(chrom_dir, os.path.basename(indiv))
+
+    def _process_cwl_success(self):
+        '''process when cwl successes'''
+        cwl_output = utils.pipeline.load_json(self.workflow_meta['cwl_output_json'])
+        filtered_vcf = self._stage_local(
+            self.workflow_meta['chrom'], cwl_output['filtered_vcf']['path']
+        )
+        self._stage_local(self.workflow_meta['chrom'], cwl_output['filtered_vcf']['secondaryFiles'][0]['path'])
+        self.workflow_meta['cwl_end'] = time.time()
+        self.pg_data['job_uuid'] = self.workflow_meta['job_uuid']
+        self.pg_data['chrom'] = self.workflow_meta['chrom']
+        self.pg_data['start'] = int(self.workflow_meta['chrom_start'])
+        self.pg_data['end'] = int(self.workflow_meta['chrom_end'])
+        self.pg_data['inputCount'] = int(cwl_output['raw_counts'])
+        self.pg_data['outputCount'] = int(cwl_output['filtered_counts'])
+        self.pg_data['inputFS'] = utils.pipeline.get_file_size(self.input_data['vcf']['path'])
+        self.pg_data['outputFS'] = utils.pipeline.get_file_size(filtered_vcf)
+        self.pg_data['inputMD5'] = utils.pipeline.get_md5(self.input_data['vcf']['path'])
+        self.pg_data['outputMD5'] = utils.pipeline.get_md5(filtered_vcf)
+        self.pg_data['inputBed'] = self.workflow_meta['bed']
+        self.pg_data['inputVCF'] = self.input_data['vcf']['path']
+        self.pg_data['outputVCF'] = filtered_vcf
+        self.pg_data['status'] = "COMPLETED"
+        self.pg_data['runtime'] = int(self.workflow_meta['cwl_end'] - self.workflow_meta['cwl_start'])
+
+    def _process_cwl_fail(self):
+        '''process when cwl fails'''
+        self.workflow_meta['cwl_end'] = time.time()
+        self.pg_data['job_uuid'] = self.workflow_meta['job_uuid']
+        self.pg_data['chrom'] = self.workflow_meta['chrom']
+        self.pg_data['start'] = int(self.workflow_meta['chrom_start'])
+        self.pg_data['end'] = int(self.workflow_meta['chrom_end'])
+        self.pg_data['inputBed'] = self.workflow_meta['bed']
+        self.pg_data['inputVCF'] = self.input_data['vcf']['path']
+        self.pg_data['status'] = "FAILED"
+        self.pg_data['runtime'] = self.workflow_meta['cwl_end'] - self.workflow_meta['cwl_start']

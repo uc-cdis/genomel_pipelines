@@ -85,15 +85,38 @@ class ProdMetrics(postgres.mixins.ProdMetricsTypeMixin, postgres.utils.Base):
 
 def add_pfp_metrics(engine, table, data):
     met = table(
-        prod_time = data['prod_time'],
-        nchunk_total = data['nchunk_total'],
-        nchunk_passed = data['nchunk_passed'],
-        nchunk_failed = data['nchunk_failed'],
-        indiv_pass_time = data['indiv_pass_time'],
-        indiv_fail_time = data['indiv_fail_time'],
-        indiv_pass_mem = data['indiv_pass_mem'],
-        indiv_fail_mem = data['indiv_fail_mem']
+        prod_time=data['prod_time'],
+        nchunk_total=data['nchunk_total'],
+        nchunk_passed=data['nchunk_passed'],
+        nchunk_failed=data['nchunk_failed'],
+        indiv_pass_time=data['indiv_pass_time'],
+        indiv_fail_time=data['indiv_fail_time'],
+        indiv_pass_mem=data['indiv_pass_mem'],
+        indiv_fail_mem=data['indiv_fail_mem']
     )
     postgres.utils.create_table(engine, met)
     postgres.utils.add_metrics(engine, met)
 
+class PFCMetrics(postgres.mixins.FBChunksMetricsTypeMixin, postgres.utils.Base):
+    __tablename__ = 'pdc_post_freebayes_qc_metrics'
+
+def add_fbc_metrics(engine, table, data):
+    met = table(
+        job_uuid=data['job_uuid'],
+        chrom=data['chrom'],
+        start=data['start'],
+        end=data['end'],
+        inputCount=data['inputCount'],
+        outputCount=data['outputCount'],
+        inputFS=data['inputFS'],
+        outputFS=data['outputFS'],
+        inputMD5=data['inputMD5'],
+        outputMD5=data['outputMD5'],
+        inputBed=data['inputBed'],
+        inputVCF=data['inputVCF'],
+        outputVCF=data['outputVCF'],
+        status=data['status'],
+        runtime=data['runtime']
+    )
+    postgres.utils.create_table(engine, met)
+    postgres.utils.add_metrics(engine, met)

@@ -19,14 +19,14 @@ inputs:
 
 outputs:
   raw_counts:
-    type: File
+    type: string
     outputSource: raw_vcf_count/vcf_count
   filtered_vcf:
     type: File
     secondaryFiles: [.tbi]
     outputSource: vcf_filtration/output_vcf
   filtered_counts:
-    type: File
+    type: string
     outputSource: filtered_vcf_count/vcf_count
 
 steps:
@@ -34,8 +34,6 @@ steps:
     run: ../../tools/variant_calling/pysam_vcf_check.cwl
     in:
       vcf: vcf
-      output_name:
-        valueFrom: "raw_count"
     out: [ vcf_count ]
 
   vcf_filtration:
@@ -51,6 +49,4 @@ steps:
     run: ../../tools/variant_calling/pysam_vcf_check.cwl
     in:
       vcf: vcf_filtration/output_vcf
-      output_name:
-        valueFrom: "filtered_count"
     out: [ vcf_count ]

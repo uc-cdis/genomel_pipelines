@@ -94,3 +94,25 @@ class ProdMetricsTypeMixin(object):
         return "<ProdMetricsTypeMixin(prod_time={}, nchunk_total={}, nchunk_passed={}, nchunk_failed={})>".format(
             self.prod_time, self.nchunk_total, self.nchunk_passed, self.nchunk_failed
         )
+
+class FBChunksMetricsTypeMixin(object):
+    id = Column(Integer, primary_key=True)
+    job_uuid = Column(String)
+    chrom = Column(String)
+    start = Column(BigInteger)
+    end = Column(BigInteger)
+    inputCount = Column(Integer)
+    outputCount = Column(Integer)
+    inputFS = Column(Integer)
+    outputFS = Column(Integer)
+    inputMD5 = Column(String)
+    outputMD5 = Column(String)
+    inputBed = Column(String)
+    inputVCF = Column(String)
+    outputVCF = Column(String)
+    status = Column(String)
+    runtime = Column(Integer)
+    def __repr__(self):
+        return "<FBChunksMetricsTypeMixin(job_uuid={}, chrom={}, start={}, end={})>".format(
+            self.job_uuid, self.chrom, self.start, self.end
+        )
