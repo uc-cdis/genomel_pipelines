@@ -26,4 +26,5 @@ RUN apt-get update \
 ADD GenomeAnalysisTK.jar /opt/ &&
 ADD snpEff.jar /opt/
 ADD SnpSift.jar /opt/
+ADD modify_header.sh /opt/
 

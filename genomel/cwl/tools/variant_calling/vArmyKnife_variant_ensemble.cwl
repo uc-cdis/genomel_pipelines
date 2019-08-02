@@ -22,12 +22,18 @@ inputs:
   freebayes_vcf:
     type: File
     secondaryFiles: [.tbi]
+  reference_dict: File
 
 outputs:
   ensemble_vcf:
     type: File
     outputBinding:
       glob: $(inputs.output_name)
+  sorted_vcf:
+    type: File
+    outputBinding:
+      glob: $(inputs.output_name+ '.gz')
+    secondaryFiles: [.tbi]
   time_metrics:
     type: File
     outputBinding:
@@ -50,3 +56,4 @@ arguments:
       --convertToStandardVcf
       "$(inputs.gatk4_vcf.path);$(inputs.freebayes_vcf.path)"
       "$(inputs.output_name)"
+      java -jar /opt/picard.jar SortVcf CREATE_INDEX=true OUTPUT=$(inputs.job_uuid + "." + inputs.output_name + ".gz") SEQUENCE_DICTIONARY=$(inputs.reference_dict.path)
