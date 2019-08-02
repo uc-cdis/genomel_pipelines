@@ -4,11 +4,10 @@
 #SBATCH --ntasks=1
 #SBATCH --mem=100000
 #SBATCH --workdir="/mnt/SCRATCH/"
-
-function cleanup (){{
+function cleanup (){
     echo "cleanup tmp data";
     sudo rm -rf $basedir;
-}}
+}
 
 pipeline="{PIPELINE}"
 job_uuid="{JOB_UUID}"

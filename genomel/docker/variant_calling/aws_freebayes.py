@@ -8,7 +8,6 @@ import subprocess
 import string
 from functools import partial
 from multiprocessing.dummy import Pool, Lock
-import fnmatch
 import logging
 
 def setup_logging(level, log_name, log_filename):
@@ -91,7 +90,7 @@ def do_pool_commands(cmd, logger, lock = Lock()):
     except BaseException, e:
         logger.error('Failed: %s', e)
     return output.wait()
-        
+
 def multi_commands(cmds, thread_count, logger):
     pool = Pool(int(thread_count))
     outputs = pool.map(partial(do_pool_commands, logger=logger), cmds)
@@ -176,10 +175,10 @@ def main():
     }
     nchunks = args.number_of_chunks
     nthreads = args.number_of_threads
-    log_file = 'aws_freebayes_docker.log'
+    log_file = '{}.pdc_freebayes_docker.log'.format(input_dict['job_uuid'])
     logger = setup_logging(
         logging.INFO,
-        'aws_freebayes',
+        'pdc_freebayes',
         log_file
     )
     cmds = list(freebayes_template(input_dict, nchunks))

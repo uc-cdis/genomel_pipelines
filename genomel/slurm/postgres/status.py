@@ -131,3 +131,26 @@ def get_bams(engine, genomel_bam_input, status_table, input_primary_column="id")
                 s[row.aliquot_id]['project'] = row.project
         return s
     return retrive_bams(cases)
+
+def get_metrics(engine, input_table):
+    Session = sessionmaker()
+    Session.configure(bind=engine)
+    session = Session()
+    meta = MetaData(engine)
+    data = Table(input_table, meta, autoload=True)
+    mapper(Metrics, data)
+    cases = session.query(Metrics).all()
+    prod_time = list()
+    total = list()
+    passed = list()
+    failed = list()
+    for row in cases:
+        prod_time.append(row.prod_time)
+        total.append(row.nchunk_total)
+        passed.append(row.nchunk_passed)
+        failed.append(row.nchunk_failed)
+        indiv_pass_time = row.indiv_pass_time
+        indiv_fail_time = row.indiv_fail_time
+        indiv_pass_mem = row.indiv_pass_mem
+        indiv_fail_mem = row.indiv_fail_mem
+    return prod_time, total, passed, failed, indiv_pass_time, indiv_fail_time, indiv_pass_mem, indiv_fail_mem

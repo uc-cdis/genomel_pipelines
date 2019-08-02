@@ -83,6 +83,27 @@ def cohort_data_template():
     }
     return cohort_data
 
+def pfc_data_template():
+    '''create postgres default dict'''
+    pfc_data = {
+        'job_uuid': None,
+        'chrom': None,
+        'start': None,
+        'end': None,
+        'inputCount': None,
+        'outputCount': None,
+        'inputFS': None,
+        'outputFS': None,
+        'inputMD5': None,
+        'outputMD5': None,
+        'inputBed': None,
+        'inputVCF': None,
+        'outputVCF': None,
+        'status': None,
+        'runtime': None
+    }
+    return pfc_data
+
 def create_cwl_array_input(manifest):
     '''create cwl array type input json'''
     path_list = []

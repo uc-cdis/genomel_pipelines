@@ -44,5 +44,11 @@
     "upload_s3_bucket": "s3://genomel/individual_workflow_output",
     "upload_s3_profile": "genomel-cleversafe",
     "upload_s3_endpoint": "https://atwood-accessors.osdc.io"
+  },
+  "post_freebayes_template": {
+    "job_uuid": "XX_JOB_ID_XX",
+    "reference": {"class": "File", "path": "/mnt/nfs/reference/hg19_canonical_correct_chr_order.fa"},
+    "vcf": {"class": "File", "path": "XX_VCF_XX"},
+    "output_prefix": "XX_OUTPUT_XX"
   }
 }

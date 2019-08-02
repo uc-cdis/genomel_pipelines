@@ -18,3 +18,4 @@ ADD GenomeAnalysisTK.jar /opt/
 ADD gatk3_genomel_variant_calling.py /opt/
 ADD genomel_pdc_freebayes.py /opt/
 ADD aws_freebayes.py /opt/
+ADD extract_pass_pair.py /opt/

@@ -38,6 +38,10 @@ outputs:
     type: File
     outputSource: sort_freebayes/sorted_vcf
 
+  passed_bed:
+    type: File
+    outputSource: merge_passed_bed/output
+
   time_logs:
     type: File[]
     outputSource: extract_time_log/output
@@ -61,7 +65,32 @@ steps:
           time_metrics_from_picard_sortvcf,
           time_metrics_from_selectvariants,
           log_file,
-          freebayes_vcf]
+          freebayes_vcf,
+          passed_bed]
+
+  merge_passed_bed:
+    run: ./cwl/tools/utils/merge_files.cwl
+    in:
+      input_files:
+        source: freebayes_cohort_genotyping/passed_bed
+        valueFrom: |
+          ${
+            var bed_list = []
+            for (var i = 0; i < self.length; i++){
+              if (Array.isArray(self[i])){
+                for (var j = 0; j < self[i].length; j++){
+                  bed_list.push(self[i][j])
+                }
+              } else {
+                bed_list.push(self[i])
+              }
+            }
+            return bed_list
+          }
+      output_file:
+        source: job_uuid
+        valueFrom: $(self + '.passed.bed')
+    out: [ output ]
 
   sort_freebayes:
     run: ./cwl/tools/variant_calling/picard_sortvcf.cwl
@@ -74,6 +103,19 @@ steps:
       output_prefix:
         valueFrom: 'genomel_cohort.freebayes.genomel_all'
     out: [sorted_vcf, time_metrics]
+
+  upload_passed_bed:
+    run: ./cwl/tools/utils/awscli_upload.cwl
+    in:
+      aws_config: aws_config
+      aws_shared_credentials: aws_shared_credentials
+      input: merge_passed_bed/output
+      s3uri:
+        source: [upload_s3_bucket, merge_passed_bed/output]
+        valueFrom: $(self[0])/$(self[1].basename)
+      s3_profile: upload_s3_profile
+      s3_endpoint: upload_s3_endpoint
+    out: [output, time_metrics]
 
   upload_freebayes_vcf:
     run: ./cwl/tools/utils/awscli_upload.cwl
@@ -111,6 +153,7 @@ steps:
                  freebayes_cohort_genotyping/time_metrics_from_picard_sortvcf,
                  freebayes_cohort_genotyping/time_metrics_from_selectvariants,
                  sort_freebayes/time_metrics,
+                 upload_passed_bed/time_metrics,
                  upload_freebayes_vcf/time_metrics,
                  upload_freebayes_vcf_index/time_metrics]
         valueFrom: |

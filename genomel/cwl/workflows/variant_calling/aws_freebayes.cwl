@@ -38,6 +38,9 @@ outputs:
   freebayes_vcf:
     type: File
     outputSource: gatk3_selectvariants/output_vcf
+  passed_bed:
+    type: File[]
+    outputSource: extract_pass_pair/passed_bed_list
 
 steps:
   aws_freebayes:
@@ -49,13 +52,21 @@ steps:
       bed_file: bed_file
       thread_count: thread_count
       number_of_chunks: number_of_chunks
-    out: [vcf_list, log_file, time_metrics]
+    out: [vcf_list, bed_list, log_file, time_metrics]
+
+  extract_pass_pair:
+    run: ../../tools/utils/extract_pass_pair.cwl
+    in:
+      bed_files: aws_freebayes/bed_list
+      vcf_files: aws_freebayes/vcf_list
+      log_file: aws_freebayes/log_file
+    out: [ passed_vcf_list, passed_bed_list ]
 
   picard_sortvcf:
     run: ../../tools/variant_calling/picard_sortvcf.cwl
     in:
       job_uuid: job_uuid
-      vcf: aws_freebayes/vcf_list
+      vcf: extract_pass_pair/passed_vcf_list
       reference_dict:
         source: reference
         valueFrom: $(self.secondaryFiles[1])
