@@ -1,4 +1,4 @@
-from pysam import VariantFile
+ulb rom pysam import VariantFile
 import pandas as pd
 import requests
 import json
@@ -102,7 +102,6 @@ class Filter_vcf:
             for key in rec.samples.keys():
                 if rec.samples[key]['GT'] == (1, 1) and rec.samples[key]['GT_DISAGREE'] == ('0',) and key not in filter_sample:
                     filter_sample.append(key)
-                    print(key)
         print("Sample filtering: %s samples to be removed" % len(filter_sample))
         with open("sample_id.txt", "w") as fh:
             for item in filter_sample:
@@ -157,8 +156,6 @@ class Mapping_samples:
             else:
                 for index, row in bam_case.iterrows():
                     if sample in row['base_bam'] or row['base_bam'].strip() in sample:
-                        print(sample)
-                        print(row['base_bam'])
                         found = True
                         aligned_reads_id = row['input_id']
                         project = row['project']

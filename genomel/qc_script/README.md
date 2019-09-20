@@ -14,11 +14,11 @@ region.txt is the bed file for those 8 genes retrieved from UCSC genome browser.
 ### Run script:
     If no mapping file exist, the script will create the mapping file ("vcf_case_mapping.csv") to idenfy the samples in vcf with the case, family and project information in genomel gen3 common. The additional output will be "deleterious_varaint_remove_sample.vcf" and "to_be_remove_sample.csv"
 
-    python3 known_melanoma_risk_sample.py -vcf select_region.sort.vcf -k credentials.json -bam genomel_bam_input.csv -fastq genomel_fastq_input.csv
+        python3 known_melanoma_risk_sample.py -vcf select_region.sort.vcf -k credentials.json -bam genomel_bam_input.csv -fastq genomel_fastq_input.csv
 
     If the mapping file has be generated, the mapping file will be supplied in the script. The output will be "deleterious_varaint_remove_sample.vcf" and "to_be_remove_sample.csv"
 
-    python3 known_melanoma_risk_sample.py -vcf select_region.sort.vcf -k credentials.json -bam genomel_bam_input.csv -fastq genomel_fastq_input.csv  -case vcf_case_mapping.csv
+        python3 known_melanoma_risk_sample.py -vcf select_region.sort.vcf -k credentials.json -bam genomel_bam_input.csv -fastq genomel_fastq_input.csv  -case vcf_case_mapping.csv
 
 
 
