@@ -1,4 +1,4 @@
-ulb rom pysam import VariantFile
+from pysam import VariantFile
 import pandas as pd
 import requests
 import json
