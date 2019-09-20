@@ -1,6 +1,6 @@
 ## A list of python script to do QC for vcf file called by genomel WEX pipeline
 
-known_melanoma_risk_sample.py identify samples with known deleterious variant for 10 melanoma risk related genes, and those samples will potential be removed from downstream analysis from the vcf file.
+known_melanoma_risk_sample.py identify samples with known deleterious variant for 8 melanoma risk related genes, and those samples will potential be removed from downstream analysis from the vcf file.
 Melanoma susceptible gene list: CDKN2A, CDK4, POT1, BAP1, TERT, MITF – 3:70014091 G>A only [rs149617956], ACD, TERF2IP
 
 region.txt is the bed file for those 8 genes retrieved from UCSC genome browser. CDKN2A has 2 canonical transcripts.
