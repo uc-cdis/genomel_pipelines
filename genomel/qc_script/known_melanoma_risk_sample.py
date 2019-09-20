@@ -13,9 +13,9 @@ def get_args():
     """Loads the parser"""
     parser = argparse.ArgumentParser(description="genomel qc")
     parser.add_argument('-vcf', '--vcffile', required=True, help="vcf file for filtering")
-    parser.add_argument('-k', '--authfile', required=True, help="auth key file")
-    parser.add_argument('-bam', '--bamfile', required=True, help="bam input csv")
-    parser.add_argument('-fastq', '--fastqfile', required=True, help="fastq input csv")
+    parser.add_argument('-k', '--authfile', required=False, help="auth key file")
+    parser.add_argument('-bam', '--bamfile', required=False, help="bam input csv")
+    parser.add_argument('-fastq', '--fastqfile', required=False, help="fastq input csv")
     parser.add_argument('-case', '--casefile', required=False, help="case information csv")
 
     return parser.parse_args()
@@ -209,10 +209,10 @@ class Mapping_samples:
 
 if __name__ == "__main__":
     args = get_args()
-    add_keys(args.authfile)
     if args.casefile:
         filter_obj = Filter_vcf(args.vcffile, categories, args.casefile)
     else:
+        add_keys(args.authfile)
         mapping_obj = Mapping_samples(args.vcffile, args.bamfile, args.fastqfile)
         cases = mapping_obj.retrieve_case()
         mapping_obj.output_file(cases)

@@ -2,6 +2,7 @@
 
 known_melanoma_risk_sample.py identify samples with known deleterious variant for 10 melanoma risk related genes, and those samples will potential be removed from downstream analysis from the vcf file.
 Melanoma susceptible gene list: CDKN2A, CDK4, POT1, BAP1, TERT, MITF – 3:70014091 G>A only [rs149617956], ACD, TERF2IP
+
 region.txt is the bed file for those 8 genes retrieved from UCSC genome browser. CDKN2A has 2 canonical transcripts.
 
 ### Input files:
@@ -18,7 +19,7 @@ region.txt is the bed file for those 8 genes retrieved from UCSC genome browser.
 
     If the mapping file has be generated, the mapping file will be supplied in the script. The output will be "deleterious_varaint_remove_sample.vcf" and "to_be_remove_sample.csv"
 
-        python3 known_melanoma_risk_sample.py -vcf select_region.sort.vcf -k credentials.json -bam genomel_bam_input.csv -fastq genomel_fastq_input.csv  -case vcf_case_mapping.csv
+        python3 known_melanoma_risk_sample.py -vcf select_region.sort.vcf  -case vcf_case_mapping.csv
 
 
 
