@@ -8,7 +8,7 @@ requirements:
   - class: InlineJavascriptRequirement
   - class: ShellCommandRequirement
   - class: DockerRequirement
-    dockerPull: alpine
+    dockerPull: quay.io/shenglai/alpine_with_bash:1.0
   - class: ResourceRequirement
     coresMin: 1
     coresMax: 1

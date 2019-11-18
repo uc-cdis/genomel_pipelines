@@ -1,0 +1,4 @@
+{
+    "input_bam": {"class": "File", "path": "/mnt/SCRATCH/cromwell_test/genomel_pipelines/support/NIST7035.1.filtered.chrM.bam"},
+    "capture_kit": {"bait": "abait"}
+}

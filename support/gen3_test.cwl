@@ -10,9 +10,13 @@ requirements:
   - class: MultipleInputFeatureRequirement
   - class: ScatterFeatureRequirement
   - class: SubworkflowFeatureRequirement
+  - class: SchemaDefRequirement
+    types:
+      - $import: capture_kit.yml
 
 inputs:
     input_bam: File
+    capture_kit: capture_kit.yml#capture_kit
 outputs:
     output:
         type: string[]
@@ -24,7 +28,7 @@ steps:
         in:
             input_bam: input_bam
         out: [ output_files ]
-    
+
     test_scatter:
         run: ./tools/scatter_test.cwl
         scatter: file
