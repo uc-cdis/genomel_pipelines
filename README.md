@@ -1,3 +1,5 @@
+# Notice: all the docker tages are temporarily removed due to the log4j vulnerability. The workflow can not be run as is until the log4j issue is resolved.
+
 ## GenoMEL-Bionimbus Protected Data Cloud (PDC) production pipeline
 
 General workflow:
