@@ -15,4 +15,5 @@ RUN apt-get update \
     && tar xf bcftools-1.9.tar.bz2 && rm /opt/bcftools-1.9.tar.bz2 && cd /opt/bcftools-1.9/ && make && make install \
     && cd /opt/ && wget https://github.com/hartleys/vArmyKnife/raw/master/vArmyKnife.2.2.87.tar.gz \
     && tar xf vArmyKnife.2.2.87.tar.gz && rm /opt/vArmyKnife.2.2.87.tar.gz \
+    && cd /opt/ && wget https://github.com/broadinstitute/picard/releases/download/2.18.11/picard.jar \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*

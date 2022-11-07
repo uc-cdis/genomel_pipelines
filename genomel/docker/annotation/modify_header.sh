@@ -1,0 +1,14 @@
+#/bin/bash
+# # The names of 7 fields in the dbNSFP 3.5a version had been changed compared to dbNSFP 3.0a version. Therefore, some explaination need to be added to the VCF header for such name changes.
+ sed -i "s/##INFO=<ID=dbNSFP_MutationAssessor_UniprotID,Number=A,Type=String,Description=\"Field 'MutationAssessor_UniprotID' from dbNSFP\">/##INFO=<ID=dbNSFP_MutationAssessor_UniprotID,Number=A,Type=String,Description=\"Field 'MutationAssessor_UniprotID' from dbNSFP3.5a, and was 'Uniprot_id_MutationAssessor' from dbNSFP 3.0a\">/g" $1 &&
+ sed -i "s/##INFO=<ID=dbNSFP_MutationAssessor_variant,Number=A,Type=String,Description=\"Field 'MutationAssessor_variant' from dbNSFP\">/##INFO=<ID=dbNSFP_MutationAssessor_variant,Number=A,Type=String,Description=\"Field 'MutationAssessor_variant' from dbNSFP 3.5a, and was 'Uniprot_variant_MutationAssessor' from dbNSFP 3.0a\">/g" $1 &&
+ sed -i "s/##INFO=<ID=dbNSFP_MutationAssessor_score_rankscore,Number=A,Type=String,Description=\"Field 'MutationAssessor_score_rankscore' from dbNSFP\">/##INFO=<ID=dbNSFP_MutationAssessor_score_rankscore,Number=A,Type=String,Description=\"Field 'MutationAssessor_score_rankscore' from dbNSFP 3.5a, and was 'MutationAssessor_rankscore' from dbNSFP 3.0a\">/g" $1 &&
+ sed -i "s/##INFO=<ID=dbNSFP_phyloP100way_vertebrate,Number=A,Type=Float,Description=\"Field 'phyloP100way_vertebrate' from dbNSFP\">/##INFO=<ID=dbNSFP_phyloP100way_vertebrate,Number=A,Type=Float,Description=\"Field 'phyloP100way_vertebrate' from dbNSFP 3.5a, and was 'phyloP7way_vertebrate' from dbNSFP 3.0a\">/g" $1 &&
+ sed -i "s/##INFO=<ID=dbNSFP_phyloP100way_vertebrate_rankscore,Number=A,Type=Float,Description=\"Field 'phyloP100way_vertebrate_rankscore' from dbNSFP\">/##INFO=<ID=dbNSFP_phyloP100way_vertebrate_rankscore,Number=A,Type=Float,Description=\"Field 'phyloP100way_vertebrate_rankscore' from dbNSFP 3.5a, and was 'phyloP7way_vertebrate_rankscore' from dbNSFP 3.0a\">/g" $1 &&
+ sed -i "s/##INFO=<ID=dbNSFP_phastCons100way_vertebrate,Number=A,Type=Float,Description=\"Field 'phastCons100way_vertebrate' from dbNSFP\">/##INFO=<ID=dbNSFP_phastCons100way_vertebrate,Number=A,Type=Float,Description=\"Field 'phastCons100way_vertebrate' from dbNSFP 3.5a, and was 'phastCons7way_vertebrate' from dbNSFP 3.0a\">/g" $1 &&
+ sed -i "s/##INFO=<ID=dbNSFP_phastCons100way_vertebrate_rankscore,Number=A,Type=Float,Description=\"Field 'phastCons100way_vertebrate_rankscore' from dbNSFP\">/##INFO=<ID=dbNSFP_phastCons100way_vertebrate_rankscore,Number=A,Type=Float,Description=\"Field 'phastCons100way_vertebrate_rankscore' from dbNSFP 3.5a, and was 'phastCons7way_vertebrate_rankscore' from dbNSFP 3.0a\">/g" $1 &&
+
+ # The new version of SNPSIFT does not correctly show three INFO fields. Need to correct the issue here.
+ sed -i "s/dbNSFP_GERP___RS/dbNSFP_GERP++_RS/g" $1 &&
+ sed -i "s/dbNSFP_GERP___NR/dbNSFP_GERP++_NR/g" $1 &&
+ sed -i "s/dbNSFP_GERP___RS_rankscore/dbNSFP_GERP++_RS_rankscore/g" $1
