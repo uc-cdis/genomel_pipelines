@@ -6,7 +6,7 @@ setup(
     name="GenoMEL-PDC bionimbus pipeline",
     version="1.0",
     install_requires=[
-        "GitPython==2.1.11",
+        "GitPython==3.1.37",
         "PyYAML==5.4"
     ],
     packages=find_packages(),
