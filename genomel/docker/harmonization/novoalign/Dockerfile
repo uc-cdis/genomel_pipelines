@@ -1,4 +1,4 @@
-FROM ubuntu:16.04
+FROM ubuntu:xenial-20210416
 
 ### add novocraftV3.09.00.Linux3.1X and license
 ADD novocraft.tar.bz2 /opt/
